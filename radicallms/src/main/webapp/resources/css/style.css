@@ -1,0 +1,38 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto);
+
+body{font-family: 'Roboto', sans-serif; font-size: 14px; margin: 0; padding: 10px 50px 50px 50px;}
+.container{width: 1280px;}
+#header{ display: inline-block; width: 100%;}
+#header .account { margin-bottom: 18px; margin-top: 15px;}
+#header .account a{ color: #000;}
+#action {background: #025930;  border-radius: 0;  margin-bottom: 20px; margin-left: -50px;  margin-right: -50px;  padding: 0 50px;}
+.default-filters{ margin: 0; padding: 0; list-style: none;}
+.default-filters li{ margin: 0; padding: 0; list-style: none; display: inline-block;}
+.default-filters li a{ color: #fff; padding: 12px 16px; margin: 0; display: inline-block}
+.default-filters li a.active, .default-filters li a:hover{ background: url(../images/active.png) no-repeat center bottom; color: #fff; text-decoration: none}
+.default-filters li a i{ color: #fff;}
+.pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {background-color: #025930; border-color: #025930;}
+#header img{width: 230px;}
+.logo{ float: left}
+.searchform{ float: left; margin: 6px 0 0 46px}
+.searchform input { border: 1px solid #ccc; border-radius: 3px 0 0 3px; padding: 8px 15px;}
+.searchform button { background: #025930; border: medium none; border-radius: 0 3px 3px 0; color: #fff; padding: 9px 18px;margin: 0 0 0 -5px;}
+a i{color: #025930}
+.action-btns ul{ margin: 0; padding: 0; text-align: center;}
+.action-btns ul li { background: #025930;  border-radius: 3px; display: inline-block; list-style: outside none none; margin: 0 2px;}
+.action-btns ul li a{  padding: 5px 19px; display: inline-block}
+.action-btns ul li a i{ color: #fff;}
+.action-btns { margin: 0 0 20px;}
+.action-btns ul li:hover .childemail{ display: block}
+.childemail {display:none; padding: 7px 0 0 !important; position: absolute; top: 30px;    width: 160px;}
+.childemail li { background: #000 !important; border-radius: 0 !important; border-top: 1px solid #ccc; float: left; margin: 0 !important; text-align: left;width: 100%;}
+.childemail:after, .childemail:before {bottom: 87%;left: 50%;border: solid transparent;content: " ";height: 0;width: 0;position: absolute;pointer-events: none;}
+.childemail::before {  border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #000;  border-width: 8px; margin-left: -73px;}
+.childemail li a{ text-align: left; color: #fff; text-decoration: none; cursor: pointer; font-size: 13px;}
+.right { float: right;}
+section { position: relative;}
+.count{ position: absolute; right: 0; top:0}
+.form-inline .form-group{ margin-bottom: 15px;}
+.pagination{margin: 0 0 20px;}
+.wd50{ width: 50%; float: left}
+.btn-group, .btn-group-vertical {width: 98% !important;}
