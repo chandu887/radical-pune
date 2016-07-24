@@ -4,14 +4,30 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "leads")
 public class LeadsEntity {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "leadid")
+	private int leadiId;
+
 	@Column(name = "name")
 	private String name;
+
+	public int getLeadiId() {
+		return leadiId;
+	}
+
+	public void setLeadiId(int leadiId) {
+		this.leadiId = leadiId;
+	}
 
 	@Column(name = "mobileno")
 	private String mobileNo;
@@ -23,13 +39,13 @@ public class LeadsEntity {
 	private int status;
 
 	@Column(name = "course")
-	private String course;
+	private int course;
 
 	@Column(name = "coursecategory")
 	private int courseCategeory;
 
 	@Column(name = "leadsource")
-	private String leadSource;
+	private int leadSource;
 
 	@Column(name = "assignedto")
 	private int assignedTo;
@@ -40,12 +56,15 @@ public class LeadsEntity {
 	@Column(name = "lastupdatetime")
 	private Date lastUpdatedDate;
 
+	@Column(name = "cityId")
+	private int cityId;
+	
 	public LeadsEntity() {
 
 	}
 
-	public LeadsEntity(String name, String mobileNo, String emailId, int status, String course, int courseCategeory,
-			String leadSource, int assignedTo, Date createdDate, Date lastUpdatedDate) {
+	public LeadsEntity(String name, String mobileNo, String emailId, int status, int course, int courseCategeory,
+			int leadSource, int assignedTo, Date createdDate, Date lastUpdatedDate) {
 		this.name = name;
 		this.mobileNo = mobileNo;
 		this.emailId = emailId;
@@ -91,14 +110,6 @@ public class LeadsEntity {
 		this.status = status;
 	}
 
-	public String getCourse() {
-		return course;
-	}
-
-	public void setCourse(String course) {
-		this.course = course;
-	}
-
 	public int getCourseCategeory() {
 		return courseCategeory;
 	}
@@ -107,16 +118,24 @@ public class LeadsEntity {
 		this.courseCategeory = courseCategeory;
 	}
 
-	public String getLeadSource() {
+	public int getAssignedTo() {
+		return assignedTo;
+	}
+
+	public int getCourse() {
+		return course;
+	}
+
+	public void setCourse(int course) {
+		this.course = course;
+	}
+
+	public int getLeadSource() {
 		return leadSource;
 	}
 
-	public void setLeadSource(String leadSource) {
+	public void setLeadSource(int leadSource) {
 		this.leadSource = leadSource;
-	}
-
-	public int getAssignedTo() {
-		return assignedTo;
 	}
 
 	public void setAssignedTo(int assignedTo) {
@@ -139,4 +158,13 @@ public class LeadsEntity {
 		this.lastUpdatedDate = lastUpdatedDate;
 	}
 
+	public int getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(int cityId) {
+		this.cityId = cityId;
+	}
+
+	
 }

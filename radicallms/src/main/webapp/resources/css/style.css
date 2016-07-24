@@ -36,3 +36,17 @@ section { position: relative;}
 .pagination{margin: 0 0 20px;}
 .wd50{ width: 50%; float: left}
 .btn-group, .btn-group-vertical {width: 98% !important;}
+
+
+
+/*------- Login Page --------*/
+.form-container {bottom: 0; height: 168px; left: 0; margin: auto; position: fixed;right: 0;top: -150px;width: 450px;}
+.form-container-inner {background: #fff; padding: 35px; -webkit-box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.55);
+                       -moz-box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.55);
+                       box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.55);}
+.form-container input{ background: #f2f2f2; width: 92%; padding: 15px 4%; border: 0; margin-bottom: 10px; font-size: 16px;}
+.form-container ul{ margin: 0; padding: 0; list-style: none}
+.form-container button {background: #00b241;border: medium none; color: #fff; font-size: 17px; padding: 11px 0; cursor: pointer;width: 100%;}
+.form-container h1{color: #fff; margin: 0 0 15px 0; font-size: 25px; text-align: center;text-transform: uppercase}
+.error{ color: #ff0000; display: block;font-size: 12px; margin: 0 0 4px; padding: 8px 0; width: 96%;}
+body.login{background: #55b460;}

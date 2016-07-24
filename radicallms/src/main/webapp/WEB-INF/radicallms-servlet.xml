@@ -20,7 +20,7 @@ xmlns:mvc="http://www.springframework.org/schema/mvc"
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
  
     <context:annotation-config />
-    <context:component-scan base-package="com.radical.lms.controller" />
+    <context:component-scan base-package="com.radical.lms" />
  
     <bean id="jspViewResolver"
         class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -69,6 +69,11 @@ xmlns:mvc="http://www.springframework.org/schema/mvc"
     <bean id="userDao" class="com.radical.lms.dao.UserDaoImpl"></bean>
     <bean id="userService" class="com.radical.lms.service.UserServiceImpl"></bean> 
     
+    <bean id="emailDao" class="com.radical.lms.dao.EmailDaoImpl"></bean>
+    <bean id="emailService" class="com.radical.lms.service.EmailServiceImpl" init-method="init"></bean> 
+    
+    <bean id="leadDao" class="com.radical.lms.dao.LeadDaoImpl"></bean>
+    <bean id="leadService" class="com.radical.lms.service.LeadServiceImpl"></bean>
     
     <tx:annotation-driven />
     <bean id="transactionManager"

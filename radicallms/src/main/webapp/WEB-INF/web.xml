@@ -50,7 +50,9 @@
     </servlet-mapping>
     <context-param>
 	    <param-name>contextConfigLocation</param-name>
-	    <param-value>/WEB-INF/radicallms-servlet.xml</param-value>
+	    <param-value>
+	    /WEB-INF/radicallms-servlet.xml, /WEB-INF/quartz-context.xml
+	    </param-value>
 	</context-param>
     <listener>
 	    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
