@@ -67,7 +67,7 @@ xmlns:mvc="http://www.springframework.org/schema/mvc"
     
    
     <bean id="userDao" class="com.radical.lms.dao.UserDaoImpl"></bean>
-    <bean id="userService" class="com.radical.lms.service.UserServiceImpl"></bean> 
+    <bean id="userService" class="com.radical.lms.service.UserServiceImpl" init-method="init" ></bean> 
     
     <bean id="emailDao" class="com.radical.lms.dao.EmailDaoImpl"></bean>
     <bean id="emailService" class="com.radical.lms.service.EmailServiceImpl" init-method="init"></bean> 

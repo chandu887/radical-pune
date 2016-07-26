@@ -7,6 +7,10 @@
     <session-factory>        
         <mapping class="com.radical.lms.entity.UsersEntity" />
         <mapping class="com.radical.lms.entity.LeadsEntity" />
-        <mapping class="com.radical.lms.entity.EmailCountEntity" />   
+        <mapping class="com.radical.lms.entity.EmailCountEntity" />         
+        <mapping class="com.radical.lms.entity.CourseCategeoryEntity" /> 
+        <mapping class="com.radical.lms.entity.CourseEntity" />
+        <mapping class="com.radical.lms.entity.LeadSourcesEntity" />
+        		
      </session-factory>
 </hibernate-configuration>
