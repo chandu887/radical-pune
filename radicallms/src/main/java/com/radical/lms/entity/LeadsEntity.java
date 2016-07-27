@@ -56,15 +56,16 @@ public class LeadsEntity {
 	@Column(name = "lastupdatetime")
 	private Date lastUpdatedDate;
 
-	@Column(name = "cityId")
-	private int cityId;
+	@Column(name = "city")
+	private String city;
 	
 	public LeadsEntity() {
 
 	}
 
 	public LeadsEntity(String name, String mobileNo, String emailId, int status, int course, int courseCategeory,
-			int leadSource, int assignedTo, Date createdDate, Date lastUpdatedDate) {
+			int leadSource, int assignedTo, Date createdDate, String city) {
+		super();
 		this.name = name;
 		this.mobileNo = mobileNo;
 		this.emailId = emailId;
@@ -74,8 +75,7 @@ public class LeadsEntity {
 		this.leadSource = leadSource;
 		this.assignedTo = assignedTo;
 		this.createdDate = createdDate;
-		this.lastUpdatedDate = lastUpdatedDate;
-
+		this.city = city;
 	}
 
 	public String getName() {
@@ -158,13 +158,15 @@ public class LeadsEntity {
 		this.lastUpdatedDate = lastUpdatedDate;
 	}
 
-	public int getCityId() {
-		return cityId;
+	public String getCity() {
+		return city;
 	}
 
-	public void setCityId(int cityId) {
-		this.cityId = cityId;
+	public void setCity(String city) {
+		this.city = city;
 	}
+
+
 
 	
 }

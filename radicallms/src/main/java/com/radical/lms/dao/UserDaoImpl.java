@@ -47,21 +47,24 @@ public class UserDaoImpl implements UserDao {
 
 	public List getCountByStatusType() {
 		Query query = this.sessionFactory.getCurrentSession()
-				.createQuery("select count(*) from LeadsEntity group by status");
+				.createQuery("select status , count(*) from LeadsEntity group by status");
 		List countList = query.list();
 		return countList;
 	}
 
 	public List<LeadsEntity> getLeadsByStatus(int status) {
-		Query query = this.sessionFactory.getCurrentSession().createQuery("from LeadsEntity where status = :status");
-		query.setInteger("status", status);
+		String queryStr = "from LeadsEntity";
+		if (status != 0) {
+			queryStr +=" where status = " +status;
+		}
+		Query query = this.sessionFactory.getCurrentSession().createQuery(queryStr);
 		List<LeadsEntity> leads = query.list();
 		if (leads != null && !leads.isEmpty()) {
 			return leads;
 		}
 		return null;
 	}
-	
+
 	@Transactional
 	public List<CourseCategeoryEntity> getCourseCategories() {
 		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity");
@@ -71,7 +74,7 @@ public class UserDaoImpl implements UserDao {
 		}
 		return null;
 	}
-	
+
 	@Transactional
 	public List<CourseEntity> getCourses() {
 		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity");
@@ -81,7 +84,7 @@ public class UserDaoImpl implements UserDao {
 		}
 		return null;
 	}
-	
+
 	@Transactional
 	public List<LeadSourcesEntity> getLeadSources() {
 		Query query = this.sessionFactory.getCurrentSession().createQuery("from LeadSourcesEntity");

@@ -96,14 +96,15 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public List<LeadsEntityBean> getLeadsByStatus(int statusType) {
 		List<LeadsEntity> leads = userDao.getLeadsByStatus(statusType);
+		if(leads!=null){
 		List<LeadsEntityBean> leadBeanList = new ArrayList<LeadsEntityBean>();
 		String status = "";
 		for (LeadsEntity leadsEntity : leads) {
-			if (statusType == 1) {
+			if (leadsEntity.getStatus() == 1) {
 				status = "New";
-			} else if (statusType == 2) {
+			} else if (leadsEntity.getStatus() == 2) {
 				status = "Open";
-			} else {
+			} else if (leadsEntity.getStatus() == 3){
 				status = "Closed";
 			}
 			LeadsEntityBean leadsEntityBean = new LeadsEntityBean(status, leadsEntity.getName(),
@@ -114,6 +115,8 @@ public class UserServiceImpl implements UserService {
 			leadBeanList.add(leadsEntityBean);
 		}
 		return leadBeanList;
+		}
+		return null;
 	}
 
 	public Map<Integer, String> getCourseCategories() {

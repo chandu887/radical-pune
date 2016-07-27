@@ -46,14 +46,16 @@
 			</section>
 			<section id="action">
 			<ul class="default-filters">
-				<li><a href="#" class="active"><i
+				<li><a href="dashboard?leadStatus=1" class="active"><i
 						class="fa fa-external-link" aria-hidden="true"></i> New <span>${newCount}</span></a></li>
-				<li><a href="#"><i class="fa fa-folder-open-o"
-						aria-hidden="true"></i> Open ${openCount}</a></li>
-				<li><a href="#"><i class="fa fa-folder-o"
-						aria-hidden="true"></i> Closed ${closeCount}</a></li>
-				<li><a href="#"><i class="fa fa-bars" aria-hidden="true"></i>
-						All ${allCount}</a></li>
+				<li><a href="dashboard?leadStatus=2"><i
+						class="fa fa-folder-open-o" aria-hidden="true"></i> Open
+						${openCount}</a></li>
+				<li><a href="dashboard?leadStatus=3"><i
+						class="fa fa-folder-o" aria-hidden="true"></i> Closed
+						${closeCount}</a></li>
+				<li><a href="dashboard?leadStatus=0"><i class="fa fa-bars"
+						aria-hidden="true"></i> All ${allCount}</a></li>
 
 
 				<li class="right"><a data-toggle="modal" role="button"
@@ -118,22 +120,29 @@
 				</thead>
 
 				<tbody>
-					<c:forEach items="${leadsList}" var="lead">
+					<c:if test="${leadsList != null}">
+						<c:forEach items="${leadsList}" var="lead">
+							<tr>
+								<td><input type="checkbox" value=""></td>
+								<td><a href="#"><i class="fa fa-pencil-square-o"
+										aria-hidden="true"></i></a></td>
+								<td>${lead.status}</td>
+								<td>ENQ ${lead.enqID}</td>
+								<td>${lead.name}</td>
+								<td>${lead.mobileNo}</td>
+								<td>${lead.course}</td>
+								<td>${lead.categeory}</td>
+								<td>${lead.sourceLead}</td>
+								<td>${lead.assignedTo}</td>
+								<td>${lead.createdTime}</td>
+							</tr>
+						</c:forEach>
+					</c:if>
+					<c:if test="${leadsList == null}">
 						<tr>
-							<td><input type="checkbox" value=""></td>
-							<td><a href="#"><i class="fa fa-pencil-square-o"
-									aria-hidden="true"></i></a></td>
-							<td>${lead.status}</td>
-							<td>ENQ ${lead.enqID}</td>
-							<td>${lead.name}</td>
-							<td>${lead.mobileNo}</td>
-							<td>${lead.course}</td>
-							<td>${lead.categeory}</td>
-							<td>${lead.sourceLead}</td>
-							<td>${lead.assignedTo}</td>
-							<td>${lead.createdTime}</td>
+							<h3>No leads Found.</h3>
 						</tr>
-					</c:forEach>
+					</c:if>
 
 				</tbody>
 			</table>
@@ -155,13 +164,13 @@
 	<script
 		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
 	<script>
-            $(function () {
-                $("[rel='tooltip']").tooltip();
-            });
-            $(document).ready(function () {
-                $('.selectpicker').selectpicker();
-            });
-        </script>
+		$(function() {
+			$("[rel='tooltip']").tooltip();
+		});
+		$(document).ready(function() {
+			$('.selectpicker').selectpicker();
+		});
+	</script>
 
 
 
