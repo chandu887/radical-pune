@@ -1,0 +1,5 @@
+CREATE TABLE `emailcount` (
+  `id` int(11) NOT NULL,
+  `lastemailcount` int(10) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

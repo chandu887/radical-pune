@@ -2,6 +2,7 @@ package com.radical.lms.service;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.Address;
@@ -27,6 +28,9 @@ public class EmailServiceImpl implements EmailService{
 	
 	@Autowired
 	private EmailDao emailDao;
+	
+	@Autowired
+	private UserService userService;
 	
 	Store store = null;
 	
@@ -66,6 +70,9 @@ public class EmailServiceImpl implements EmailService{
 			inbox.open(Folder.READ_WRITE);
 			currentEmailCount = inbox.getMessageCount();
 			int lastEmailCount = emailDao.getLastEmailCount();
+			if (lastEmailCount <  currentEmailCount) {
+				lastEmailCount += 1;
+			}
 			Message[] messages = inbox.getMessages(lastEmailCount, currentEmailCount);
 			for (Message message : messages) {
 				Address[] addressArray = message.getFrom();
@@ -80,9 +87,9 @@ public class EmailServiceImpl implements EmailService{
 						processYet5MailContent(mailContent, date);
 					} else if (mailsubject.contains("enquiry for you at")) {
 						processJustDailMailConten(mailContent, date);
-					} else if (mailsubject.contains("UrbanPro-Customers")) {
+					} /*else if (mailsubject.contains("UrbanPro-Customers")) {
 						processUrbanProMailContent(mailContent, date);
-					} else if (mailsubject.contains("A user contacted you through us")) {
+					} */else if (mailsubject.contains("A user contacted you through us")) {
 						processSulekhaMailContent(mailContent, date);
 					}
 				}
@@ -122,14 +129,47 @@ public class EmailServiceImpl implements EmailService{
 			leadsEntity.setEmailId(email);
 			leadsEntity.setStatus(1);
 			leadsEntity.setCreatedDate(date);
+			int courseId = 0;
+			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
+				if (course.equalsIgnoreCase(entry.getValue())) {
+					courseId = entry.getKey();
+					break;
+				}
+			}
+			int courseCategory = 0;
+			if (courseId != 0) {
+				courseCategory = userService.getCoursesCategeoryMapping().get(courseId);
+			}
+			leadsEntity.setCourse(courseId);
+			leadsEntity.setCourseCategeory(courseCategory);
+			
+			leadsEntity.setLeadSource(getLeadSoureId("YET5"));
+			
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	private int getLeadSoureId(String leadSource) {
+		for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
+			if (leadSource.equalsIgnoreCase(entry.getValue())) {
+				return entry.getKey();
+			}
+		}
+		return 0;
+	}
+	
 	private void processUrbanProMailContent(String mailContent, Date date) {
 		System.out.println(mailContent);
+		String[] spiltContent = mailContent.split("\\n");
+		System.out.println(spiltContent);
+		String name = spiltContent[12];
+		String course = spiltContent[14];
+		LeadsEntity leadsEntity = new LeadsEntity();
+		leadsEntity.setName(name);
+		leadService.saveLead(leadsEntity);
+		
 	}
 	
 	private void processJustDailMailConten(String mailContent, Date date) {
@@ -152,8 +192,9 @@ public class EmailServiceImpl implements EmailService{
 			leadsEntity.setMobileNo(mobileNo);
 			leadsEntity.setStatus(1);
 			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLeadSource(getLeadSoureId("jsutdail"));
+			leadsEntity.setCity(city);
 			leadService.saveLead(leadsEntity);
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -169,6 +210,7 @@ public class EmailServiceImpl implements EmailService{
 			leadsEntity.setMobileNo(mobileNo);
 			leadsEntity.setStatus(1);
 			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLeadSource(getLeadSoureId("sulekha"));
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
