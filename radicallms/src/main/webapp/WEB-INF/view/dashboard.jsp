@@ -13,7 +13,6 @@
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
 <link href="<c:url value="/resources/css/font-awesome.css"/>"
 	rel="stylesheet" />
-<script src="<c:url value="/resources/js/jquery1_8_1.js" />"></script>
 
 <!-- Bootstrap -->
 <link
@@ -25,6 +24,39 @@
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
 </head>
+
+<script src="<c:url value="/resources/js/jquery1_8_1.js" />"></script>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script
+		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script
+		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+	<script>
+		$(function() {
+			$("[rel='tooltip']").tooltip();
+		});
+		$(document).ready(function() {
+			$('.selectpicker').selectpicker();
+		});
+		
+		function validateStatusForm() {
+			
+		}
+	</script>
+	
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#changeStatusButton").click(function(){
+            var leadIds = [];
+            $.each($("input[name='leadId']:checked"), function(){            
+            	leadIds.push($(this).val());
+            });
+            $('#leadIds').val(leadIds.join(","));
+            $("#changeStatusForm").submit();
+        });
+    });
+</script>
 <body>
 	<div class="container-fluid">
 		<div class="row">
@@ -47,15 +79,15 @@
 			<section id="action">
 			<ul class="default-filters">
 				<li><a href="dashboard?leadStatus=1" class="active"><i
-						class="fa fa-external-link" aria-hidden="true"></i> New <span>${newCount}</span></a></li>
+						class="fa fa-external-link" aria-hidden="true"></i> New <span>${dashBoardForm.newCount}</span></a></li>
 				<li><a href="dashboard?leadStatus=2"><i
 						class="fa fa-folder-open-o" aria-hidden="true"></i> Open
-						${openCount}</a></li>
+						${dashBoardForm.openCount}</a></li>
 				<li><a href="dashboard?leadStatus=3"><i
 						class="fa fa-folder-o" aria-hidden="true"></i> Closed
-						${closeCount}</a></li>
+						${dashBoardForm.closedCount}</a></li>
 				<li><a href="dashboard?leadStatus=0"><i class="fa fa-bars"
-						aria-hidden="true"></i> All ${allCount}</a></li>
+						aria-hidden="true"></i> All ${dashBoardForm.totalLeadsCount}</a></li>
 
 
 				<li class="right"><a data-toggle="modal" role="button"
@@ -97,9 +129,10 @@
 			</div>
 			<div class="count">
 				Showing <select>
-					<option>50</option>
-					<option>100</option>
-					<option>200</option>
+					<option value ="5">5</option>
+					<option value ="10">10</option>
+					<option value ="20">20</option>
+					<option value ="30">30</option>
 				</select>
 			</div>
 			<table class="table table-bordered">
@@ -123,7 +156,7 @@
 					<c:if test="${leadsList != null}">
 						<c:forEach items="${leadsList}" var="lead">
 							<tr>
-								<td><input type="checkbox" value=""></td>
+								<td><input type="checkbox" value="${lead.enqID}" name="leadId"></td>
 								<td><a href="#"><i class="fa fa-pencil-square-o"
 										aria-hidden="true"></i></a></td>
 								<td>${lead.status}</td>
@@ -157,22 +190,6 @@
 			</section>
 		</div>
 	</div>
-	<script
-		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script
-		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
-	<script>
-		$(function() {
-			$("[rel='tooltip']").tooltip();
-		});
-		$(document).ready(function() {
-			$('.selectpicker').selectpicker();
-		});
-	</script>
-
-
 
 	<!--Change Status-->
 	<div id="changestatus" class="modal fade" role="dialog">
@@ -184,20 +201,21 @@
 				</div>
 				<div class="modal-body">
 					<p>Do you want to change lead status?</p>
-					<form class="form-inline" role="form">
-						<div class="form-group">
-							<label class="sr-only" for="email">Email address:</label> <select
-								class="selectpicker">
-								<option>New</option>
-								<option>OPen</option>
-								<option>Closed</option>
-							</select>
+					<form:form method="post" action="changeStatus" id="changeStatusForm" class="form-inline" role="form">
+						<input type="hidden" id="leadIds" name ="leadIds" value="">
+							<div class="form-group">
+								<label class="sr-only" for="email">Email address:</label> 
+								<select	class="selectpicker">
+									<option value ="1">New</option>
+									<option value ="2">Open</option>
+									<option value ="3">Closed</option>
+								</select>
+							</div>
+							<div class="modal-footer">
+							<button type="button" id ="changeStatusButton" class="btn btn-success">Submit</button>
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
 						</div>
-					</form>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Submit</button>
-						<button type="submit" class="btn btn-danger">Cancel</button>
-					</div>
+					</form:form>
 				</div>
 			</div>
 		</div>

@@ -1,5 +1,6 @@
 package com.radical.lms.controller;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.entity.UsersEntity;
 import com.radical.lms.quartz.MailReadingJob;
@@ -49,7 +51,9 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
-	public String dashBoard(@RequestParam("leadStatus") int leadStatus,ModelMap map){
+	public String dashBoard(HttpServletRequest request, @RequestParam("leadStatus") int leadStatus,ModelMap map) {
+		HttpSession session = request.getSession();
+		DashBoardForm dashBoardForm = new DashBoardForm();
 		List countList = this.userService.getCountByStatusType();
 		Map<Integer,Integer> countMap = new ConcurrentHashMap<Integer, Integer>();
 		countMap.put(1, 0);
@@ -64,12 +68,24 @@ public class UserController {
 		long newCount =countMap.get(1).intValue();
 		long openCount = countMap.get(2).intValue();
 		long closeCount = countMap.get(3).intValue();
+		int totalCount = (int) newCount + (int) openCount + (int) closeCount;
+		dashBoardForm.setNewCount((int)newCount);
+		dashBoardForm.setOpenCount((int)openCount);
+		dashBoardForm.setClosedCount((int)closeCount);
+		dashBoardForm.setTotalLeadsCount(totalCount);
+		dashBoardForm.setPageNumber(1);
+		dashBoardForm.setPageLimit(5);
+		List<Integer> pageList = new ArrayList<Integer>();
+		int i;
+		for (i = 1	; i <= totalCount; i = i + dashBoardForm.getPageLimit()) {
+			pageList.add(i);
+		}
+		dashBoardForm.setPageList(pageList);	
+		
 		List<LeadsEntityBean> leadsList = this.userService.getLeadsByStatus(leadStatus);
-		map.addAttribute("newCount", newCount);
-		map.addAttribute("openCount", openCount);
-		map.addAttribute("closeCount", closeCount);
-		map.addAttribute("allCount", ((int) newCount + (int) openCount + (int) closeCount));
 		map.addAttribute("leadsList", leadsList);
+		map.addAttribute("dashBoardForm", dashBoardForm);
+		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "dashboard";
 	}
 	
