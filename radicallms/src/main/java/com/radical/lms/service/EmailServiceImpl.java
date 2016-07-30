@@ -1,6 +1,8 @@
 package com.radical.lms.service;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Map;
 import java.util.Properties;
@@ -15,14 +17,16 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.radical.lms.dao.EmailDao;
-import com.radical.lms.entity.EmailCountEntity;
+import com.radical.lms.entity.EmailTimeEntity;
 import com.radical.lms.entity.LeadsEntity;
 
 public class EmailServiceImpl implements EmailService{
 	
+	final static Logger logger = Logger.getLogger(EmailServiceImpl.class);
 	@Autowired
 	private LeadService leadService;
 	
@@ -64,33 +68,40 @@ public class EmailServiceImpl implements EmailService{
 
 	public void readMailInbox() {
 		Folder inbox;
-		int currentEmailCount = 0;
+		long firstEmailTimeInMillis = 0;
 		try {
 			inbox = getStore().getFolder("INBOX");
 			inbox.open(Folder.READ_WRITE);
-			currentEmailCount = inbox.getMessageCount();
-			int lastEmailCount = emailDao.getLastEmailCount();
-			if (lastEmailCount <  currentEmailCount) {
-				lastEmailCount += 1;
-			}
-			Message[] messages = inbox.getMessages(lastEmailCount, currentEmailCount);
-			for (Message message : messages) {
+			
+			long lastEmailTimeInMillis = emailDao.getLastEmailTimeInMillis();
+			
+			Message[] messages = inbox.getMessages(1, inbox.getMessageCount());
+			
+			for (int i = messages.length-1; i > 0; i--) {
+				Message message = messages[i];
 				Address[] addressArray = message.getFrom();
-				if (addressArray[0].toString().equalsIgnoreCase("Ravi Shashtri <nagunuriravi@gmail.com>")) {
+				Date emailReceivedDate = message.getReceivedDate();
+				if (firstEmailTimeInMillis == 0) {
+					firstEmailTimeInMillis = emailReceivedDate.getTime();
+				}
+				if (lastEmailTimeInMillis >= emailReceivedDate.getTime()) {
+					break;
+				}
+				if (addressArray[0].toString().equalsIgnoreCase("Chandrasekhar Mutta <chandrasekhar.mutta8@gmail.com>")) {
+					
 					String mailsubject = message.getSubject();
-					Date date = message.getSentDate();
 					Multipart multiPart = (Multipart) message.getContent();
 					BodyPart bodyPart = multiPart.getBodyPart(0);
 					String mailContent = (String) bodyPart.getContent();
 
 					if (mailsubject.contains("Yet5.com")) {
-						processYet5MailContent(mailContent, date);
+						processYet5MailContent(mailContent, emailReceivedDate);
 					} else if (mailsubject.contains("enquiry for you at")) {
-						processJustDailMailConten(mailContent, date);
+						processJustDailMailConten(mailContent, emailReceivedDate);
 					} /*else if (mailsubject.contains("UrbanPro-Customers")) {
 						processUrbanProMailContent(mailContent, date);
-					} */else if (mailsubject.contains("A user contacted you through us")) {
-						processSulekhaMailContent(mailContent, date);
+					}*/ else if (mailsubject.contains("A user contacted you through us")) {
+						processSulekhaMailContent(mailContent, emailReceivedDate);
 					}
 				}
 			}
@@ -101,11 +112,10 @@ public class EmailServiceImpl implements EmailService{
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
-		EmailCountEntity emailCountEntity = new EmailCountEntity();
-		emailCountEntity.setId(1);
-		emailCountEntity.setLastEmailCount(currentEmailCount);
-		emailDao.saveEmailCount(emailCountEntity);
-		
+		EmailTimeEntity emailTimeEntity = new EmailTimeEntity();
+		emailTimeEntity.setId(1);
+		emailTimeEntity.setLastEmailTime(firstEmailTimeInMillis);
+		emailDao.saveEmailTime(emailTimeEntity);
 	}
 	
 	private void processYet5MailContent(String mailContent, Date date) {
@@ -148,6 +158,7 @@ public class EmailServiceImpl implements EmailService{
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("Error while Processing yet5 mail" + e.getMessage());
 		}
 	}
 	
@@ -197,6 +208,7 @@ public class EmailServiceImpl implements EmailService{
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("Error while Processing JustDail mail" + e.getMessage());
 		}
 		
 	}
@@ -214,6 +226,7 @@ public class EmailServiceImpl implements EmailService{
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
+			logger.error("Error while Processing sulekha+ mail" + e.getMessage());
 		}
 	}
 	

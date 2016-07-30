@@ -6,24 +6,24 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.radical.lms.entity.EmailCountEntity;
+import com.radical.lms.entity.EmailTimeEntity;
 
 public class EmailDaoImpl implements EmailDao{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
 	@Transactional
-	public int getLastEmailCount() {
-		Query query = this.sessionFactory.getCurrentSession().createQuery("from EmailCountEntity where id = :id");
+	public long getLastEmailTimeInMillis() {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from EmailTimeEntity where id = :id");
 		query.setInteger("id", 1);
-		EmailCountEntity emailCountEntity = (EmailCountEntity) query.uniqueResult();
-		return emailCountEntity.getLastEmailCount();		
+		EmailTimeEntity emailTimeEntity = (EmailTimeEntity) query.uniqueResult();
+		return emailTimeEntity.getLastEmailTime();		
 	}
 	
 	@Transactional
-	public void saveEmailCount(EmailCountEntity emailCountEntity) {
+	public void saveEmailTime(EmailTimeEntity emailTimeEntity) {
 		Session session = this.sessionFactory.getCurrentSession();
-		session.saveOrUpdate(emailCountEntity);
+		session.saveOrUpdate(emailTimeEntity);
 	}
 
 }

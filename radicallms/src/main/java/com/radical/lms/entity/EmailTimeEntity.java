@@ -8,15 +8,15 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "emailcount")
-public class EmailCountEntity {
+@Table(name = "emailtime")
+public class EmailTimeEntity {
 	@Id
 	@Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 
-	@Column(name = "lastemailcount")
-	private int lastEmailCount;
+	@Column(name = "lastemailtime")
+	private long lastEmailTime;
 
 	public int getId() {
 		return id;
@@ -26,13 +26,12 @@ public class EmailCountEntity {
 		this.id = id;
 	}
 
-	public int getLastEmailCount() {
-		return lastEmailCount;
+	public long getLastEmailTime() {
+		return lastEmailTime;
 	}
 
-	public void setLastEmailCount(int lastEmailCount) {
-		this.lastEmailCount = lastEmailCount;
-	}	
-	
-	
+	public void setLastEmailTime(long lastEmailTime) {
+		this.lastEmailTime = lastEmailTime;
+	}
+
 }

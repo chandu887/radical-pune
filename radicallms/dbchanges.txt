@@ -3,3 +3,11 @@ CREATE TABLE `emailcount` (
   `lastemailcount` int(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+ALTER TABLE `radicallms`.`emailcount` 
+CHANGE COLUMN `lastemailcount` `lastemailtime` BIGINT(20) NOT NULL ;
+
+ALTER TABLE `radicallms`.`emailcount` 
+RENAME TO  `radicallms`.`emailtime` ;
+
+

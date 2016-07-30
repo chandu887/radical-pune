@@ -22,12 +22,12 @@
         
         <init-param>
             <param-name>allowed-adminUrls</param-name>
-            <param-value>/,/dashboard,/logout</param-value>
+            <param-value>/,/dashboard,/logout,/testCron</param-value>
         </init-param>
         
         <init-param>
             <param-name>allowed-allUrls</param-name>
-            <param-value>/,/resources/images/*,/resources/js/*.js,/resources/css/*.css,/resources/fonts/*,/login,/getModelsList,/getCountryList</param-value>
+            <param-value>/,/resources/images/*,/resources/js/*.js,/resources/css/*.css,/resources/fonts/*,/login,/getModelsList,/getCountryList,/testCron</param-value>
         </init-param>
     </filter>
     

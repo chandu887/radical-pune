@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,9 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.radical.lms.beans.LeadsEntityBean;
-import com.radical.lms.entity.CourseCategeoryEntity;
-import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.UsersEntity;
+import com.radical.lms.quartz.MailReadingJob;
 import com.radical.lms.service.UserService;
 
 @Controller
@@ -94,6 +94,13 @@ public class UserController {
 		HttpSession session = request.getSession();
 		session.removeAttribute("userInfo");
 		session.invalidate();
+		return "login";
+	}
+	
+	@RequestMapping(value = "/testCron", method = RequestMethod.GET)
+	public String testCron(HttpServletRequest request) throws JobExecutionException {
+		MailReadingJob mail = new MailReadingJob();
+		mail.executeInternal(null);
 		return "login";
 	}
 }
