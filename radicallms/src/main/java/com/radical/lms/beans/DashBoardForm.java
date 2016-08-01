@@ -17,6 +17,7 @@ public class DashBoardForm {
 	String toDate;
 	int course;
 	int filterType;
+	List<Integer> limitList;
 	
 	public int getPageLimit() {
 		return pageLimit;
@@ -103,4 +104,11 @@ public class DashBoardForm {
 	public void setFilterType(int filterType) {
 		this.filterType = filterType;
 	}
+	public List<Integer> getLimitList() {
+		return limitList;
+	}
+	public void setLimitList(List<Integer> limitList) {
+		this.limitList = limitList;
+	}
+
 }

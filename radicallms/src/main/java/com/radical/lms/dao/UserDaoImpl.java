@@ -74,6 +74,8 @@ public class UserDaoImpl implements UserDao {
 		queryStr += " order by leadiId desc";
 		Query query = this.sessionFactory.getCurrentSession().createQuery(queryStr);
 		query.setParameterList("status", currentStatusList);
+		query.setFirstResult(dashBoardForm.getStartLimit()-1);
+		query.setMaxResults(dashBoardForm.getPageLimit());
 		List<LeadsEntity> leads = query.list();
 		if (leads != null && !leads.isEmpty()) {
 			return leads;

@@ -27,7 +27,7 @@
         
         <init-param>
             <param-name>allowed-allUrls</param-name>
-            <param-value>/,/resources/images/*,/resources/js/*.js,/resources/css/*.css,/resources/fonts/*,/login,/getModelsList,/getCountryList,/testCron</param-value>
+            <param-value>/,/resources/images/*,/resources/js/*.js,/resources/css/*.css,/resources/fonts/*,/login,/getModelsList,/getCountryList,/testCron,/getPaginationData,/getShowingData,/getPaginationData,/getShowingData</param-value>
         </init-param>
     </filter>
     

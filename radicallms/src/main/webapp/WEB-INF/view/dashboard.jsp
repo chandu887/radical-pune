@@ -130,8 +130,18 @@
 			$('#filterType').val("0");
 			$("#filterByDateAndCourseForm").submit();
 		});
+		
+        $("#showingId").change(function() {
+        	$("#getShowingForm").submit();
+        });
 
 	});
+	
+    function getPagination(pageno) {
+    	$('#currentPage').val(pageno);
+        $("#getPaginationForm").submit();
+    }
+
 </script>
 <body>
 	<div class="container-fluid">
@@ -216,12 +226,13 @@
 				</ul>
 			</div>
 			<div class="count">
-				Showing <select>
-					<option value="5">5</option>
-					<option value="10">10</option>
-					<option value="20">20</option>
-					<option value="30">30</option>
+				<form:form method="post" action="getShowingData" id="getShowingForm" class="form-inline" role="form">
+				Showing <select id="showingId" name="pageLimit">
+				<c:forEach items="${dashBoardForm.limitList}" var="limit">
+					<option value ="${limit}" <c:if test="${limit == dashBoardForm.pageLimit}">selected</c:if> >${limit}</option>
+				</c:forEach>
 				</select>
+				</form:form>
 			</div>
 			<table class="table table-bordered">
 				<thead>
@@ -268,13 +279,16 @@
 
 				</tbody>
 			</table>
-			<span class="pull-left">Showing 1 to 50 of 76,179 entries</span>
+			<span class="pull-left">Showing ${dashBoardForm.startLimit} to ${dashBoardForm.endLimit} of ${dashBoardForm.totalLeadsCount} entries</span>
 			<ul class="pagination pull-right">
-				<li><a href="#">1</a></li>
-				<li class="active"><a href="#">2</a></li>
-				<li><a href="#">3</a></li>
-				<li><a href="#">4</a></li>
-				<li><a href="#">5</a></li>
+				<c:forEach items="${dashBoardForm.pageList}" var="page" varStatus="pageIndex">
+					<li class ="<c:if test="${dashBoardForm.pageNumber == page}">active</c:if>">
+						<a href="javascript:void(0)" onclick="getPagination(${page})">${page}</a>
+					</li>
+				</c:forEach>
+				<form:form method="post" action="getPaginationData" id="getPaginationForm" class="form-inline" role="form">
+					<input type="hidden" id="currentPage" name ="currentPage" value="">
+				</form:form>
 			</ul>
 			</section>
 		</div>

@@ -103,7 +103,7 @@ public class UserController {
 		}
 
 		dashBoardForm.setPageList(pageList);
-		int statLimit = (dashBoardForm.getPageNumber() - 1) * dashBoardForm.getPageLimit();
+		int statLimit = ((dashBoardForm.getPageNumber() - 1) * dashBoardForm.getPageLimit()) + 1;
 		int endLimit = dashBoardForm.getPageLimit() * dashBoardForm.getPageNumber();
 		dashBoardForm.setStartLimit(statLimit);
 		if (totalCount > endLimit) {
@@ -116,6 +116,12 @@ public class UserController {
 			dashBoardForm.setToDate("");
 			dashBoardForm.setCourse(0);
 		}
+		List<Integer> limitList = new ArrayList<Integer>();
+		limitList.add(5);
+		limitList.add(10);
+		limitList.add(15);
+		limitList.add(20);
+		dashBoardForm.setLimitList(limitList);
 		List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
 		Map<Integer, String> coursesMap = this.userService.getCourses();
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
@@ -202,6 +208,24 @@ public class UserController {
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus() + "&isFromFilter=true";
 
+	}
+	
+	@RequestMapping(value = "/getPaginationData", method = RequestMethod.POST)
+	public String getPaginationData(HttpServletRequest request, @RequestParam("currentPage") int currentPage) {
+		HttpSession session = request.getSession();
+		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		dashBoardForm.setPageNumber(currentPage);
+		session.setAttribute("dashBoardForm", dashBoardForm);
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+	}
+
+	@RequestMapping(value = "/getShowingData", method = RequestMethod.POST)
+	public String getShowingData(HttpServletRequest request, @RequestParam("pageLimit") int pageLimit) {
+		HttpSession session = request.getSession();
+		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		dashBoardForm.setPageLimit(pageLimit);
+		session.setAttribute("dashBoardForm", dashBoardForm);
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 	}
 
 }
