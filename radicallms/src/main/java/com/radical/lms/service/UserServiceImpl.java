@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.dao.UserDao;
 import com.radical.lms.entity.CourseCategeoryEntity;
@@ -94,8 +95,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Transactional
-	public List<LeadsEntityBean> getLeadsByStatus(int statusType) {
-		List<LeadsEntity> leads = userDao.getLeadsByStatus(statusType);
+	public List<LeadsEntityBean> getLeadsByStatus(DashBoardForm dashBoardForm) {
+		List<LeadsEntity> leads = userDao.getLeadsByStatus(dashBoardForm);
 		if(leads!=null){
 		List<LeadsEntityBean> leadBeanList = new ArrayList<LeadsEntityBean>();
 		String status = "";

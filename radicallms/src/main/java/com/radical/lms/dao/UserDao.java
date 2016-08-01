@@ -2,6 +2,7 @@ package com.radical.lms.dao;
 
 import java.util.List;
 
+import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadSourcesEntity;
@@ -16,7 +17,7 @@ public interface UserDao {
 
 	List getCountByStatusType();
 
-	List<LeadsEntity> getLeadsByStatus(int status);
+	List<LeadsEntity> getLeadsByStatus(DashBoardForm dashBoardForm );
 	
 	List<CourseCategeoryEntity> getCourseCategories();
 	

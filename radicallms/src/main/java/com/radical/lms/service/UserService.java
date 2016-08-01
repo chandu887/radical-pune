@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.LeadsEntity;
@@ -22,7 +23,7 @@ public interface UserService {
 
 	List getCountByStatusType();
 
-	List<LeadsEntityBean> getLeadsByStatus(int status);
+	List<LeadsEntityBean> getLeadsByStatus(DashBoardForm dashBoardForm );
 
 	void getAllCourseCategories();
 	

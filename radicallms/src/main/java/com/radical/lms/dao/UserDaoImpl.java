@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadSourcesEntity;
@@ -52,10 +53,10 @@ public class UserDaoImpl implements UserDao {
 		return countList;
 	}
 
-	public List<LeadsEntity> getLeadsByStatus(int status) {
+	public List<LeadsEntity> getLeadsByStatus(DashBoardForm dashBoardForm ) {
 		String queryStr = "from LeadsEntity";
-		if (status != 0) {
-			queryStr +=" where status = " +status;
+		if (dashBoardForm.getCurrentStatus() != 0) {
+			queryStr +=" where status = " +dashBoardForm.getCurrentStatus();
 		}
 		Query query = this.sessionFactory.getCurrentSession().createQuery(queryStr);
 		List<LeadsEntity> leads = query.list();

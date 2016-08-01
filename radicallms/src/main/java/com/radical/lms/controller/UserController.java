@@ -53,7 +53,7 @@ public class UserController {
 	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
 	public String dashBoard(HttpServletRequest request, @RequestParam("leadStatus") int leadStatus,ModelMap map) {
 		HttpSession session = request.getSession();
-		DashBoardForm dashBoardForm = new DashBoardForm();
+
 		List countList = this.userService.getCountByStatusType();
 		Map<Integer,Integer> countMap = new ConcurrentHashMap<Integer, Integer>();
 		countMap.put(1, 0);
@@ -69,20 +69,40 @@ public class UserController {
 		long openCount = countMap.get(2).intValue();
 		long closeCount = countMap.get(3).intValue();
 		int totalCount = (int) newCount + (int) openCount + (int) closeCount;
+		
+		DashBoardForm dashBoardForm = null;
+		if (session.getAttribute("dashBoardForm") != null) {
+			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		} else {
+			dashBoardForm = new DashBoardForm();
+			dashBoardForm.setPageNumber(1);
+			dashBoardForm.setPageLimit(5);
+		}
+		
 		dashBoardForm.setNewCount((int)newCount);
 		dashBoardForm.setOpenCount((int)openCount);
 		dashBoardForm.setClosedCount((int)closeCount);
 		dashBoardForm.setTotalLeadsCount(totalCount);
-		dashBoardForm.setPageNumber(1);
-		dashBoardForm.setPageLimit(5);
-		List<Integer> pageList = new ArrayList<Integer>();
-		int i;
-		for (i = 1	; i <= totalCount; i = i + dashBoardForm.getPageLimit()) {
-			pageList.add(i);
-		}
-		dashBoardForm.setPageList(pageList);	
 		
-		List<LeadsEntityBean> leadsList = this.userService.getLeadsByStatus(leadStatus);
+		List<Integer> pageList = new ArrayList<Integer>();
+		int page = 1;
+		int i;
+		for ( i = 0	; i <= totalCount; i = i + dashBoardForm.getPageLimit()) {
+			pageList.add(page);
+			page += 1;
+			
+		}
+		
+		dashBoardForm.setPageList(pageList);
+		int statLimit = (dashBoardForm.getPageNumber()-1) * dashBoardForm.getPageLimit();
+		int endLimit = dashBoardForm.getPageLimit() * dashBoardForm.getPageNumber();
+		dashBoardForm.setStartLimit(statLimit);
+		if (totalCount > endLimit) {
+			dashBoardForm.setEndLimit(endLimit);
+		} else {
+			dashBoardForm.setEndLimit(totalCount);
+		}
+		List<LeadsEntityBean> leadsList = this.userService.getLeadsByStatus(dashBoardForm);
 		map.addAttribute("leadsList", leadsList);
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		session.setAttribute("dashBoardForm", dashBoardForm);
