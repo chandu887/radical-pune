@@ -24,4 +24,6 @@ public interface UserDao {
 	List<CourseEntity> getCourses();
 	
 	List<LeadSourcesEntity> getLeadSources();
+	
+	String leadsChangeStatus(List<Integer>changeStatusLeadIdsList,int statusType,String reason);
 }

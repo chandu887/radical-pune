@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Transactional
-	public List<LeadsEntityBean> getLeadsByStatus(DashBoardForm dashBoardForm) {
+	public List<LeadsEntityBean> getLeadsStatus(DashBoardForm dashBoardForm) {
 		List<LeadsEntity> leads = userDao.getLeadsByStatus(dashBoardForm);
 		if(leads!=null){
 		List<LeadsEntityBean> leadBeanList = new ArrayList<LeadsEntityBean>();
@@ -150,5 +150,10 @@ public class UserServiceImpl implements UserService {
 
 	public void setLeadSourceMapping(Map<Integer, String> leadSourceMapping) {
 		this.leadSourceMapping = leadSourceMapping;
+	}
+
+	@Transactional
+	public String leadsChangeStatus(List<Integer> changeStatusLeadIdsList, int statusType , String reason) {
+		return userDao.leadsChangeStatus(changeStatusLeadIdsList,statusType,reason);
 	}
 }

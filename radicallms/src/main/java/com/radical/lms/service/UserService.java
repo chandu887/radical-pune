@@ -23,7 +23,7 @@ public interface UserService {
 
 	List getCountByStatusType();
 
-	List<LeadsEntityBean> getLeadsByStatus(DashBoardForm dashBoardForm );
+	List<LeadsEntityBean> getLeadsStatus(DashBoardForm dashBoardForm );
 
 	void getAllCourseCategories();
 	
@@ -35,6 +35,6 @@ public interface UserService {
 	
 	Map<Integer, String> getCourseCategories();
 	
+	String leadsChangeStatus(List<Integer>changeStatusLeadIdsList,int statusType,String reason);
 	
-
 }

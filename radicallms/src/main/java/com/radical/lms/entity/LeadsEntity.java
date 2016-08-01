@@ -59,6 +59,28 @@ public class LeadsEntity {
 	@Column(name = "city")
 	private String city;
 	
+	@Column(name = "comments")
+	private String comments;
+	
+	@Column(name = "reason")
+	private String reason;
+	
+	public String getComments() {
+		return comments;
+	}
+
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+
+	public String getReason() {
+		return reason;
+	}
+
+	public void setReason(String reason) {
+		this.reason = reason;
+	}
+
 	public LeadsEntity() {
 
 	}

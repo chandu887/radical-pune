@@ -13,6 +13,10 @@ public class DashBoardForm {
 	int closedCount;
 	int totalLeadsCount;
 	List<Integer> pageList;
+	String fromDate;
+	String toDate;
+	int course;
+	int filterType;
 	
 	public int getPageLimit() {
 		return pageLimit;
@@ -74,5 +78,29 @@ public class DashBoardForm {
 	}
 	public void setEndLimit(int endLimit) {
 		this.endLimit = endLimit;
+	}
+	public String getFromDate() {
+		return fromDate;
+	}
+	public void setFromDate(String fromDate) {
+		this.fromDate = fromDate;
+	}
+	public String getToDate() {
+		return toDate;
+	}
+	public void setToDate(String toDate) {
+		this.toDate = toDate;
+	}
+	public int getCourse() {
+		return course;
+	}
+	public void setCourse(int course) {
+		this.course = course;
+	}
+	public int getFilterType() {
+		return filterType;
+	}
+	public void setFilterType(int filterType) {
+		this.filterType = filterType;
 	}
 }

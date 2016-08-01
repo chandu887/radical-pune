@@ -10,4 +10,9 @@ CHANGE COLUMN `lastemailcount` `lastemailtime` BIGINT(20) NOT NULL ;
 ALTER TABLE `radicallms`.`emailcount` 
 RENAME TO  `radicallms`.`emailtime` ;
 
+ALTER TABLE `radicallms`.`leads` 
+ADD COLUMN `comments` TEXT NULL AFTER `city`,
+ADD COLUMN `reason` VARCHAR(45) NULL AFTER `comments`;
+
+
 

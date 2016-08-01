@@ -12,15 +12,19 @@ import javax.servlet.http.HttpSession;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
+import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.UsersEntity;
 import com.radical.lms.quartz.MailReadingJob;
+import com.radical.lms.service.LeadService;
 import com.radical.lms.service.UserService;
 
 @Controller
@@ -28,6 +32,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private LeadService leadService;
 
 	private boolean getData = false;
 
@@ -49,13 +56,14 @@ public class UserController {
 		}
 		return "login";
 	}
-	
+
 	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
-	public String dashBoard(HttpServletRequest request, @RequestParam("leadStatus") int leadStatus,ModelMap map) {
+	public String dashBoard(HttpServletRequest request, @RequestParam("leadStatus") int leadStatus, ModelMap map,
+			@RequestParam(value = "isFromFilter", defaultValue = "false", required = false) Boolean isFromFilter) {
 		HttpSession session = request.getSession();
 
 		List countList = this.userService.getCountByStatusType();
-		Map<Integer,Integer> countMap = new ConcurrentHashMap<Integer, Integer>();
+		Map<Integer, Integer> countMap = new ConcurrentHashMap<Integer, Integer>();
 		countMap.put(1, 0);
 		countMap.put(2, 0);
 		countMap.put(3, 0);
@@ -63,13 +71,13 @@ public class UserController {
 			Object[] objects = (Object[]) iter.next();
 			int statusId = (Integer) objects[0];
 			long count = (Long) objects[1];
-			countMap.put(statusId, (int)count);
+			countMap.put(statusId, (int) count);
 		}
-		long newCount =countMap.get(1).intValue();
+		long newCount = countMap.get(1).intValue();
 		long openCount = countMap.get(2).intValue();
 		long closeCount = countMap.get(3).intValue();
 		int totalCount = (int) newCount + (int) openCount + (int) closeCount;
-		
+
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
@@ -78,23 +86,24 @@ public class UserController {
 			dashBoardForm.setPageNumber(1);
 			dashBoardForm.setPageLimit(5);
 		}
-		
-		dashBoardForm.setNewCount((int)newCount);
-		dashBoardForm.setOpenCount((int)openCount);
-		dashBoardForm.setClosedCount((int)closeCount);
+
+		dashBoardForm.setNewCount((int) newCount);
+		dashBoardForm.setOpenCount((int) openCount);
+		dashBoardForm.setClosedCount((int) closeCount);
 		dashBoardForm.setTotalLeadsCount(totalCount);
-		
+		dashBoardForm.setCurrentStatus(leadStatus);
+
 		List<Integer> pageList = new ArrayList<Integer>();
 		int page = 1;
 		int i;
-		for ( i = 0	; i <= totalCount; i = i + dashBoardForm.getPageLimit()) {
+		for (i = 0; i <= totalCount; i = i + dashBoardForm.getPageLimit()) {
 			pageList.add(page);
 			page += 1;
-			
+
 		}
-		
+
 		dashBoardForm.setPageList(pageList);
-		int statLimit = (dashBoardForm.getPageNumber()-1) * dashBoardForm.getPageLimit();
+		int statLimit = (dashBoardForm.getPageNumber() - 1) * dashBoardForm.getPageLimit();
 		int endLimit = dashBoardForm.getPageLimit() * dashBoardForm.getPageNumber();
 		dashBoardForm.setStartLimit(statLimit);
 		if (totalCount > endLimit) {
@@ -102,17 +111,26 @@ public class UserController {
 		} else {
 			dashBoardForm.setEndLimit(totalCount);
 		}
-		List<LeadsEntityBean> leadsList = this.userService.getLeadsByStatus(dashBoardForm);
+		if (!isFromFilter) {
+			dashBoardForm.setFromDate("");
+			dashBoardForm.setToDate("");
+			dashBoardForm.setCourse(0);
+		}
+		List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
+		Map<Integer, String> coursesMap = this.userService.getCourses();
+		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
 		map.addAttribute("leadsList", leadsList);
 		map.addAttribute("dashBoardForm", dashBoardForm);
+		map.addAttribute("coursesMap", coursesMap);
+		map.addAttribute("leadSourceMapping", leadSourceMapping);
 		session.setAttribute("dashBoardForm", dashBoardForm);
+
 		return "dashboard";
 	}
-	
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String loginEmployee(@RequestParam("userName") String userName, @RequestParam("password") String password,
-			 HttpServletRequest request) {
+			HttpServletRequest request) {
 		UsersEntity user = userService.checkLoginDetails(userName, password);
 		if (user != null) {
 			HttpSession session = request.getSession();
@@ -132,11 +150,58 @@ public class UserController {
 		session.invalidate();
 		return "login";
 	}
-	
+
 	@RequestMapping(value = "/testCron", method = RequestMethod.GET)
 	public String testCron(HttpServletRequest request) throws JobExecutionException {
 		MailReadingJob mail = new MailReadingJob();
 		mail.executeInternal(null);
 		return "login";
 	}
+
+	@RequestMapping(value = "/addlead", method = RequestMethod.POST)
+	public String saveColor(@ModelAttribute(value = "addLeadForm") LeadsEntity leadsEntity, Model model) {
+		int courseCategeory = this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
+		leadsEntity.setStatus(1);
+		leadsEntity.setCourseCategeory(courseCategeory);
+		this.leadService.saveLead(leadsEntity);
+		return "redirect:/dashboard?leadStatus=1";
+	}
+
+	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
+	public String changeStatus(@RequestParam("leadIds") String changeStatusLeadIds,
+			@RequestParam("statusType") String statusType, @RequestParam("reason") String reason,
+			HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		DashBoardForm dashBoardForm = null;
+		if (session.getAttribute("dashBoardForm") != null) {
+			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		}
+		String[] changeStatusLeadIdsSplitArray = changeStatusLeadIds.split(",");
+		List<Integer> changeStatusLeadIdsList = new ArrayList<Integer>();
+		for (String leadId : changeStatusLeadIdsSplitArray) {
+			changeStatusLeadIdsList.add(Integer.parseInt(leadId));
+		}
+		String leadsChangeStatus = this.userService.leadsChangeStatus(changeStatusLeadIdsList,
+				Integer.parseInt(statusType), reason);
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+	}
+
+	@RequestMapping(value = "/filterByDateAndCourse", method = RequestMethod.POST)
+	public String filterByDateAndCourse(@RequestParam("fromDate") String fromDate,
+			@RequestParam("toDate") String toDate, @RequestParam("course") int course,
+			@RequestParam("filterType") int filterType, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		DashBoardForm dashBoardForm = null;
+		if (session.getAttribute("dashBoardForm") != null) {
+			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		}
+		dashBoardForm.setFromDate(fromDate);
+		dashBoardForm.setToDate(toDate);
+		dashBoardForm.setCourse(course);
+		dashBoardForm.setFilterType(filterType);
+		session.setAttribute("dashBoardForm", dashBoardForm);
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus() + "&isFromFilter=true";
+
+	}
+
 }

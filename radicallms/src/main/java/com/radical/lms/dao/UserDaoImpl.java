@@ -53,12 +53,27 @@ public class UserDaoImpl implements UserDao {
 		return countList;
 	}
 
-	public List<LeadsEntity> getLeadsByStatus(DashBoardForm dashBoardForm ) {
-		String queryStr = "from LeadsEntity";
+	public List<LeadsEntity> getLeadsByStatus(DashBoardForm dashBoardForm) {
+		String queryStr = "from LeadsEntity where status in (:status)";
+		List<Integer> currentStatusList = new ArrayList<Integer>();
 		if (dashBoardForm.getCurrentStatus() != 0) {
-			queryStr +=" where status = " +dashBoardForm.getCurrentStatus();
+			currentStatusList.add(dashBoardForm.getCurrentStatus());
+		} else {
+			currentStatusList.add(0);
+			currentStatusList.add(1);
+			currentStatusList.add(2);
+			currentStatusList.add(3);
 		}
+		if (dashBoardForm.getCourse() != 0) {
+			queryStr += " and course = " + dashBoardForm.getCourse();
+		}
+		if (dashBoardForm.getFromDate() != null && !dashBoardForm.getFromDate().equalsIgnoreCase("")
+				&& dashBoardForm.getToDate() != null && !dashBoardForm.getToDate().equalsIgnoreCase("")) {
+			queryStr += " and createdDate BETWEEN '" + dashBoardForm.getFromDate() + "' AND '" + dashBoardForm.getToDate()+"'";
+		}
+		queryStr += " order by leadiId desc";
 		Query query = this.sessionFactory.getCurrentSession().createQuery(queryStr);
+		query.setParameterList("status", currentStatusList);
 		List<LeadsEntity> leads = query.list();
 		if (leads != null && !leads.isEmpty()) {
 			return leads;
@@ -93,6 +108,24 @@ public class UserDaoImpl implements UserDao {
 		if (leadSourcesEntityList != null && !leadSourcesEntityList.isEmpty()) {
 			return leadSourcesEntityList;
 		}
+		return null;
+	}
+
+	public String leadsChangeStatus(List<Integer> changeStatusLeadIdsList, int statusType, String reason) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery(
+				"update LeadsEntity set status=:status ,reason=:reason where leadiId in (:changeStatusLeadIdsList)");
+		query.setInteger("status", statusType);
+		query.setString("reason", reason);
+		query.setParameterList("changeStatusLeadIdsList", changeStatusLeadIdsList);
+		Integer changeStatusResult = query.executeUpdate();
+		String result = "";
+		if (changeStatusResult > 0) {
+			result = "Leads Status Changed Successfully.";
+		} else {
+			result = "Leads Status Change failed.";
+		}
+
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

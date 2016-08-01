@@ -13,6 +13,11 @@
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
 <link href="<c:url value="/resources/css/font-awesome.css"/>"
 	rel="stylesheet" />
+<script>
+	function validateCreateNDform() {
+		return true;
+	}
+</script>
 
 <!-- Bootstrap -->
 <link
@@ -26,36 +31,107 @@
 </head>
 
 <script src="<c:url value="/resources/js/jquery1_8_1.js" />"></script>
-	<script
-		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-	<script
-		src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-	<script
-		src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
-	<script>
-		$(function() {
-			$("[rel='tooltip']").tooltip();
-		});
-		$(document).ready(function() {
-			$('.selectpicker').selectpicker();
-		});
-		
-		function validateStatusForm() {
-			
-		}
-	</script>
-	
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script
+	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+<script>
+	$(function() {
+		$("[rel='tooltip']").tooltip();
+	});
+	$(document).ready(function() {
+		$('.selectpicker').selectpicker();
+	});
+
+	function validateStatusForm() {
+
+	}
+</script>
+
 <script type="text/javascript">
-    $(document).ready(function() {
-        $("#changeStatusButton").click(function(){
-            var leadIds = [];
-            $.each($("input[name='leadId']:checked"), function(){            
-            	leadIds.push($(this).val());
-            });
-            $('#leadIds').val(leadIds.join(","));
-            $("#changeStatusForm").submit();
-        });
-    });
+	$(document).ready(function() {
+
+		$("#changeStatusButton").click(function() {
+			var leadIds = [];
+			$.each($("input[name='leadId']:checked"), function() {
+				leadIds.push($(this).val());
+			});
+			if (leadIds.length == 0) {
+				alert("please select any enquiry");
+			} else {
+				$('#changeStatusLeadIds').val(leadIds.join(","));
+				$("#changeStatusForm").submit();
+			}
+		});
+
+		$("#leadConvertedToCloseButton").click(function() {
+			var leadIds = [];
+			$.each($("input[name='leadId']:checked"), function() {
+				leadIds.push($(this).val());
+			});
+			if (leadIds.length == 0) {
+				alert("please select any enquiry");
+			} else {
+				$('#leadConvertedLeadIds').val(leadIds.join(","));
+				$('#leadConvertedStatus').val("3");
+				$("#changeStatusSuccesForm").submit();
+			}
+		});
+
+		$("#leadConvertedToOpenButton").click(function() {
+			var leadIds = [];
+			$.each($("input[name='leadId']:checked"), function() {
+				leadIds.push($(this).val());
+			});
+			if (leadIds.length == 0) {
+				alert("please select any enquiry");
+			} else {
+				$('#leadConvertedLeadIds').val(leadIds.join(","));
+				$('#leadConvertedStatus').val("2");
+				$("#changeStatusSuccesForm").submit();
+			}
+		});
+
+		$("#leadFailedToConvertedToCloseButton").click(function() {
+			var leadIds = [];
+			$.each($("input[name='leadId']:checked"), function() {
+				leadIds.push($(this).val());
+			});
+			if (leadIds.length == 0) {
+				alert("please select any enquiry");
+			} else {
+				$('#leadFailedToCloseingLeadIds').val(leadIds.join(","));
+				$('#leadFailedToClosingStatus').val("3");
+				$("#changeStatusFailureToCloseForm").submit();
+			}
+		});
+
+		$("#leadDeleteButton").click(function() {
+			var leadIds = [];
+			$.each($("input[name='leadId']:checked"), function() {
+				leadIds.push($(this).val());
+			});
+			if (leadIds.length == 0) {
+				alert("please select any enquiry");
+			} else {
+				$('#deleteLeadIds').val(leadIds.join(","));
+				$('#deleteStatus').val("4");
+				$("#changeStatusDeleteForm").submit();
+			}
+		});
+
+		$("#downloadLeadsFilter").click(function() {
+			$('#filterType').val("1");
+			$("#filterByDateAndCourseForm").submit();
+		});
+		$("#showLeadsFilter").click(function() {
+			$('#filterType').val("0");
+			$("#filterByDateAndCourseForm").submit();
+		});
+
+	});
 </script>
 <body>
 	<div class="container-fluid">
@@ -76,20 +152,32 @@
 						href="logout">Logout</a></span>
 				</div>
 			</section>
+			<c:if test="${dashBoardForm.currentStatus == 1}">
+				<c:set var="newActive" value="active" />
+			</c:if>
+
+			<c:if test="${dashBoardForm.currentStatus == 2}">
+				<c:set var="openActive" value="active" />
+			</c:if>
+			<c:if test="${dashBoardForm.currentStatus == 3}">
+				<c:set var="closeActive" value="active" />
+			</c:if>
+			<c:if test="${dashBoardForm.currentStatus == 0}">
+				<c:set var="allActive" value="active" />
+			</c:if>
 			<section id="action">
 			<ul class="default-filters">
-				<li><a href="dashboard?leadStatus=1" class="active"><i
+				<li><a href="dashboard?leadStatus=1" class="${newActive}"><i
 						class="fa fa-external-link" aria-hidden="true"></i> New <span>${dashBoardForm.newCount}</span></a></li>
-				<li><a href="dashboard?leadStatus=2"><i
+				<li><a href="dashboard?leadStatus=2" class="${openActive}"><i
 						class="fa fa-folder-open-o" aria-hidden="true"></i> Open
 						${dashBoardForm.openCount}</a></li>
-				<li><a href="dashboard?leadStatus=3"><i
+				<li><a href="dashboard?leadStatus=3" class="${closeActive}"><i
 						class="fa fa-folder-o" aria-hidden="true"></i> Closed
 						${dashBoardForm.closedCount}</a></li>
-				<li><a href="dashboard?leadStatus=0"><i class="fa fa-bars"
-						aria-hidden="true"></i> All ${dashBoardForm.totalLeadsCount}</a></li>
-
-
+				<li><a href="dashboard?leadStatus=0" class="${allActive}"><i
+						class="fa fa-bars" aria-hidden="true"></i> All
+						${dashBoardForm.totalLeadsCount}</a></li>
 				<li class="right"><a data-toggle="modal" role="button"
 					data-target="#filter"><i class="fa fa-filter"
 						aria-hidden="true"></i> Filter</a></li>
@@ -129,10 +217,10 @@
 			</div>
 			<div class="count">
 				Showing <select>
-					<option value ="5">5</option>
-					<option value ="10">10</option>
-					<option value ="20">20</option>
-					<option value ="30">30</option>
+					<option value="5">5</option>
+					<option value="10">10</option>
+					<option value="20">20</option>
+					<option value="30">30</option>
 				</select>
 			</div>
 			<table class="table table-bordered">
@@ -156,7 +244,8 @@
 					<c:if test="${leadsList != null}">
 						<c:forEach items="${leadsList}" var="lead">
 							<tr>
-								<td><input type="checkbox" value="${lead.enqID}" name="leadId"></td>
+								<td><input type="checkbox" value="${lead.enqID}"
+									name="leadId"></td>
 								<td><a href="#"><i class="fa fa-pencil-square-o"
 										aria-hidden="true"></i></a></td>
 								<td>${lead.status}</td>
@@ -201,18 +290,22 @@
 				</div>
 				<div class="modal-body">
 					<p>Do you want to change lead status?</p>
-					<form:form method="post" action="changeStatus" id="changeStatusForm" class="form-inline" role="form">
-						<input type="hidden" id="leadIds" name ="leadIds" value="">
-							<div class="form-group">
-								<label class="sr-only" for="email">Email address:</label> 
-								<select	class="selectpicker">
-									<option value ="1">New</option>
-									<option value ="2">Open</option>
-									<option value ="3">Closed</option>
-								</select>
-							</div>
-							<div class="modal-footer">
-							<button type="button" id ="changeStatusButton" class="btn btn-success">Submit</button>
+					<form:form method="post" action="changeStatus"
+						id="changeStatusForm" class="form-inline" role="form">
+						<input type="hidden" id="changeStatusLeadIds" name="leadIds"
+							value="">
+						<input type="hidden" name="reason" value="">
+						<div class="form-group">
+							<!-- <label class="sr-only" for="email">Email address:</label>  -->
+							<select class="selectpicker" id="statusType" name="statusType">
+								<option value="1">New</option>
+								<option value="2">Open</option>
+								<option value="3">Closed</option>
+							</select>
+						</div>
+						<div class="modal-footer">
+							<button type="button" id="changeStatusButton"
+								class="btn btn-success">Submit</button>
 							<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
 						</div>
 					</form:form>
@@ -230,14 +323,22 @@
 					<h4 class="modal-title">Close Lead As Successful</h4>
 				</div>
 				<div class="modal-body">
-					<p>It will mark this lead as 'Successfully Closed'</p>
-					<p>Do you want to close this lead?</p>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Lead
-							Converted Successfully</button>
-						<button type="submit" class="btn btn-danger">Not Yet
-							Closed</button>
-					</div>
+					<form:form method="post" action="changeStatus"
+						id="changeStatusSuccesForm" class="form-inline" role="form">
+						<input type="hidden" id="leadConvertedLeadIds" name="leadIds"
+							value="">
+						<input type="hidden" id="leadConvertedStatus" name="statusType"
+							value="">
+						<input type="hidden" name="reason" value="">
+						<p>It will mark this lead as 'Successfully Closed'</p>
+						<p>Do you want to close this lead?</p>
+						<div class="modal-footer">
+							<button type="button" id="leadConvertedToCloseButton"
+								class="btn btn-success">Lead Converted Successfully</button>
+							<button type="button" id="leadConvertedToOpenButton"
+								class="btn btn-danger">Not Yet Closed</button>
+						</div>
+					</form:form>
 				</div>
 			</div>
 		</div>
@@ -253,24 +354,32 @@
 					<h4 class="modal-title">Close Lead</h4>
 				</div>
 				<div class="modal-body">
-					<p>Select A Reason For Failed Enquiries.</p>
-					<form class="form-inline" role="form">
+					<form:form method="post" action="changeStatus"
+						id="changeStatusFailureToCloseForm" class="form-inline"
+						role="form">
+						<input type="hidden" id="leadFailedToCloseingLeadIds"
+							name="leadIds" value="">
+						<input type="hidden" id="leadFailedToClosingStatus"
+							name="statusType" value="">
+						<p>Select A Reason For Failed Enquiries.</p>
 						<div class="form-group">
-							<label class="sr-only" for="email">Email address:</label> <select
-								class="selectpicker">
-								<option>Admission Taken</option>
-								<option>Are Not Served</option>
-								<option>Customer Not Interested</option>
-								<option>Duplicate Enquiry</option>
-								<option>Pricing Issue</option>
+							<select class="selectpicker" name="reason">
+								<option value="Admission Taken">Admission Taken</option>
+								<option value="Are Not Served">Are Not Served</option>
+								<option value="Customer Not Interested">Customer Not
+									Interested</option>
+								<option value="Duplicate Enquiry">Duplicate Enquiry</option>
+								<option value="Pricing Issue">Pricing Issue</option>
 							</select>
 						</div>
-					</form>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Failed To
-							Convert</button>
-						<button type="submit" class="btn btn-danger">Cancel</button>
-					</div>
+
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success"
+								id="leadFailedToConvertedToCloseButton">Failed To
+								Convert</button>
+							<button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+						</div>
+					</form:form>
 				</div>
 			</div>
 		</div>
@@ -285,13 +394,20 @@
 					<h4 class="modal-title">Delete Lead</h4>
 				</div>
 				<div class="modal-body">
-					<p>Are you sure you want to delete leads?</p>
-					<p>Note : After deletion, you can ONLY view deleted leads but
-						can't restore it or do ANY operation.</p>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Delete</button>
-						<button type="submit" class="btn btn-danger">Cancel</button>
-					</div>
+					<form:form method="post" action="changeStatus"
+						id="changeStatusDeleteForm" class="form-inline" role="form">
+						<input type="hidden" id="deleteLeadIds" name="leadIds" value="">
+						<input type="hidden" id="deleteStatus" name="statusType" value="">
+						<input type="hidden" name="reason" value="">
+						<p>Are you sure you want to delete leads?</p>
+						<p>Note : After deletion, you can ONLY view deleted leads but
+							can't restore it or do ANY operation.</p>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success"
+								id="leadDeleteButton">Delete</button>
+							<button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+						</div>
+					</form:form>
 				</div>
 			</div>
 		</div>
@@ -321,42 +437,43 @@
 	<div id="filter" class="modal fade" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Filter By</h4>
-				</div>
-				<div class="modal-body">
-					<form role="form">
+				<form:form method="post" action="filterByDateAndCourse"
+					id="filterByDateAndCourseForm" role="form">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Filter By</h4>
+					</div>
+					<div class="modal-body">
 						<div class="form-group">
-							<label for="email">From date</label> <input type="email"
-								class="form-control" id="email">
+							<label for="email">From date</label> <input type="text"
+								class="form-control" id="fromDate" name="fromDate">
 						</div>
 						<div class="form-group">
-							<label for="pwd">To Date</label> <input type="password"
-								class="form-control" id="pwd">
+							<label for="pwd">To Date</label> <input type="text"
+								class="form-control" id="toDate" name="toDate">
 						</div>
 						<div class="form-group">
 							<label for="pwd">Course</label><br> <select
-								class="selectpicker">
-								<option>Course 1</option>
-								<option>Course 1</option>
-								<option>Course 1</option>
-								<option>Course 1</option>
-								<option>Course 1</option>
-								<option>Course 1</option>
+								class="selectpicker" title="Select Course" id="course"
+								name="course">
+								<c:forEach var="courses" items="${coursesMap}">
+									<option value="${courses.key}">${courses.value}</option>
+								</c:forEach>
 							</select>
 						</div>
-					</form>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Download
-							Report</button>
-						<button type="submit" class="btn btn-success">Apply
-							Filter</button>
-						<button type="submit" class="btn btn-danger">Cancel</button>
+						<input type="hidden" name="filterType" id="filterType" value="">
+						<div class="modal-footer">
+							<button type="button" class="btn btn-success"
+								id="downloadLeadsFilter">Download Report</button>
+							<button type="button" class="btn btn-success"
+								id="showLeadsFilter">Apply Filter</button>
+							<button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+						</div>
 					</div>
-				</div>
+				</form:form>
 			</div>
 		</div>
+
 	</div>
 
 
@@ -369,48 +486,48 @@
 					<h4 class="modal-title">Add Lead</h4>
 				</div>
 				<div class="modal-body">
-					<form role="form">
+					<form:form method="post" action="addlead" name="addLeadForm"
+						onsubmit="return validateCreateNDform()">
 						<div class="form-group">
 							<label for="email">Student Name</label> <input type="text"
-								class="form-control" id="email">
+								class="form-control" id="name" name="name">
 						</div>
 						<div class="form-group">
 							<label for="pwd">Phone Number</label> <input type="text"
-								class="form-control" id="pwd">
+								class="form-control" id="mobileNo" name="mobileNo">
 						</div>
 						<div class="form-group">
 							<label for="pwd">Email ID</label> <input type="email"
-								class="form-control" id="pwd">
+								class="form-control" id="emailId" name="emailId">
 						</div>
 						<div class="form-group wd50">
 							<label for="pwd">Course</label><br> <select
-								class="selectpicker" multiple title="Select Course">
-								<option>Course 1</option>
-								<option>Course 2</option>
-								<option>Course 3</option>
-								<option>Course 4</option>
-								<option>Course 5</option>
+								class="selectpicker" multiple title="Select Course" id="course"
+								name="course">
+								<c:forEach var="courses" items="${coursesMap}">
+									<option value="${courses.key}">${courses.value}</option>
+								</c:forEach>
 							</select>
 						</div>
 						<div class="form-group wd50">
 							<label for="pwd">Source Lead</label><br> <select
-								class="selectpicker" title="Select Source">
-								<option>Yet 5</option>
-								<option>Suleka</option>
-								<option>Justdial</option>
-								<option>Walkin</option>
-								<option>Phone Enquiry</option>
+								class="selectpicker" title="Select Source" id="leadSource"
+								name="leadSource">
+								<c:forEach var="leadSource" items="${leadSourceMapping}">
+									<option value="${leadSource.key}">${leadSource.value}</option>
+								</c:forEach>
 							</select>
 						</div>
 						<div class="form-group">
 							<label for="pwd">Commentes</label><br>
-							<textarea class="form-control"></textarea>
+							<textarea class="form-control" id="comments" name="comments"></textarea>
 						</div>
-					</form>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Add Lead</button>
-						<button type="submit" class="btn btn-danger">Cancel</button>
-					</div>
+
+						<div class="modal-footer">
+							<button type="submit" class="btn btn-success">Add Lead</button>
+							<button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+						</div>
+					</form:form>
 				</div>
 			</div>
 		</div>
