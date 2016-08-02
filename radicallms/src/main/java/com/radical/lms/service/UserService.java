@@ -21,7 +21,7 @@ public interface UserService {
 
 	UsersEntity checkLoginDetails(String userName, String passWord);
 
-	List getCountByStatusType();
+	List getCountByStatusType(DashBoardForm dashBoardForm);
 
 	List<LeadsEntityBean> getLeadsStatus(DashBoardForm dashBoardForm );
 

@@ -46,24 +46,24 @@ public class UserDaoImpl implements UserDao {
 		return null;
 	}
 
-	public List getCountByStatusType() {
+	public List getCountByStatusType(DashBoardForm dashBoardForm) {
+		String queryStr = "select status , count(*) from LeadsEntity ";
+		queryStr += generateQueryString(dashBoardForm);
+		queryStr += " group by status";
 		Query query = this.sessionFactory.getCurrentSession()
-				.createQuery("select status , count(*) from LeadsEntity group by status");
+				.createQuery(queryStr);
+		List<Integer> currentStatusList = new ArrayList<Integer>();
+		currentStatusList.add(1);
+		currentStatusList.add(2);
+		currentStatusList.add(3);
+		currentStatusList.add(4);
+		query.setParameterList("status", currentStatusList);
 		List countList = query.list();
 		return countList;
 	}
-
-	public List<LeadsEntity> getLeadsByStatus(DashBoardForm dashBoardForm) {
-		String queryStr = "from LeadsEntity where status in (:status)";
-		List<Integer> currentStatusList = new ArrayList<Integer>();
-		if (dashBoardForm.getCurrentStatus() != 0) {
-			currentStatusList.add(dashBoardForm.getCurrentStatus());
-		} else {
-			currentStatusList.add(0);
-			currentStatusList.add(1);
-			currentStatusList.add(2);
-			currentStatusList.add(3);
-		}
+	
+	private String generateQueryString(DashBoardForm dashBoardForm) {
+		String queryStr = " where status in (:status)";
 		if (dashBoardForm.getCourse() != 0) {
 			queryStr += " and course = " + dashBoardForm.getCourse();
 		}
@@ -71,6 +71,22 @@ public class UserDaoImpl implements UserDao {
 				&& dashBoardForm.getToDate() != null && !dashBoardForm.getToDate().equalsIgnoreCase("")) {
 			queryStr += " and createdDate BETWEEN '" + dashBoardForm.getFromDate() + "' AND '" + dashBoardForm.getToDate()+"'";
 		}
+		return queryStr;
+	}
+
+	public List<LeadsEntity> getLeadsByStatus(DashBoardForm dashBoardForm) {
+		String queryStr = "from LeadsEntity ";
+		queryStr += generateQueryString(dashBoardForm);
+		List<Integer> currentStatusList = new ArrayList<Integer>();
+		if (dashBoardForm.getCurrentStatus() != 0) {
+			currentStatusList.add(dashBoardForm.getCurrentStatus());
+		} else {
+			currentStatusList.add(1);
+			currentStatusList.add(2);
+			currentStatusList.add(3);
+			currentStatusList.add(4);
+		}
+		
 		queryStr += " order by leadiId desc";
 		Query query = this.sessionFactory.getCurrentSession().createQuery(queryStr);
 		query.setParameterList("status", currentStatusList);

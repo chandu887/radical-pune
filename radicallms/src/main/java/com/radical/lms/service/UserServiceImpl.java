@@ -90,8 +90,8 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Transactional
-	public List getCountByStatusType() {
-		return userDao.getCountByStatusType();
+	public List getCountByStatusType(DashBoardForm dashBoardForm) {
+		return userDao.getCountByStatusType(dashBoardForm);
 	}
 
 	@Transactional
@@ -107,6 +107,8 @@ public class UserServiceImpl implements UserService {
 				status = "Open";
 			} else if (leadsEntity.getStatus() == 3){
 				status = "Closed";
+			} else if (leadsEntity.getStatus() == 4){
+				status = "Deleted";
 			}
 			LeadsEntityBean leadsEntityBean = new LeadsEntityBean(status, leadsEntity.getName(),
 					leadsEntity.getMobileNo(), leadsEntity.getLeadiId(), getCourses().get(leadsEntity.getCourse()),

@@ -15,7 +15,7 @@ public interface UserDao {
 
 	UsersEntity checkLoginDetails(String userName, String passWord);
 
-	List getCountByStatusType();
+	List getCountByStatusType(DashBoardForm dashBoardForm);
 
 	List<LeadsEntity> getLeadsByStatus(DashBoardForm dashBoardForm );
 	

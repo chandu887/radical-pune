@@ -62,11 +62,27 @@ public class UserController {
 			@RequestParam(value = "isFromFilter", defaultValue = "false", required = false) Boolean isFromFilter) {
 		HttpSession session = request.getSession();
 
-		List countList = this.userService.getCountByStatusType();
+		DashBoardForm dashBoardForm = null;
+		if (session.getAttribute("dashBoardForm") != null) {
+			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		} else {
+			dashBoardForm = new DashBoardForm();
+			dashBoardForm.setPageNumber(1);
+			dashBoardForm.setPageLimit(5);
+		}
+
+		if (!isFromFilter) {
+			dashBoardForm.setFromDate("");
+			dashBoardForm.setToDate("");
+			dashBoardForm.setCourse(0);
+		}
+		
+		List countList = this.userService.getCountByStatusType(dashBoardForm);
 		Map<Integer, Integer> countMap = new ConcurrentHashMap<Integer, Integer>();
 		countMap.put(1, 0);
 		countMap.put(2, 0);
 		countMap.put(3, 0);
+		countMap.put(4, 0);
 		for (Iterator iter = countList.iterator(); iter.hasNext();) {
 			Object[] objects = (Object[]) iter.next();
 			int statusId = (Integer) objects[0];
@@ -76,16 +92,8 @@ public class UserController {
 		long newCount = countMap.get(1).intValue();
 		long openCount = countMap.get(2).intValue();
 		long closeCount = countMap.get(3).intValue();
-		int totalCount = (int) newCount + (int) openCount + (int) closeCount;
-
-		DashBoardForm dashBoardForm = null;
-		if (session.getAttribute("dashBoardForm") != null) {
-			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
-		} else {
-			dashBoardForm = new DashBoardForm();
-			dashBoardForm.setPageNumber(1);
-			dashBoardForm.setPageLimit(5);
-		}
+		long deletedCount = countMap.get(4).intValue();
+		int totalCount = (int) newCount + (int) openCount + (int) closeCount + (int) deletedCount;
 
 		dashBoardForm.setNewCount((int) newCount);
 		dashBoardForm.setOpenCount((int) openCount);
@@ -111,11 +119,7 @@ public class UserController {
 		} else {
 			dashBoardForm.setEndLimit(totalCount);
 		}
-		if (!isFromFilter) {
-			dashBoardForm.setFromDate("");
-			dashBoardForm.setToDate("");
-			dashBoardForm.setCourse(0);
-		}
+		
 		List<Integer> limitList = new ArrayList<Integer>();
 		limitList.add(5);
 		limitList.add(10);
@@ -223,6 +227,7 @@ public class UserController {
 	public String getShowingData(HttpServletRequest request, @RequestParam("pageLimit") int pageLimit) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		dashBoardForm.setPageNumber(1);
 		dashBoardForm.setPageLimit(pageLimit);
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
