@@ -6,4 +6,5 @@ public interface LeadDao {
 
 	void saveLead(LeadsEntity leadsEntity);
 	
+	LeadsEntity getLeadByLeadId(int leadId);
 }

@@ -65,6 +65,21 @@ public class LeadsEntity {
 	@Column(name = "reason")
 	private String reason;
 	
+	@Column(name = "address")
+	private String address;
+	
+	@Column(name = "area")
+	private String area;
+	
+	@Column(name = "location")
+	private String location;
+	
+	@Column(name = "modeoftraining")
+	private String modeofTraining;
+	
+	@Column(name = "typeoftraining")
+	private String typeofTraining;
+	
 	public String getComments() {
 		return comments;
 	}
@@ -186,6 +201,46 @@ public class LeadsEntity {
 
 	public void setCity(String city) {
 		this.city = city;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	public String getModeofTraining() {
+		return modeofTraining;
+	}
+
+	public void setModeofTraining(String modeofTraining) {
+		this.modeofTraining = modeofTraining;
+	}
+
+	public String getTypeofTraining() {
+		return typeofTraining;
+	}
+
+	public void setTypeofTraining(String typeofTraining) {
+		this.typeofTraining = typeofTraining;
 	}
 
 

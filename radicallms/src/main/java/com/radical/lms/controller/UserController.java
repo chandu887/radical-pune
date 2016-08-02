@@ -1,6 +1,7 @@
 package com.radical.lms.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
@@ -129,10 +131,12 @@ public class UserController {
 		List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
 		Map<Integer, String> coursesMap = this.userService.getCourses();
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
+		Map<Integer, String> courseCategories= userService.getCourseCategories();
 		map.addAttribute("leadsList", leadsList);
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
 		map.addAttribute("leadSourceMapping", leadSourceMapping);
+		map.addAttribute("courseCategories", courseCategories);
 		session.setAttribute("dashBoardForm", dashBoardForm);
 
 		return "dashboard";
@@ -169,12 +173,12 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/addlead", method = RequestMethod.POST)
-	public String saveColor(@ModelAttribute(value = "addLeadForm") LeadsEntity leadsEntity, Model model) {
+	public String addLead(@ModelAttribute(value = "addLeadForm") LeadsEntity leadsEntity, Model model) {
 		int courseCategeory = this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
 		leadsEntity.setStatus(1);
 		leadsEntity.setCourseCategeory(courseCategeory);
 		this.leadService.saveLead(leadsEntity);
-		return "redirect:/dashboard?leadStatus=1";
+		return "redirect:/dashboard?leadStatus="+leadsEntity.getStatus();
 	}
 
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
@@ -232,5 +236,20 @@ public class UserController {
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 	}
-
+	
+	@RequestMapping(value = "/getLeadInfo", method = RequestMethod.POST)
+	@ResponseBody
+	public LeadsEntity getLeadInfoByLeadId(@RequestParam("leadId") int leadId) {
+		return leadService.getLeadByLeadId(leadId);
+	}
+	
+	@RequestMapping(value = "/editlead", method = RequestMethod.POST)
+	public String editLead(@ModelAttribute(value = "editLeadForm") LeadsEntity leadsEntity, Model model) {
+		LeadsEntity lead = leadService.getLeadByLeadId(leadsEntity.getLeadiId());
+		leadsEntity.setCreatedDate(lead.getCreatedDate());
+		leadsEntity.setLastUpdatedDate(new Date());
+		leadsEntity.setReason(lead.getReason());
+		leadService.saveLead(leadsEntity);
+		return "redirect:/dashboard?leadStatus="+leadsEntity.getStatus();
+	}
 }

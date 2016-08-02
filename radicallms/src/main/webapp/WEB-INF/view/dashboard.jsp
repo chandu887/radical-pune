@@ -9,7 +9,7 @@
 <head>
 
 <meta charset="utf-8">
-<title>LMS Login Page</title>
+<title>LMS Dashboard</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
 <link href="<c:url value="/resources/css/font-awesome.css"/>"
 	rel="stylesheet" />
@@ -51,6 +51,7 @@
 </script>
 
 <script type="text/javascript">
+var basepath = "${pageContext.request.contextPath}";
 	$(document).ready(function() {
 
 		$("#changeStatusButton").click(function() {
@@ -140,6 +141,31 @@
     function getPagination(pageno) {
     	$('#currentPage').val(pageno);
         $("#getPaginationForm").submit();
+    }
+    
+    function getLeadInfo(leadId) {
+    	$.post(basepath + "/getLeadInfo?leadId="+leadId, function(data) {
+    		$('#editLeadId').val(data.leadiId);
+    		$('#editStatus').val(data.status);
+    		$('#editName').val(data.name);
+    		$('#editMobileNo').val(data.mobileNo);
+    		$('#editEmail').val(data.emailId);
+    		$('#editAddress').val(data.address);
+    		$('#editArea').val(data.area);
+    		$('#editCity').val(data.city);
+    		$('#editCenter').selectpicker('val', data.location);
+    		$('#editAssigned').selectpicker('val', data.assignedTo);
+    		$('#editSource').selectpicker('val', data.leadSource);
+    		$('#editCategory').selectpicker('val', data.courseCategeory);
+    		$('#editCourse').selectpicker('val', data.course);
+    		$('#editMode').selectpicker('val', data.modeofTraining);
+    		$('#editType').selectpicker('val', data.typeofTraining);
+    		$('#editComments').val(data.comments);
+    	});
+    }
+    
+    function validateEditLeadForm (){
+    	return true;
     }
 
 </script>
@@ -257,8 +283,7 @@
 							<tr>
 								<td><input type="checkbox" value="${lead.enqID}"
 									name="leadId"></td>
-								<td><a href="#"><i class="fa fa-pencil-square-o"
-										aria-hidden="true"></i></a></td>
+								<td><a data-toggle="modal" role="button" data-target="#editlead" onclick="getLeadInfo(${lead.enqID})"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
 								<td>${lead.status}</td>
 								<td>ENQ ${lead.enqID}</td>
 								<td>${lead.name}</td>
@@ -547,6 +572,118 @@
 		</div>
 	</div>
 
-
+	        <!--Filter-->
+        <div id="editlead" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Edit Lead</h4>
+                    </div>
+                    <div class="modal-body">
+                    <form:form method="post" action="editlead" name="editLeadForm"
+						onsubmit="return validateEditLeadForm()" role="form">
+							<input type="hidden" class="form-control" id="editLeadId" value="" name = "leadiId">
+							<input type="hidden" class="form-control" id="editStatus" value="" name = "status">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="email">Student Name</label>
+                                    <input type="text" class="form-control" id="editName" value="" name = "name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd">Phone Number</label>
+                                    <input type="text" class="form-control" id="editMobileNo" value="" name = "mobileNo">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd">Email ID</label>
+                                    <input type="email" class="form-control" id="editEmail" value="" name = "emailId">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd">Address</label>
+                                    <input type="text" class="form-control" id="editAddress" value="" name = "address">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd">Area</label>
+                                    <input type="text" class="form-control" id="editArea" value="" name = "area" >
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd">City</label>
+                                    <input type="text" class="form-control" id="editCity" value="" name = "city">
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd">Center Location</label><br>
+                                    <select class="selectpicker" title="Select Location" id="editCenter" name = "location">
+                                        <option value ="Location 1">Location 1</option>
+                                        <option value ="Location 2">Location 2</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="pwd">Assigned to</label><br>
+                                    <select class="selectpicker" multiple title="Assigned to" id="editAssigned" name = "assignedTo">
+                                        <option value="1">Person 1</option>
+                                        <option value="2">Person 2</option>
+                                        <option value="3">Person 3</option>
+                                        <option value="4">Person 4</option>
+                                        <option value="5">Person 5</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd">Source</label><br>
+                                    <select class="selectpicker" title="Select source" id = "editSource" name = "leadSource">
+                                   	 <c:forEach var="leadSource" items="${leadSourceMapping}">
+										<option value="${leadSource.key}">${leadSource.value}</option>
+									 </c:forEach>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd">Category</label><br>
+                                    <select class="selectpicker" title="Select Category" id ="editCategory" name = "courseCategeory">
+                                     <c:forEach var="category" items="${courseCategories}">
+										<option value="${category.key}">${category.value}</option>
+									 </c:forEach>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd">Course</label><br>
+                                    <select class="selectpicker" title="Select Course" id ="editCourse" name = "course">
+                                    <c:forEach var="courses" items="${coursesMap}">
+										<option value="${courses.key}">${courses.value}</option>
+									</c:forEach>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwd">Mode of Training</label><br>
+                                    <select class="selectpicker" title="Select Training" id= "editMode" name = "modeofTraining">
+                                        <option value="Classroom">Classroom</option>
+                                        <option value="Online">Online</option>
+                                    </select>
+                                </div>
+                                
+                                
+                                <div class="form-group">
+                                    <label for="pwd">Weekday/Weekend</label><br>
+                                    <select class="selectpicker" title="Select Type" id = "editType" name = "typeofTraining">
+                                        <option value = "Weekend">Weekend</option>
+                                        <option value ="Weekday">Weekday</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <div class="form-group">
+                                    <label for="pwd">Commentes</label><br>
+                                    <textarea class="form-control" id ="editComments" name = "comments"></textarea>
+                                </div>
+                                <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Update Lead</button>
+                            <button type="button" class="btn btn-danger">Cancel</button>
+                        	</div>
+                            </div>
+                        </form:form>
+                    </div>
+                </div>
+            </div>
+        </div>
 </body>
 </html>

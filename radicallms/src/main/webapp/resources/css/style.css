@@ -36,7 +36,7 @@ section { position: relative;}
 .pagination{margin: 0 0 20px;}
 .wd50{ width: 50%; float: left}
 .btn-group, .btn-group-vertical {width: 98% !important;}
-
+.modal-body{ overflow: hidden;}
 
 
 /*------- Login Page --------*/

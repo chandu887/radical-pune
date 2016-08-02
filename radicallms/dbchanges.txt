@@ -14,5 +14,10 @@ ALTER TABLE `radicallms`.`leads`
 ADD COLUMN `comments` TEXT NULL AFTER `city`,
 ADD COLUMN `reason` VARCHAR(45) NULL AFTER `comments`;
 
-
+ALTER TABLE `radicallms`.`leads` 
+ADD COLUMN `address` VARCHAR(100) NULL AFTER `reason`,
+ADD COLUMN `area` VARCHAR(100) NULL AFTER `address`,
+ADD COLUMN `location` VARCHAR(100) NULL AFTER `area`,
+ADD COLUMN `modeoftraining` VARCHAR(20) NULL AFTER `location`,
+ADD COLUMN `typeoftraining` VARCHAR(20) NULL AFTER `modeoftraining`;
 

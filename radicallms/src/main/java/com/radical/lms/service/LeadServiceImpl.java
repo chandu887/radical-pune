@@ -14,4 +14,8 @@ public class LeadServiceImpl implements LeadService {
 		leadDao.saveLead(leadsEntity);
 	}
 	
+	public LeadsEntity getLeadByLeadId(int leadId) {
+		return leadDao.getLeadByLeadId(leadId);
+	}
+	
 }

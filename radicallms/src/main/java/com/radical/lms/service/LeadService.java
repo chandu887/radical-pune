@@ -6,4 +6,6 @@ public interface LeadService {
 	
 	void saveLead(LeadsEntity leadsEntity);
 	
+	LeadsEntity getLeadByLeadId(int leadId);
+	
 }
