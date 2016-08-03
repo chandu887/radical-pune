@@ -28,6 +28,8 @@
 	rel="stylesheet">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css">
 </head>
 
 <script src="<c:url value="/resources/js/jquery1_8_1.js" />"></script>
@@ -132,9 +134,15 @@ var basepath = "${pageContext.request.contextPath}";
 			$("#filterByDateAndCourseForm").submit();
 		});
 		
+		$("#download").click(function() {
+			$("#downloadLeadsToSheetForm").submit();
+		});
+		
         $("#showingId").change(function() {
         	$("#getShowingForm").submit();
         });
+        
+        
 
 	});
 	
@@ -252,12 +260,14 @@ var basepath = "${pageContext.request.contextPath}";
 				</ul>
 			</div>
 			<div class="count">
-				<form:form method="post" action="getShowingData" id="getShowingForm" class="form-inline" role="form">
+				<form:form method="post" action="getShowingData" id="getShowingForm"
+					class="form-inline" role="form">
 				Showing <select id="showingId" name="pageLimit">
-				<c:forEach items="${dashBoardForm.limitList}" var="limit">
-					<option value ="${limit}" <c:if test="${limit == dashBoardForm.pageLimit}">selected</c:if> >${limit}</option>
-				</c:forEach>
-				</select>
+						<c:forEach items="${dashBoardForm.limitList}" var="limit">
+							<option value="${limit}"
+								<c:if test="${limit == dashBoardForm.pageLimit}">selected</c:if>>${limit}</option>
+						</c:forEach>
+					</select>
 				</form:form>
 			</div>
 			<table class="table table-bordered">
@@ -304,15 +314,20 @@ var basepath = "${pageContext.request.contextPath}";
 
 				</tbody>
 			</table>
-			<span class="pull-left">Showing ${dashBoardForm.startLimit} to ${dashBoardForm.endLimit} of ${dashBoardForm.totalLeadsCount} entries</span>
+			<span class="pull-left">Showing ${dashBoardForm.startLimit} to
+				${dashBoardForm.endLimit} of ${dashBoardForm.totalLeadsCount}
+				entries</span>
 			<ul class="pagination pull-right">
-				<c:forEach items="${dashBoardForm.pageList}" var="page" varStatus="pageIndex">
-					<li class ="<c:if test="${dashBoardForm.pageNumber == page}">active</c:if>">
+				<c:forEach items="${dashBoardForm.pageList}" var="page"
+					varStatus="pageIndex">
+					<li
+						class="<c:if test="${dashBoardForm.pageNumber == page}">active</c:if>">
 						<a href="javascript:void(0)" onclick="getPagination(${page})">${page}</a>
 					</li>
 				</c:forEach>
-				<form:form method="post" action="getPaginationData" id="getPaginationForm" class="form-inline" role="form">
-					<input type="hidden" id="currentPage" name ="currentPage" value="">
+				<form:form method="post" action="getPaginationData"
+					id="getPaginationForm" class="form-inline" role="form">
+					<input type="hidden" id="currentPage" name="currentPage" value="">
 				</form:form>
 			</ul>
 			</section>
@@ -456,19 +471,21 @@ var basepath = "${pageContext.request.contextPath}";
 	<!--mark as Success-->
 	<div id="dwnexcel" class="modal fade" role="dialog">
 		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Download Lead</h4>
-				</div>
-				<div class="modal-body">
-					<p>Are you sure you want to Download leads?</p>
-					<div class="modal-footer">
-						<button type="submit" class="btn btn-success">Download</button>
-						<button type="submit" class="btn btn-danger">Cancel</button>
+			<form:form method="post" action="downloadLeadsToSheet" id ="downloadLeadsToSheetForm" role="form">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Download Lead</h4>
+					</div>
+					<div class="modal-body">
+						<p>Are you sure you want to Download leads?</p>
+						<div class="modal-footer">
+							<button type="button" id="download" class="btn btn-success" data-dismiss="modal">Download</button>
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+						</div>
 					</div>
 				</div>
-			</div>
+			</form:form>
 		</div>
 	</div>
 
@@ -484,8 +501,13 @@ var basepath = "${pageContext.request.contextPath}";
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
-							<label for="email">From date</label> <input type="text"
-								class="form-control" id="fromDate" name="fromDate">
+							<label for="email">From date</label> 
+								<div class="input-group date" data-provide="datepicker">
+                                    <input type="text" class="form-control"  id="fromDate" name="fromDate" placeholder="Select from date">
+                                    <div class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </div>
+                                </div>
 						</div>
 						<div class="form-group">
 							<label for="pwd">To Date</label> <input type="text"
@@ -503,7 +525,7 @@ var basepath = "${pageContext.request.contextPath}";
 						<input type="hidden" name="filterType" id="filterType" value="">
 						<div class="modal-footer">
 							<button type="button" class="btn btn-success"
-								id="downloadLeadsFilter">Download Report</button>
+								id="downloadLeadsFilter" data-dismiss="modal">Download Report</button>
 							<button type="button" class="btn btn-success"
 								id="showLeadsFilter">Apply Filter</button>
 							<button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>

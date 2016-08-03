@@ -90,8 +90,10 @@ public class UserDaoImpl implements UserDao {
 		queryStr += " order by leadiId desc";
 		Query query = this.sessionFactory.getCurrentSession().createQuery(queryStr);
 		query.setParameterList("status", currentStatusList);
-		query.setFirstResult(dashBoardForm.getStartLimit()-1);
-		query.setMaxResults(dashBoardForm.getPageLimit());
+		if(dashBoardForm.getFilterType()!=1){
+			query.setFirstResult(dashBoardForm.getStartLimit()-1);
+			query.setMaxResults(dashBoardForm.getPageLimit());
+		}
 		List<LeadsEntity> leads = query.list();
 		if (leads != null && !leads.isEmpty()) {
 			return leads;
@@ -144,6 +146,16 @@ public class UserDaoImpl implements UserDao {
 		}
 
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getAssignedToName(int assignedToId) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("select userName from UsersEntity where userId= :userId");
+		query.setInteger("userId", assignedToId);
+		List<String> userIdList = query.list();
+		if (null != userIdList && !userIdList.isEmpty()) {
+			return userIdList.get(0);
+		}
 		return null;
 	}
 }

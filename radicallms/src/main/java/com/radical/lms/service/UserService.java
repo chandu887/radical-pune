@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -36,5 +37,7 @@ public interface UserService {
 	Map<Integer, String> getCourseCategories();
 	
 	String leadsChangeStatus(List<Integer>changeStatusLeadIdsList,int statusType,String reason);
+	
+	XSSFWorkbook  downloadLeadsSheet(List<LeadsEntityBean> leadsEntityBeanList);
 	
 }

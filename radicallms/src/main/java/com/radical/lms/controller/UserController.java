@@ -1,5 +1,8 @@
 package com.radical.lms.controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -7,9 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -78,7 +84,7 @@ public class UserController {
 			dashBoardForm.setToDate("");
 			dashBoardForm.setCourse(0);
 		}
-		
+
 		List countList = this.userService.getCountByStatusType(dashBoardForm);
 		Map<Integer, Integer> countMap = new ConcurrentHashMap<Integer, Integer>();
 		countMap.put(1, 0);
@@ -121,7 +127,7 @@ public class UserController {
 		} else {
 			dashBoardForm.setEndLimit(totalCount);
 		}
-		
+
 		List<Integer> limitList = new ArrayList<Integer>();
 		limitList.add(5);
 		limitList.add(10);
@@ -203,7 +209,7 @@ public class UserController {
 	@RequestMapping(value = "/filterByDateAndCourse", method = RequestMethod.POST)
 	public String filterByDateAndCourse(@RequestParam("fromDate") String fromDate,
 			@RequestParam("toDate") String toDate, @RequestParam("course") int course,
-			@RequestParam("filterType") int filterType, HttpServletRequest request) {
+			@RequestParam("filterType") int filterType, HttpServletRequest request, HttpServletResponse response) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
@@ -214,10 +220,27 @@ public class UserController {
 		dashBoardForm.setCourse(course);
 		dashBoardForm.setFilterType(filterType);
 		session.setAttribute("dashBoardForm", dashBoardForm);
-		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus() + "&isFromFilter=true";
+		if (filterType == 0) {
+			return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus() + "&isFromFilter=true";
+		} else if (filterType == 1) {
+			List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
+			XSSFWorkbook workbook = this.userService.downloadLeadsSheet(leadsList);
+			try {
+				String fileName = "leadsdump-" + new Date().getTime() + ".xlsx";
+				ServletOutputStream out = response.getOutputStream();
+				response.setContentType("application/vnd.ms-excel");
+				response.addHeader("content-disposition", "attachment; filename=" + fileName);
+				workbook.write(out);
+				out.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		return null;
 
 	}
-	
+
 	@RequestMapping(value = "/getPaginationData", method = RequestMethod.POST)
 	public String getPaginationData(HttpServletRequest request, @RequestParam("currentPage") int currentPage) {
 		HttpSession session = request.getSession();
@@ -252,4 +275,28 @@ public class UserController {
 		leadService.saveLead(leadsEntity);
 		return "redirect:/dashboard?leadStatus="+leadsEntity.getStatus();
 	}
+	@RequestMapping(value = "/downloadLeadsToSheet", method = RequestMethod.POST)
+	public String downloadLeadsToSheet(HttpServletRequest request, HttpServletResponse response) {
+		HttpSession session = request.getSession();
+		DashBoardForm dashBoardForm = null;
+		if (session.getAttribute("dashBoardForm") != null) {
+			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		}
+		List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
+		XSSFWorkbook workbook = this.userService.downloadLeadsSheet(leadsList);
+		try {
+			String fileName = "leadsdump-" + new Date().getTime() + ".xlsx";
+			ServletOutputStream out = response.getOutputStream();
+			response.setContentType("application/vnd.ms-excel");
+			response.addHeader("content-disposition", "attachment; filename=" + fileName);
+			workbook.write(out);
+			out.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return null;
+
+	}
+
 }

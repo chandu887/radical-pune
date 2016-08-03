@@ -22,7 +22,7 @@
         
         <init-param>
             <param-name>allowed-adminUrls</param-name>
-            <param-value>/,/dashboard,/logout,/testCron,/addlead,/changeStatus,/filterByDateAndCourse,/getLeadInfo,/editlead</param-value>
+            <param-value>/,/dashboard,/logout,/testCron,/addlead,/changeStatus,/filterByDateAndCourse,/getLeadInfo,/editlead,/downloadLeadsToSheet</param-value>
         </init-param>
         
         <init-param>
