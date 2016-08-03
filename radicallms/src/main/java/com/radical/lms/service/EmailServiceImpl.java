@@ -137,6 +137,7 @@ public class EmailServiceImpl implements EmailService{
 			leadsEntity.setEmailId(email);
 			leadsEntity.setStatus(1);
 			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLastUpdatedDate(date);
 			int courseId = 0;
 			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
 				if (course.equalsIgnoreCase(entry.getValue())) {

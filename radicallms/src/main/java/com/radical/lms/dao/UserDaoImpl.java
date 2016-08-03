@@ -90,7 +90,7 @@ public class UserDaoImpl implements UserDao {
 		queryStr += " order by leadiId desc";
 		Query query = this.sessionFactory.getCurrentSession().createQuery(queryStr);
 		query.setParameterList("status", currentStatusList);
-		if(dashBoardForm.getFilterType()!=1){
+		if(dashBoardForm.getFilterType() !=1 ){
 			query.setFirstResult(dashBoardForm.getStartLimit()-1);
 			query.setMaxResults(dashBoardForm.getPageLimit());
 		}

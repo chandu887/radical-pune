@@ -141,8 +141,6 @@ var basepath = "${pageContext.request.contextPath}";
         $("#showingId").change(function() {
         	$("#getShowingForm").submit();
         });
-        
-        
 
 	});
 	
@@ -231,6 +229,8 @@ var basepath = "${pageContext.request.contextPath}";
 
 			</ul>
 			</section>
+			
+			<c:if test="${dashBoardForm.pageTotalCount != 0}">
 			<section id="content">
 			<div class="action-btns">
 				<ul>
@@ -270,6 +270,7 @@ var basepath = "${pageContext.request.contextPath}";
 					</select>
 				</form:form>
 			</div>
+			
 			<table class="table table-bordered">
 				<thead>
 					<tr>
@@ -306,16 +307,11 @@ var basepath = "${pageContext.request.contextPath}";
 							</tr>
 						</c:forEach>
 					</c:if>
-					<c:if test="${leadsList == null}">
-						<tr>
-							<h3>No leads Found.</h3>
-						</tr>
-					</c:if>
 
 				</tbody>
 			</table>
 			<span class="pull-left">Showing ${dashBoardForm.startLimit} to
-				${dashBoardForm.endLimit} of ${dashBoardForm.totalLeadsCount}
+				${dashBoardForm.endLimit} of ${dashBoardForm.pageTotalCount}
 				entries</span>
 			<ul class="pagination pull-right">
 				<c:forEach items="${dashBoardForm.pageList}" var="page"
@@ -331,6 +327,12 @@ var basepath = "${pageContext.request.contextPath}";
 				</form:form>
 			</ul>
 			</section>
+			</c:if>
+			
+			<c:if test="${dashBoardForm.pageTotalCount == 0}">
+							<h3>No leads Found.</h3>
+			</c:if>
+			
 		</div>
 	</div>
 
@@ -699,7 +701,7 @@ var basepath = "${pageContext.request.contextPath}";
                                 </div>
                                 <div class="modal-footer">
                             <button type="submit" class="btn btn-success">Update Lead</button>
-                            <button type="button" class="btn btn-danger">Cancel</button>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                         	</div>
                             </div>
                         </form:form>

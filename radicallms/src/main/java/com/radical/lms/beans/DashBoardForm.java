@@ -12,6 +12,7 @@ public class DashBoardForm {
 	int openCount;
 	int closedCount;
 	int totalLeadsCount;
+	int pageTotalCount;
 	List<Integer> pageList;
 	String fromDate;
 	String toDate;
@@ -109,6 +110,12 @@ public class DashBoardForm {
 	}
 	public void setLimitList(List<Integer> limitList) {
 		this.limitList = limitList;
+	}
+	public int getPageTotalCount() {
+		return pageTotalCount;
+	}
+	public void setPageTotalCount(int pageTotalCount) {
+		this.pageTotalCount = pageTotalCount;
 	}
 
 }

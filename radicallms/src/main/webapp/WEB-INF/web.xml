@@ -16,7 +16,7 @@
 
         <init-param>
             <param-name>login-url</param-name>
-            <param-value>/loginfailure</param-value>
+            <param-value>/loginpage</param-value>
         </init-param>
 
         

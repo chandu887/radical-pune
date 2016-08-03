@@ -67,7 +67,8 @@ public class UserController {
 
 	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
 	public String dashBoard(HttpServletRequest request, @RequestParam("leadStatus") int leadStatus, ModelMap map,
-			@RequestParam(value = "isFromFilter", defaultValue = "false", required = false) Boolean isFromFilter) {
+			@RequestParam(value = "isFromFilter", defaultValue = "false", required = false) Boolean isFromFilter,
+			@RequestParam(value = "isFromPagination", defaultValue = "false", required = false) Boolean isFromPagination) {
 		HttpSession session = request.getSession();
 
 		DashBoardForm dashBoardForm = null;
@@ -77,6 +78,10 @@ public class UserController {
 			dashBoardForm = new DashBoardForm();
 			dashBoardForm.setPageNumber(1);
 			dashBoardForm.setPageLimit(5);
+		}
+		
+		if (!isFromPagination) {
+			dashBoardForm.setPageNumber(1);
 		}
 
 		if (!isFromFilter) {
@@ -106,13 +111,24 @@ public class UserController {
 		dashBoardForm.setNewCount((int) newCount);
 		dashBoardForm.setOpenCount((int) openCount);
 		dashBoardForm.setClosedCount((int) closeCount);
-		dashBoardForm.setTotalLeadsCount(totalCount);
+		
 		dashBoardForm.setCurrentStatus(leadStatus);
 
+		int pageTotalCount = 0;
+		
+		if (leadStatus == 0) {
+			pageTotalCount = totalCount;
+		} else {
+			pageTotalCount = (int) countMap.get(leadStatus).intValue();
+		}
+		
+		dashBoardForm.setPageTotalCount(pageTotalCount);
+		dashBoardForm.setTotalLeadsCount(totalCount);
+		
 		List<Integer> pageList = new ArrayList<Integer>();
 		int page = 1;
 		int i;
-		for (i = 0; i <= totalCount; i = i + dashBoardForm.getPageLimit()) {
+		for (i = 0; i < pageTotalCount; i = i + dashBoardForm.getPageLimit()) {
 			pageList.add(page);
 			page += 1;
 
@@ -122,10 +138,10 @@ public class UserController {
 		int statLimit = ((dashBoardForm.getPageNumber() - 1) * dashBoardForm.getPageLimit()) + 1;
 		int endLimit = dashBoardForm.getPageLimit() * dashBoardForm.getPageNumber();
 		dashBoardForm.setStartLimit(statLimit);
-		if (totalCount > endLimit) {
+		if (pageTotalCount > endLimit) {
 			dashBoardForm.setEndLimit(endLimit);
 		} else {
-			dashBoardForm.setEndLimit(totalCount);
+			dashBoardForm.setEndLimit(pageTotalCount);
 		}
 
 		List<Integer> limitList = new ArrayList<Integer>();
@@ -149,7 +165,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String loginEmployee(@RequestParam("userName") String userName, @RequestParam("password") String password,
+	public String login(@RequestParam("userName") String userName, @RequestParam("password") String password,
 			HttpServletRequest request) {
 		UsersEntity user = userService.checkLoginDetails(userName, password);
 		if (user != null) {
@@ -161,6 +177,11 @@ public class UserController {
 			}
 		}
 		return "loginfailure";
+	}
+	
+	@RequestMapping(value = "/loginpage", method = RequestMethod.GET)
+	public String loginpage() {
+		return "login";
 	}
 
 	@RequestMapping(value = "/logout", method = RequestMethod.GET)
@@ -183,6 +204,8 @@ public class UserController {
 		int courseCategeory = this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
 		leadsEntity.setStatus(1);
 		leadsEntity.setCourseCategeory(courseCategeory);
+		leadsEntity.setCreatedDate(new Date());
+		leadsEntity.setLastUpdatedDate(new Date());
 		this.leadService.saveLead(leadsEntity);
 		return "redirect:/dashboard?leadStatus="+leadsEntity.getStatus();
 	}
@@ -247,7 +270,7 @@ public class UserController {
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		dashBoardForm.setPageNumber(currentPage);
 		session.setAttribute("dashBoardForm", dashBoardForm);
-		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus() + "&isFromPagination=true";
 	}
 
 	@RequestMapping(value = "/getShowingData", method = RequestMethod.POST)
