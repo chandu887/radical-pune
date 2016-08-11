@@ -9,7 +9,7 @@
 <head>
 
 <meta charset="utf-8">
-<title>LMS Dashboard</title>
+<title>LMS Login Page</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
 <link href="<c:url value="/resources/css/font-awesome.css"/>"
 	rel="stylesheet" />
@@ -39,17 +39,17 @@
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+	<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
 <script>
-	$(function() {
-		$("[rel='tooltip']").tooltip();
-	});
-	$(document).ready(function() {
-		$('.selectpicker').selectpicker();
-	});
-
-	function validateStatusForm() {
-
-	}
+$(function () {
+	                $("[rel='tooltip']").tooltip();
+	            });
+	            $(document).ready(function () {
+	                $('.selectpicker').selectpicker();
+	                $('.datepicker').datepicker();
+	            });
+	        </script>
 </script>
 
 <script type="text/javascript">
@@ -512,8 +512,14 @@ var basepath = "${pageContext.request.contextPath}";
                                 </div>
 						</div>
 						<div class="form-group">
-							<label for="pwd">To Date</label> <input type="text"
-								class="form-control" id="toDate" name="toDate">
+							<label for="pwd">To Date</label>
+							<div class="input-group date" data-provide="datepicker">
+								<input type="text" class="form-control" id="toDate"
+									name="toDate" placeholder="Select to date">
+								<div class="input-group-addon">
+									<span class="glyphicon glyphicon-calendar"></span>
+								</div>
+							</div>
 						</div>
 						<div class="form-group">
 							<label for="pwd">Course</label><br> <select
