@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
 				}
 				Date createdDate = leadsEntity.getCreatedDate();
 				Date updateDate =leadsEntity.getLastUpdatedDate();
-				DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+				DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 				String createdDateString = dateFormat.format(createdDate);
 				String updateDateString = "";
 				if (updateDate != null) {
