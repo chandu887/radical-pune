@@ -302,7 +302,7 @@
 
 	</dependencies>
 	<build>
-		<finalName>lms</finalName>
+		<finalName>ROOT</finalName>
 		<plugins>
 
 		<plugin>
