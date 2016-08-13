@@ -67,11 +67,10 @@ public class EmailServiceImpl implements EmailService{
 	public void readMailInbox() {
 		Folder inbox;
 		long firstEmailTimeInMillis = 0;
+		long lastEmailTimeInMillis = emailDao.getLastEmailTimeInMillis();
 		try {
 			inbox = getStore().getFolder("INBOX");
 			inbox.open(Folder.READ_WRITE);
-			
-			long lastEmailTimeInMillis = emailDao.getLastEmailTimeInMillis();
 			
 			Message[] messages = inbox.getMessages(1, inbox.getMessageCount());
 			
@@ -109,6 +108,10 @@ public class EmailServiceImpl implements EmailService{
 			e.printStackTrace();
 		} catch(Exception ex) {
 			ex.printStackTrace();
+		}
+		
+		if (firstEmailTimeInMillis == 0) {
+			firstEmailTimeInMillis = lastEmailTimeInMillis;
 		}
 		EmailTimeEntity emailTimeEntity = new EmailTimeEntity();
 		emailTimeEntity.setId(1);
@@ -162,7 +165,7 @@ public class EmailServiceImpl implements EmailService{
 	}
 	
 	private int getLeadSoureId(String leadSource) {
-		for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
+		for (Map.Entry<Integer, String> entry : userService.getLeadSourceMapping().entrySet()) {
 			if (leadSource.equalsIgnoreCase(entry.getValue())) {
 				return entry.getKey();
 			}
@@ -202,6 +205,7 @@ public class EmailServiceImpl implements EmailService{
 			leadsEntity.setMobileNo(mobileNo);
 			leadsEntity.setStatus(1);
 			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLastUpdatedDate(date);
 			leadsEntity.setLeadSource(getLeadSoureId("jsutdail"));
 			leadsEntity.setCity(city);
 			leadService.saveLead(leadsEntity);
@@ -221,6 +225,7 @@ public class EmailServiceImpl implements EmailService{
 			leadsEntity.setMobileNo(mobileNo);
 			leadsEntity.setStatus(1);
 			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLastUpdatedDate(date);
 			leadsEntity.setLeadSource(getLeadSoureId("sulekha"));
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {

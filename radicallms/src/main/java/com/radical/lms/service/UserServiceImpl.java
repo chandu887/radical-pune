@@ -131,7 +131,11 @@ public class UserServiceImpl implements UserService {
 				Date updateDate =leadsEntity.getLastUpdatedDate();
 				DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 				String createdDateString = dateFormat.format(createdDate);
-				String updateDateString = dateFormat.format(updateDate);
+				String updateDateString = "";
+				if (updateDate != null) {
+					updateDateString = dateFormat.format(updateDate);
+				}
+				
 				LeadsEntityBean leadsEntityBean = new LeadsEntityBean(leadsEntity.getLeadiId(),leadsEntity.getName(),leadsEntity.getMobileNo(),leadsEntity.getEmailId(),
 						status,getCourses().get(leadsEntity.getCourse()),getCourseCategories().get(leadsEntity.getCourseCategeory()),
 						getLeadSourceMapping().get(leadsEntity.getLeadSource()),assgniedTo,createdDateString,updateDateString,
