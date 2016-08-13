@@ -9,7 +9,7 @@
 <head>
 
 <meta charset="utf-8">
-<title>LMS Login Page</title>
+<title>LMS Dashboard</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
 <link href="<c:url value="/resources/css/font-awesome.css"/>"
 	rel="stylesheet" />
