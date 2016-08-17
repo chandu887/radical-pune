@@ -523,8 +523,9 @@ var basepath = "${pageContext.request.contextPath}";
 						</div>
 						<div class="form-group">
 							<label for="pwd">Course</label><br> <select
-								class="selectpicker" title="Select Course" id="course"
+								class="selectpicker" id="course"
 								name="course">
+								<option value = "0">Select Course</option>
 								<c:forEach var="courses" items="${coursesMap}">
 									<option value="${courses.key}">${courses.value}</option>
 								</c:forEach>

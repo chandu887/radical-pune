@@ -34,6 +34,7 @@ public class UserDaoImpl implements UserDao {
 		return null;
 	}
 
+	@Transactional
 	public UsersEntity checkLoginDetails(String userName, String passWord) {
 		Query query = this.sessionFactory.getCurrentSession()
 				.createQuery("from UsersEntity where userName= :userName and password= :password");
