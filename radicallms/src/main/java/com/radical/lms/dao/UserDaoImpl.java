@@ -1,5 +1,7 @@
 package com.radical.lms.dao;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,7 +72,15 @@ public class UserDaoImpl implements UserDao {
 		}
 		if (dashBoardForm.getFromDate() != null && !dashBoardForm.getFromDate().equalsIgnoreCase("")
 				&& dashBoardForm.getToDate() != null && !dashBoardForm.getToDate().equalsIgnoreCase("")) {
-			queryStr += " and createdDate BETWEEN '" + dashBoardForm.getFromDate() + "' AND '" + dashBoardForm.getToDate()+"'";
+			try {
+			 Date fromDate = new SimpleDateFormat("MM/dd/yyyy").parse(dashBoardForm.getFromDate());
+			 Date toDate = new SimpleDateFormat("MM/dd/yyyy").parse(dashBoardForm.getToDate());
+		    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			queryStr += " and createdDate BETWEEN '" + formatter.format(fromDate) + "' AND '" + formatter.format(toDate)+"'";
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return queryStr;
 	}

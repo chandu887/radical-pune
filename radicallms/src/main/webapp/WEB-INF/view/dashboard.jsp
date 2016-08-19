@@ -28,8 +28,9 @@
 	rel="stylesheet">
 <link rel="stylesheet"
 	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
-	
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css">
+
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css">
 </head>
 
 <script src="<c:url value="/resources/js/jquery1_8_1.js" />"></script>
@@ -39,7 +40,7 @@
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
-	<script
+<script
 	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
 <script>
 $(function () {
@@ -130,8 +131,22 @@ var basepath = "${pageContext.request.contextPath}";
 			$("#filterByDateAndCourseForm").submit();
 		});
 		$("#showLeadsFilter").click(function() {
+			var course =  $('#course').val();
+						var toDate = $('#toDate').val();
+						var fromDate = $('#fromDate').val();
+						if((null==fromDate || fromDate=="") && (null == toDate || toDate=="")&& (null==course || course == 0)){
+							alert("Please select date Or course");
+			              	return false;
+						} else if((null==fromDate || fromDate=="") || (null == toDate || toDate=="")){
+							alert("Please select from date and to date");
+							return false;
+						} else if(null == course || course == 0){
+							alert("Please select course");
+			              	return false;
+						} else {
 			$('#filterType').val("0");
 			$("#filterByDateAndCourseForm").submit();
+			}
 		});
 		
 		$("#download").click(function() {
@@ -229,110 +244,112 @@ var basepath = "${pageContext.request.contextPath}";
 
 			</ul>
 			</section>
-			
+
 			<c:if test="${dashBoardForm.pageTotalCount != 0}">
-			<section id="content">
-			<div class="action-btns">
-				<ul>
-					<li><a rel="tooltip" data-original-title='Change Status'
-						role="button" data-toggle="modal" data-target="#changestatus"><i
-							class="fa fa-retweet" aria-hidden="true"></i></a></li>
-					<li><a rel="tooltip"
-						data-original-title='Lead Marked Successfully' role="button"
-						data-toggle="modal" data-target="#success"><i
-							class="fa fa-thumbs-up" aria-hidden="true"></i></a></li>
-					<li><a rel="tooltip" data-original-title='Lead Failed'
-						role="button" data-toggle="modal" data-target="#closelead"><i
-							class="fa fa-thumbs-down" aria-hidden="true"></i></a></li>
-					<li><a rel="tooltip" data-original-title='Delete Lead'
-						role="button" data-toggle="modal" data-target="#deletlead"><i
-							class="fa fa-trash" aria-hidden="true"></i></a></li>
-					<li><a rel="tooltip" data-original-title='Download Excel'
-						role="button" data-toggle="modal" data-target="#dwnexcel"><i
-							class="fa fa-download" aria-hidden="true"></i></a></li>
-					<li><a rel="tooltip" data-original-title='SMA & Email'
-						role="button"><i class="fa fa-envelope" aria-hidden="true"></i></a>
-						<ul class="childemail">
-							<li><a>Templated Email</a></li>
-							<li><a>Custom Email</a></li>
-						</ul></li>
+				<section id="content">
+				<div class="action-btns">
+					<ul>
+						<li><a rel="tooltip" data-original-title='Change Status'
+							role="button" data-toggle="modal" data-target="#changestatus"><i
+								class="fa fa-retweet" aria-hidden="true"></i></a></li>
+						<li><a rel="tooltip"
+							data-original-title='Lead Marked Successfully' role="button"
+							data-toggle="modal" data-target="#success"><i
+								class="fa fa-thumbs-up" aria-hidden="true"></i></a></li>
+						<li><a rel="tooltip" data-original-title='Lead Failed'
+							role="button" data-toggle="modal" data-target="#closelead"><i
+								class="fa fa-thumbs-down" aria-hidden="true"></i></a></li>
+						<li><a rel="tooltip" data-original-title='Delete Lead'
+							role="button" data-toggle="modal" data-target="#deletlead"><i
+								class="fa fa-trash" aria-hidden="true"></i></a></li>
+						<li><a rel="tooltip" data-original-title='Download Excel'
+							role="button" data-toggle="modal" data-target="#dwnexcel"><i
+								class="fa fa-download" aria-hidden="true"></i></a></li>
+						<li><a rel="tooltip" data-original-title='SMA & Email'
+							role="button"><i class="fa fa-envelope" aria-hidden="true"></i></a>
+							<ul class="childemail">
+								<li><a>Templated Email</a></li>
+								<li><a>Custom Email</a></li>
+							</ul></li>
 
-				</ul>
-			</div>
-			<div class="count">
-				<form:form method="post" action="getShowingData" id="getShowingForm"
-					class="form-inline" role="form">
+					</ul>
+				</div>
+				<div class="count">
+					<form:form method="post" action="getShowingData"
+						id="getShowingForm" class="form-inline" role="form">
 				Showing <select id="showingId" name="pageLimit">
-						<c:forEach items="${dashBoardForm.limitList}" var="limit">
-							<option value="${limit}"
-								<c:if test="${limit == dashBoardForm.pageLimit}">selected</c:if>>${limit}</option>
-						</c:forEach>
-					</select>
-				</form:form>
-			</div>
-			
-			<table class="table table-bordered">
-				<thead>
-					<tr>
-						<th></th>
-						<th></th>
-						<th>Status</th>
-						<th>ENQ ID</th>
-						<th>Name</th>
-						<th>Mobile</th>
-						<th>Course</th>
-						<th>Category</th>
-						<th>Source Lead</th>
-						<th>Assigned To</th>
-						<th>Time Created</th>
-					</tr>
-				</thead>
+							<c:forEach items="${dashBoardForm.limitList}" var="limit">
+								<option value="${limit}"
+									<c:if test="${limit == dashBoardForm.pageLimit}">selected</c:if>>${limit}</option>
+							</c:forEach>
+						</select>
+					</form:form>
+				</div>
 
-				<tbody>
-					<c:if test="${leadsList != null}">
-						<c:forEach items="${leadsList}" var="lead">
-							<tr>
-								<td><input type="checkbox" value="${lead.enqID}"
-									name="leadId"></td>
-								<td><a data-toggle="modal" role="button" data-target="#editlead" onclick="getLeadInfo(${lead.enqID})"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
-								<td>${lead.status}</td>
-								<td>ENQ ${lead.enqID}</td>
-								<td>${lead.name}</td>
-								<td>${lead.mobileNo}</td>
-								<td>${lead.course}</td>
-								<td>${lead.categeory}</td>
-								<td>${lead.sourceLead}</td>
-								<td>${lead.assignedTo}</td>
-								<td>${lead.createdTime}</td>
-							</tr>
-						</c:forEach>
-					</c:if>
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th></th>
+							<th></th>
+							<th>Status</th>
+							<th>ENQ ID</th>
+							<th>Name</th>
+							<th>Mobile</th>
+							<th>Course</th>
+							<th>Category</th>
+							<th>Source Lead</th>
+							<th>Assigned To</th>
+							<th>Time Created</th>
+						</tr>
+					</thead>
 
-				</tbody>
-			</table>
-			<span class="pull-left">Showing ${dashBoardForm.startLimit} to
-				${dashBoardForm.endLimit} of ${dashBoardForm.pageTotalCount}
-				entries</span>
-			<ul class="pagination pull-right">
-				<c:forEach items="${dashBoardForm.pageList}" var="page"
-					varStatus="pageIndex">
-					<li
-						class="<c:if test="${dashBoardForm.pageNumber == page}">active</c:if>">
-						<a href="javascript:void(0)" onclick="getPagination(${page})">${page}</a>
-					</li>
-				</c:forEach>
-				<form:form method="post" action="getPaginationData"
-					id="getPaginationForm" class="form-inline" role="form">
-					<input type="hidden" id="currentPage" name="currentPage" value="">
-				</form:form>
-			</ul>
-			</section>
+					<tbody>
+						<c:if test="${leadsList != null}">
+							<c:forEach items="${leadsList}" var="lead">
+								<tr>
+									<td><input type="checkbox" value="${lead.enqID}"
+										name="leadId"></td>
+									<td><a data-toggle="modal" role="button"
+										data-target="#editlead" onclick="getLeadInfo(${lead.enqID})"><i
+											class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+									<td>${lead.status}</td>
+									<td>ENQ ${lead.enqID}</td>
+									<td>${lead.name}</td>
+									<td>${lead.mobileNo}</td>
+									<td>${lead.course}</td>
+									<td>${lead.categeory}</td>
+									<td>${lead.sourceLead}</td>
+									<td>${lead.assignedTo}</td>
+									<td>${lead.createdTime}</td>
+								</tr>
+							</c:forEach>
+						</c:if>
+
+					</tbody>
+				</table>
+				<span class="pull-left">Showing ${dashBoardForm.startLimit}
+					to ${dashBoardForm.endLimit} of ${dashBoardForm.pageTotalCount}
+					entries</span>
+				<ul class="pagination pull-right">
+					<c:forEach items="${dashBoardForm.pageList}" var="page"
+						varStatus="pageIndex">
+						<li
+							class="<c:if test="${dashBoardForm.pageNumber == page}">active</c:if>">
+							<a href="javascript:void(0)" onclick="getPagination(${page})">${page}</a>
+						</li>
+					</c:forEach>
+					<form:form method="post" action="getPaginationData"
+						id="getPaginationForm" class="form-inline" role="form">
+						<input type="hidden" id="currentPage" name="currentPage" value="">
+					</form:form>
+				</ul>
+				</section>
 			</c:if>
-			
+
 			<c:if test="${dashBoardForm.pageTotalCount == 0}">
-							<h3>No leads Found.</h3>
+				<h3>No leads Found.</h3>
 			</c:if>
-			
+
 		</div>
 	</div>
 
@@ -473,7 +490,8 @@ var basepath = "${pageContext.request.contextPath}";
 	<!--mark as Success-->
 	<div id="dwnexcel" class="modal fade" role="dialog">
 		<div class="modal-dialog">
-			<form:form method="post" action="downloadLeadsToSheet" id ="downloadLeadsToSheetForm" role="form">
+			<form:form method="post" action="downloadLeadsToSheet"
+				id="downloadLeadsToSheetForm" role="form">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -482,7 +500,8 @@ var basepath = "${pageContext.request.contextPath}";
 					<div class="modal-body">
 						<p>Are you sure you want to Download leads?</p>
 						<div class="modal-footer">
-							<button type="button" id="download" class="btn btn-success" data-dismiss="modal">Download</button>
+							<button type="button" id="download" class="btn btn-success"
+								data-dismiss="modal">Download</button>
 							<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
 						</div>
 					</div>
@@ -503,13 +522,14 @@ var basepath = "${pageContext.request.contextPath}";
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
-							<label for="email">From date</label> 
-								<div class="input-group date" data-provide="datepicker">
-                                    <input type="text" class="form-control"  id="fromDate" name="fromDate" placeholder="Select from date">
-                                    <div class="input-group-addon">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </div>
-                                </div>
+							<label for="email">From date</label>
+							<div class="input-group date" data-provide="datepicker">
+								<input type="text" class="form-control" id="fromDate"
+									name="fromDate" placeholder="Select from date">
+								<div class="input-group-addon">
+									<span class="glyphicon glyphicon-calendar"></span>
+								</div>
+							</div>
 						</div>
 						<div class="form-group">
 							<label for="pwd">To Date</label>
@@ -523,9 +543,8 @@ var basepath = "${pageContext.request.contextPath}";
 						</div>
 						<div class="form-group">
 							<label for="pwd">Course</label><br> <select
-								class="selectpicker" id="course"
-								name="course">
-								<option value = "0">Select Course</option>
+								class="selectpicker" id="course" name="course">
+								<option value="0">Select Course</option>
 								<c:forEach var="courses" items="${coursesMap}">
 									<option value="${courses.key}">${courses.value}</option>
 								</c:forEach>
@@ -534,7 +553,8 @@ var basepath = "${pageContext.request.contextPath}";
 						<input type="hidden" name="filterType" id="filterType" value="">
 						<div class="modal-footer">
 							<button type="button" class="btn btn-success"
-								id="downloadLeadsFilter" data-dismiss="modal">Download Report</button>
+								id="downloadLeadsFilter" data-dismiss="modal">Download
+								Report</button>
 							<button type="button" class="btn btn-success"
 								id="showLeadsFilter">Apply Filter</button>
 							<button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>
@@ -603,118 +623,129 @@ var basepath = "${pageContext.request.contextPath}";
 		</div>
 	</div>
 
-	        <!--Filter-->
-        <div id="editlead" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="modal-title">Edit Lead</h4>
-                    </div>
-                    <div class="modal-body">
-                    <form:form method="post" action="editlead" name="editLeadForm"
+	<!--Filter-->
+	<div id="editlead" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Edit Lead</h4>
+				</div>
+				<div class="modal-body">
+					<form:form method="post" action="editlead" name="editLeadForm"
 						onsubmit="return validateEditLeadForm()" role="form">
-							<input type="hidden" class="form-control" id="editLeadId" value="" name = "leadiId">
-							<input type="hidden" class="form-control" id="editStatus" value="" name = "status">
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="email">Student Name</label>
-                                    <input type="text" class="form-control" id="editName" value="" name = "name">
-                                </div>
-                                <div class="form-group">
-                                    <label for="pwd">Phone Number</label>
-                                    <input type="text" class="form-control" id="editMobileNo" value="" name = "mobileNo">
-                                </div>
-                                <div class="form-group">
-                                    <label for="pwd">Email ID</label>
-                                    <input type="email" class="form-control" id="editEmail" value="" name = "emailId">
-                                </div>
-                                <div class="form-group">
-                                    <label for="pwd">Address</label>
-                                    <input type="text" class="form-control" id="editAddress" value="" name = "address">
-                                </div>
-                                <div class="form-group">
-                                    <label for="pwd">Area</label>
-                                    <input type="text" class="form-control" id="editArea" value="" name = "area" >
-                                </div>
-                                <div class="form-group">
-                                    <label for="pwd">City</label>
-                                    <input type="text" class="form-control" id="editCity" value="" name = "city">
-                                </div>
-                                <div class="form-group">
-                                    <label for="pwd">Center Location</label><br>
-                                    <select class="selectpicker" title="Select Location" id="editCenter" name = "location">
-                                        <option value ="Location 1">Location 1</option>
-                                        <option value ="Location 2">Location 2</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-sm-6">
-                                <div class="form-group">
-                                    <label for="pwd">Assigned to</label><br>
-                                    <select class="selectpicker" multiple title="Assigned to" id="editAssigned" name = "assignedTo">
-                                        <option value="1">Person 1</option>
-                                        <option value="2">Person 2</option>
-                                        <option value="3">Person 3</option>
-                                        <option value="4">Person 4</option>
-                                        <option value="5">Person 5</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="pwd">Source</label><br>
-                                    <select class="selectpicker" title="Select source" id = "editSource" name = "leadSource">
-                                   	 <c:forEach var="leadSource" items="${leadSourceMapping}">
+						<input type="hidden" class="form-control" id="editLeadId" value=""
+							name="leadiId">
+						<input type="hidden" class="form-control" id="editStatus" value=""
+							name="status">
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="email">Student Name</label> <input type="text"
+									class="form-control" id="editName" value="" name="name">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Phone Number</label> <input type="text"
+									class="form-control" id="editMobileNo" value="" name="mobileNo">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Email ID</label> <input type="email"
+									class="form-control" id="editEmail" value="" name="emailId">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Address</label> <input type="text"
+									class="form-control" id="editAddress" value="" name="address">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Area</label> <input type="text"
+									class="form-control" id="editArea" value="" name="area">
+							</div>
+							<div class="form-group">
+								<label for="pwd">City</label> <input type="text"
+									class="form-control" id="editCity" value="" name="city">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Center Location</label><br> <select
+									class="selectpicker" title="Select Location" id="editCenter"
+									name="location">
+									<option value="Location 1">Location 1</option>
+									<option value="Location 2">Location 2</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="pwd">Assigned to</label><br> <select
+									class="selectpicker" multiple title="Assigned to"
+									id="editAssigned" name="assignedTo">
+									<option value="1">Person 1</option>
+									<option value="2">Person 2</option>
+									<option value="3">Person 3</option>
+									<option value="4">Person 4</option>
+									<option value="5">Person 5</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Source</label><br> <select
+									class="selectpicker" title="Select source" id="editSource"
+									name="leadSource">
+									<c:forEach var="leadSource" items="${leadSourceMapping}">
 										<option value="${leadSource.key}">${leadSource.value}</option>
-									 </c:forEach>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="pwd">Category</label><br>
-                                    <select class="selectpicker" title="Select Category" id ="editCategory" name = "courseCategeory">
-                                     <c:forEach var="category" items="${courseCategories}">
+									</c:forEach>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Category</label><br> <select
+									class="selectpicker" title="Select Category" id="editCategory"
+									name="courseCategeory">
+									<c:forEach var="category" items="${courseCategories}">
 										<option value="${category.key}">${category.value}</option>
-									 </c:forEach>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="pwd">Course</label><br>
-                                    <select class="selectpicker" title="Select Course" id ="editCourse" name = "course">
-                                    <c:forEach var="courses" items="${coursesMap}">
+									</c:forEach>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Course</label><br> <select
+									class="selectpicker" title="Select Course" id="editCourse"
+									name="course">
+									<c:forEach var="courses" items="${coursesMap}">
 										<option value="${courses.key}">${courses.value}</option>
 									</c:forEach>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="pwd">Mode of Training</label><br>
-                                    <select class="selectpicker" title="Select Training" id= "editMode" name = "modeofTraining">
-                                        <option value="Classroom">Classroom</option>
-                                        <option value="Online">Online</option>
-                                    </select>
-                                </div>
-                                
-                                
-                                <div class="form-group">
-                                    <label for="pwd">Weekday/Weekend</label><br>
-                                    <select class="selectpicker" title="Select Type" id = "editType" name = "typeofTraining">
-                                        <option value = "Weekend">Weekend</option>
-                                        <option value ="Weekday">Weekday</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-sm-12">
-                                <div class="form-group">
-                                    <label for="pwd">Commentes</label><br>
-                                    <textarea class="form-control" id ="editComments" name = "comments"></textarea>
-                                </div>
-                                <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Update Lead</button>
-                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                        	</div>
-                            </div>
-                        </form:form>
-                    </div>
-                </div>
-            </div>
-        </div>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Mode of Training</label><br> <select
+									class="selectpicker" title="Select Training" id="editMode"
+									name="modeofTraining">
+									<option value="Classroom">Classroom</option>
+									<option value="Online">Online</option>
+								</select>
+							</div>
+
+
+							<div class="form-group">
+								<label for="pwd">Weekday/Weekend</label><br> <select
+									class="selectpicker" title="Select Type" id="editType"
+									name="typeofTraining">
+									<option value="Weekend">Weekend</option>
+									<option value="Weekday">Weekday</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<div class="form-group">
+								<label for="pwd">Commentes</label><br>
+								<textarea class="form-control" id="editComments" name="comments"></textarea>
+							</div>
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-success">Update
+									Lead</button>
+								<button type="button" class="btn btn-danger"
+									data-dismiss="modal">Cancel</button>
+							</div>
+						</div>
+					</form:form>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

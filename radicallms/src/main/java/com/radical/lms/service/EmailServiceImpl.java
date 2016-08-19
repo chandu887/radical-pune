@@ -83,7 +83,7 @@ public class EmailServiceImpl implements EmailService{
 				if (lastEmailTimeInMillis >= emailReceivedDate.getTime()) {
 					break;
 				}
-				if (addressArray[0].toString().equalsIgnoreCase("Chandrasekhar Mutta <chandrasekhar.mutta8@gmail.com>")) {
+				if (addressArray[0].toString().equalsIgnoreCase("Radical Technologies <contact@radicaltechnologies.co.in>")) {
 					
 					String mailsubject = message.getSubject();
 					Multipart multiPart = (Multipart) message.getContent();
