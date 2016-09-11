@@ -197,13 +197,20 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/addlead", method = RequestMethod.POST)
-	public String addLead(@ModelAttribute(value = "addLeadForm") LeadsEntity leadsEntity, Model model) {
-		int courseCategeory = this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
+	public String addLead(@ModelAttribute(value = "addLeadForm") LeadsEntity leadsEntity, Model model/*, @RequestParam("courseIds") String courseIds*/) {
+		String courseIds = "15,18,29";
+		String[] courseIdsArray = courseIds.split(",");
+		for (String course : courseIdsArray) {
+		int courseId = Integer.parseInt(course);
+		int courseCategeory = this.userService.getCoursesCategeoryMapping().get(courseId);
+		//int courseCategeory = this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
+		leadsEntity.setCourse(courseId);
 		leadsEntity.setStatus(1);
 		leadsEntity.setCourseCategeory(courseCategeory);
 		leadsEntity.setCreatedDate(new Date());
 		leadsEntity.setLastUpdatedDate(new Date());
 		this.leadService.saveLead(leadsEntity);
+		}
 		return "redirect:/dashboard?leadStatus="+leadsEntity.getStatus();
 	}
 
