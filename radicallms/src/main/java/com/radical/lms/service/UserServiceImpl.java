@@ -45,6 +45,11 @@ public class UserServiceImpl implements UserService {
 	private Map<Integer, Integer> coursesCategeoryMapping = new ConcurrentHashMap<Integer, Integer>();
 
 	private Map<Integer, String> leadSourceMapping = new ConcurrentHashMap<Integer, String>();
+	
+	private Map<String, Integer> categoryNameIdMapping = new ConcurrentHashMap<String, Integer>();
+
+	private Map<String, Integer> courseNameIdMapping = new ConcurrentHashMap<String, Integer>();
+
 
 	public void init() {
 		loadCache();
@@ -72,11 +77,14 @@ public class UserServiceImpl implements UserService {
 		List<CourseEntity> courseList = userDao.getCourses();
 		Map<Integer, String> courses = new ConcurrentHashMap<Integer, String>();
 		Map<Integer, Integer> coursesCategeoryMapping = new ConcurrentHashMap<Integer, Integer>();
+		Map<String, Integer> courseNameIdMapping = new ConcurrentHashMap<String, Integer>();
 		for (CourseEntity courseEntity : courseList) {
 			courses.put(courseEntity.getCourseId(), courseEntity.getCourseName());
+			courseNameIdMapping.put(courseEntity.getCourseName(), courseEntity.getCourseId());
 			coursesCategeoryMapping.put(courseEntity.getCourseId(), courseEntity.getCategeoryId());
 		}
 		setCourses(courses);
+		setCourseNameIdMapping(courseNameIdMapping);
 		setCoursesCategeoryMapping(coursesCategeoryMapping);
 	}
 
@@ -84,10 +92,13 @@ public class UserServiceImpl implements UserService {
 	public void getAllCourseCategories() {
 		List<CourseCategeoryEntity> courseCategeories = userDao.getCourseCategories();
 		Map<Integer, String> courseCategories = new ConcurrentHashMap<Integer, String>();
+		Map<String, Integer> courseNameIdMapping = new ConcurrentHashMap<String, Integer>();
 		for (CourseCategeoryEntity courseCategeoryEntity : courseCategeories) {
 			courseCategories.put(courseCategeoryEntity.getCategoryId(), courseCategeoryEntity.getCategeoryName());
+			courseNameIdMapping.put(courseCategeoryEntity.getCategeoryName(), courseCategeoryEntity.getCategoryId());
 		}
 		setCourseCategories(courseCategories);
+		setCategoryNameIdMapping(courseNameIdMapping);
 	}
 
 	@Transactional
@@ -142,6 +153,22 @@ public class UserServiceImpl implements UserService {
 
 	public void setLeadSourceMapping(Map<Integer, String> leadSourceMapping) {
 		this.leadSourceMapping = leadSourceMapping;
+	}
+	
+	public Map<String, Integer> getCategoryNameIdMapping() {
+		return categoryNameIdMapping;
+	}
+
+	public void setCategoryNameIdMapping(Map<String, Integer> categoryNameIdMapping) {
+		this.categoryNameIdMapping = categoryNameIdMapping;
+	}
+
+	public Map<String, Integer> getCourseNameIdMapping() {
+		return courseNameIdMapping;
+	}
+
+	public void setCourseNameIdMapping(Map<String, Integer> courseNameIdMapping) {
+		this.courseNameIdMapping = courseNameIdMapping;
 	}
 
 	@Transactional

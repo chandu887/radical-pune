@@ -27,7 +27,7 @@
         
         <init-param>
             <param-name>allowed-allUrls</param-name>
-            <param-value>/,/favicon.ico,/resources/images/*,/resources/js/*.js,/resources/css/*.css,/resources/fonts/*,/login,/getModelsList,/getCountryList,/testCron,/getPaginationData,/getShowingData,/getPaginationData,/getShowingData,/getCoursesBasedOnCategoryId</param-value>
+            <param-value>/,/favicon.ico,/resources/images/*,/resources/js/*.js,/resources/css/*.css,/resources/fonts/*,/login,/getModelsList,/getCountryList,/testCron,/getPaginationData,/getShowingData,/getPaginationData,/getShowingData,/getCoursesBasedOnCategoryId,/searchByCourse</param-value>
         </init-param>
     </filter>
     

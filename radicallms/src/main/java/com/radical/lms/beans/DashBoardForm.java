@@ -20,6 +20,7 @@ public class DashBoardForm {
 	int category;
 	int filterType;
 	List<Integer> limitList;
+	String searchData;
 	
 	public int getPageLimit() {
 		return pageLimit;
@@ -124,5 +125,10 @@ public class DashBoardForm {
 	public void setCategory(int category) {
 		this.category = category;
 	}
-
+	public String getSearchData() {
+		return searchData;
+	}
+	public void setSearchData(String searchData) {
+		this.searchData = searchData;
+	}
 }

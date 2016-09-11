@@ -34,6 +34,9 @@
 	src="<c:url value="/resources/js/bootstrap-select.min.js"/>" ></script>
 <script
 	src="<c:url value="/resources/js/bootstrap-datepicker.min.js"/>" ></script>
+	  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+	
 <script>
 function validateAddLeadform() {
 	//var courseIds=[];
@@ -94,6 +97,24 @@ $(function () {
 <script type="text/javascript">
 var basepath = "${pageContext.request.contextPath}";
 	$(document).ready(function() {
+		
+		$(function () {
+			var availableTags = [];
+			
+			<c:forEach var="category" items="${courseCategories}">
+				var categoryName = '${category.value}';
+				availableTags.push(categoryName);
+			</c:forEach>
+			
+			<c:forEach var="course" items="${coursesMap}">
+				var courseName = '${course.value}';
+				availableTags.push(courseName);
+			</c:forEach>
+		    $("#courseList").autocomplete({
+		        source: availableTags
+		    });
+		});
+
 
 		$("#changeStatusButton").click(function() {
 			var leadIds = [];
@@ -257,11 +278,13 @@ var basepath = "${pageContext.request.contextPath}";
 			<section id="header">
 			<div class="row">
 				<div class="col-md-8">
-					<span class="logo"><a href="dashboard?leadStatus=1"><img
+					<span class="logo"><a href="clearFilter"><img
 						src="<c:url value="/resources/images/logo.png"/>" /></a></span>
-					<span class="searchform"> <input type="text"
-						placeholder="Search Lead">
-						<button type="submit">Search</button>
+					<span class="searchform">
+						<form:form method="post" action="searchByCourse" id="searchByCourseForm" class="form-inline" role="form"> 
+							<input id="courseList" name="course" type ="text" placeholder="Search Lead" value="${dashBoardForm.searchData}">
+							<button type="submit">Search</button>
+						</form:form>
 					</span>
 				</div>
 				<div class="col-md-4">

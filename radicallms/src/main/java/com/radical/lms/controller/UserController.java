@@ -288,6 +288,22 @@ public class UserController {
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 	}
 	
+	@RequestMapping(value = "/searchByCourse", method = RequestMethod.POST)
+	public String searchByCourse(HttpServletRequest request, @RequestParam("course") String courseName) {
+		HttpSession session = request.getSession();
+		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		dashBoardForm.setSearchData(courseName);
+		
+		if (userService.getCategoryNameIdMapping().containsKey(courseName)) {			
+			dashBoardForm.setCategory(userService.getCategoryNameIdMapping().get(courseName));
+		} else if (userService.getCourseNameIdMapping().containsKey(courseName)) {			
+			dashBoardForm.setCourse(userService.getCourseNameIdMapping().get(courseName));
+		}
+		
+		session.setAttribute("dashBoardForm", dashBoardForm);
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+	}
+	
 	@RequestMapping(value = "/getLeadInfo", method = RequestMethod.POST)
 	@ResponseBody
 	public LeadsEntity getLeadInfoByLeadId(@RequestParam("leadId") int leadId) {
@@ -350,6 +366,7 @@ public class UserController {
 		dashBoardForm.setToDate("");
 		dashBoardForm.setCourse(0);
 		dashBoardForm.setCategory(0);
+		dashBoardForm.setSearchData("");
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=1";
 	}
