@@ -11,14 +11,6 @@
 <meta charset="utf-8">
 <title>LMS Dashboard</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
-<link href="<c:url value="/resources/css/font-awesome.css"/>"
-	rel="stylesheet" />
-<script>
-	function validateCreateNDform() {
-		return true;
-	}
-</script>
-
 <!-- Bootstrap -->
 <link
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
@@ -35,14 +27,60 @@
 
 <script src="<c:url value="/resources/js/jquery1_8_1.js" />"></script>
 <script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	src="<c:url value="/resources/js/jquery.min.js"/>" ></script>
 <script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	src="<c:url value="/resources/js/bootstrap.min.js"/>" ></script>
 <script
-	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
+	src="<c:url value="/resources/js/bootstrap-select.min.js"/>" ></script>
 <script
-	src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/js/bootstrap-datepicker.min.js"></script>
+	src="<c:url value="/resources/js/bootstrap-datepicker.min.js"/>" ></script>
 <script>
+function validateAddLeadform() {
+	//var courseIds=[];
+	/* $.each($("input[name='addCourseName']:checked"), function() {
+		courseIds.push($(this).val());
+	});
+	alert("courseIdslength"+courseIds.length); */
+	
+	return true;
+}
+function getCourseList(courseID,categeoryID) {
+	var categeoryId = $("#"+categeoryID).val();
+	//alert(courseID);
+	//alert(categeoryId);
+	var statedropdown= $("#"+courseID);
+	//alert("hi "+statedropdown);
+	var check = "courseName";
+    statedropdown.empty();
+	//alert(categeoryId);
+    $.ajax({
+        type : "post", 
+        url : basepath + "/getCoursesBasedOnCategoryId", 
+        data : "categeoryId=" + categeoryId,
+        success : function(data) {
+          if(statedropdown == check){
+        	 alert("Hi"); 
+         statedropdown.append('<option value="0" selected>Select Course</option>');
+        } 
+        //var options = '<option value="0" disabled selected>Select Course1</option>';
+        //alert(data.length);
+             for (i=0 ; i<data.length;i++) {
+         //  	alert(data[i].courseId+":"+data[i].courseName);
+           //options += 
+   			statedropdown.append($('<option>', { value: data[i].courseId, text: data[i].courseName}, '</option>'));
+             }
+             
+          // $("'#"+courseID+"'").selectpicker('refresh');
+             $("#"+courseID).selectpicker('refresh');
+            // $('#addCourseName').selectpicker('refresh');
+             
+        },
+        error : function(e) {
+         alert('Error: ' + e); 
+        }
+       });
+      }
+
 $(function () {
 	                $("[rel='tooltip']").tooltip();
 	            });
@@ -127,21 +165,35 @@ var basepath = "${pageContext.request.contextPath}";
 		});
 
 		$("#downloadLeadsFilter").click(function() {
+			var courseCategeory =  $('#courseCategeory').val();
+			var toDate = $('#toDate').val();
+			var fromDate = $('#fromDate').val();
+			if((null==fromDate || fromDate=="") && (null == toDate || toDate=="")&& (null==courseCategeory || courseCategeory == 0)){
+				alert("Please select date Or course Categeory");
+              	return false;
+			} else if((null==fromDate || fromDate=="") || (null == toDate || toDate=="")){
+				alert("Please select from date and to date");
+				return false;
+			} else if(null == courseCategeory || courseCategeory == 0){
+				alert("Please select courseCategeory");
+              	return false;
+			} else {
 			$('#filterType').val("1");
 			$("#filterByDateAndCourseForm").submit();
+			}
 		});
 		$("#showLeadsFilter").click(function() {
-			var course =  $('#course').val();
+			var courseCategeory =  $('#courseCategeory').val();
 						var toDate = $('#toDate').val();
 						var fromDate = $('#fromDate').val();
-						if((null==fromDate || fromDate=="") && (null == toDate || toDate=="")&& (null==course || course == 0)){
-							alert("Please select date Or course");
+						if((null==fromDate || fromDate=="") && (null == toDate || toDate=="")&& (null==courseCategeory || courseCategeory == 0)){
+							alert("Please select date Or course Categeory");
 			              	return false;
 						} else if((null==fromDate || fromDate=="") || (null == toDate || toDate=="")){
 							alert("Please select from date and to date");
 							return false;
-						} else if(null == course || course == 0){
-							alert("Please select course");
+						} else if(null == courseCategeory || courseCategeory == 0){
+							alert("Please select courseCategeory");
 			              	return false;
 						} else {
 			$('#filterType').val("0");
@@ -150,7 +202,16 @@ var basepath = "${pageContext.request.contextPath}";
 		});
 		
 		$("#download").click(function() {
+			var leadIds = [];
+			$.each($("input[name='leadId']:checked"), function() {
+				leadIds.push($(this).val());
+			});
+			if (leadIds.length == 0) {
+				alert("please select any enquiry");
+			} else {
+			$('#downloadLeadIds').val(leadIds.join(","));
 			$("#downloadLeadsToSheetForm").submit();
+			}
 		});
 		
         $("#showingId").change(function() {
@@ -195,17 +256,16 @@ var basepath = "${pageContext.request.contextPath}";
 		<div class="row">
 			<section id="header">
 			<div class="row">
-				<div class="col-md-6">
-					<span class="logo"><img
-						src="http://www.radicaltechnologies.co.in/wp-content/themes/radical/images/logo.png" /></span>
+				<div class="col-md-8">
+					<span class="logo"><a href="dashboard?leadStatus=1"><img
+						src="<c:url value="/resources/images/logo.png"/>" /></a></span>
 					<span class="searchform"> <input type="text"
 						placeholder="Search Lead">
 						<button type="submit">Search</button>
 					</span>
 				</div>
-				<div class="col-md-6">
-					<span class="pull-right account"><a href="#">LMS</a> | <a
-						href="#">Administration</a> | <a href="#">Profile</a> | <a
+				<div class="col-md-4">
+					<span class="pull-right account"><a
 						href="logout">Logout</a></span>
 				</div>
 			</section>
@@ -235,6 +295,9 @@ var basepath = "${pageContext.request.contextPath}";
 				<li><a href="dashboard?leadStatus=0" class="${allActive}"><i
 						class="fa fa-bars" aria-hidden="true"></i> All
 						${dashBoardForm.totalLeadsCount}</a></li>
+						<li class="right"><a href="clearFilter" role="button"
+					><i class="fa fa-filter"
+						aria-hidden="true"></i> Clear Filter</a></li>
 				<li class="right"><a data-toggle="modal" role="button"
 					data-target="#filter"><i class="fa fa-filter"
 						aria-hidden="true"></i> Filter</a></li>
@@ -497,6 +560,8 @@ var basepath = "${pageContext.request.contextPath}";
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
 						<h4 class="modal-title">Download Lead</h4>
 					</div>
+					<input type="hidden" id="downloadLeadIds" name="leadIds"
+							value="">
 					<div class="modal-body">
 						<p>Are you sure you want to Download leads?</p>
 						<div class="modal-footer">
@@ -542,12 +607,18 @@ var basepath = "${pageContext.request.contextPath}";
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="pwd">Course</label><br> <select
-								class="selectpicker" id="course" name="course">
-								<option value="0">Select Course</option>
-								<c:forEach var="courses" items="${coursesMap}">
-									<option value="${courses.key}">${courses.value}</option>
+							<label for="pwd">Category</label><br> <select
+								class="selectpicker" id="courseCategeory" name="courseCategeory" onchange="getCourseList('courseName','courseCategeory');">
+								<option value="0">Select Category</option>
+								<c:forEach var="category" items="${courseCategories}">
+										<option value="${category.key}">${category.value}</option>
 								</c:forEach>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="pwd">Course</label><br> <select
+								class="selectpicker" id="courseName" name="course">
+								<option value="0">Select Course</option>
 							</select>
 						</div>
 						<input type="hidden" name="filterType" id="filterType" value="">
@@ -577,7 +648,7 @@ var basepath = "${pageContext.request.contextPath}";
 				</div>
 				<div class="modal-body">
 					<form:form method="post" action="addlead" name="addLeadForm"
-						onsubmit="return validateCreateNDform()">
+						onsubmit="return validateAddLeadform()">
 						<div class="form-group">
 							<label for="email">Student Name</label> <input type="text"
 								class="form-control" id="name" name="name">
@@ -591,6 +662,21 @@ var basepath = "${pageContext.request.contextPath}";
 								class="form-control" id="emailId" name="emailId">
 						</div>
 						<div class="form-group wd50">
+							<label for="pwd">Category</label><br> <select
+								class="selectpicker" id="courseCategeoryName" name="courseCategeory" onchange="getCourseList('addCourseName','courseCategeoryName');">
+								<option value="0">Select Category</option>
+								<c:forEach var="category" items="${courseCategories}">
+										<option value="${category.key}">${category.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+						<div class="form-group wd50">
+							<label for="pwd">Course</label><br> <select
+								class="selectpicker" multiple title ="Select Course" id="addCourseName" name="course">
+								<!-- <option value="0">Select Course</option> -->
+							</select>
+						</div>
+						<%-- <div class="form-group wd50">
 							<label for="pwd">Course</label><br> <select
 								class="selectpicker" multiple title="Select Course" id="course"
 								name="course">
@@ -600,7 +686,16 @@ var basepath = "${pageContext.request.contextPath}";
 							</select>
 						</div>
 						<div class="form-group wd50">
-							<label for="pwd">Source Lead</label><br> <select
+							<label for="pwd">Course</label><br> <select
+								class="selectpicker" multiple title="Select Course" id="course"
+								name="course">
+								<c:forEach var="courses" items="${coursesMap}">
+									<option value="${courses.key}">${courses.value}</option>
+								</c:forEach>
+							</select>
+						</div> --%>
+						<div class="form-group">
+							<label for="pwd">Source Lead</label> <select
 								class="selectpicker" title="Select Source" id="leadSource"
 								name="leadSource">
 								<c:forEach var="leadSource" items="${leadSourceMapping}">

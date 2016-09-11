@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.radical.lms.beans.DashBoardForm;
+import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadSourcesEntity;
@@ -67,6 +68,9 @@ public class UserDaoImpl implements UserDao {
 	
 	private String generateQueryString(DashBoardForm dashBoardForm) {
 		String queryStr = " where status in (:status)";
+		if (dashBoardForm.getCategory()!=0){
+			queryStr += " and courseCategeory = " + dashBoardForm.getCategory();
+		}
 		if (dashBoardForm.getCourse() != 0) {
 			queryStr += " and course = " + dashBoardForm.getCourse();
 		}
@@ -168,5 +172,19 @@ public class UserDaoImpl implements UserDao {
 			return userIdList.get(0);
 		}
 		return null;
+	}
+
+	public List<LeadsEntity> getLeadsListForDownload(List<Integer> downloadLeadIdsList) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from LeadsEntity where leadiId in (:downloadLeadIdsList)");
+		query.setParameterList("downloadLeadIdsList", downloadLeadIdsList);
+		List<LeadsEntity> usersList = query.list(); 
+		return usersList;
+	}
+
+	public List<CourseEntity> getCourseList(int categoryId) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where categeoryId=:categeoryId");
+		query.setInteger("categeoryId", categoryId);
+		List<CourseEntity> courseList = query.list(); 
+		return courseList;
 	}
 }

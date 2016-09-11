@@ -3,6 +3,7 @@ package com.radical.lms.dao;
 import java.util.List;
 
 import com.radical.lms.beans.DashBoardForm;
+import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadSourcesEntity;
@@ -28,4 +29,8 @@ public interface UserDao {
 	String leadsChangeStatus(List<Integer>changeStatusLeadIdsList,int statusType,String reason);
 	
 	String getAssignedToName(int assignedToId);
+	
+	List<LeadsEntity> getLeadsListForDownload(List<Integer> downloadLeadIdsList);
+	
+	List<CourseEntity> getCourseList(int intCategoryId);
 }

@@ -29,7 +29,7 @@
  
         <property name="triggers">
             <list>
-            <ref bean="mailReadingCronTrigger" />
+          <!--   <ref bean="mailReadingCronTrigger" /> -->
             </list>
         </property>
     </bean>

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.entity.CourseCategeoryEntity;
+import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.UsersEntity;
 
@@ -39,5 +40,9 @@ public interface UserService {
 	String leadsChangeStatus(List<Integer>changeStatusLeadIdsList,int statusType,String reason);
 	
 	XSSFWorkbook  downloadLeadsSheet(List<LeadsEntityBean> leadsEntityBeanList);
+	
+	List<LeadsEntityBean> getLeadsListForDownload(List<Integer> downloadLeadIdsList);
+	
+	List<CourseEntity> getCourseList(int intCategoryId);
 	
 }

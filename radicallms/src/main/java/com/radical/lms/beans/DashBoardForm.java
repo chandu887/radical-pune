@@ -17,6 +17,7 @@ public class DashBoardForm {
 	String fromDate;
 	String toDate;
 	int course;
+	int category;
 	int filterType;
 	List<Integer> limitList;
 	
@@ -116,6 +117,12 @@ public class DashBoardForm {
 	}
 	public void setPageTotalCount(int pageTotalCount) {
 		this.pageTotalCount = pageTotalCount;
+	}
+	public int getCategory() {
+		return category;
+	}
+	public void setCategory(int category) {
+		this.category = category;
 	}
 
 }

@@ -108,44 +108,8 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public List<LeadsEntityBean> getLeadsStatus(DashBoardForm dashBoardForm) {
 		List<LeadsEntity> leads = userDao.getLeadsByStatus(dashBoardForm);
-		if (leads != null) {
-			List<LeadsEntityBean> leadBeanList = new ArrayList<LeadsEntityBean>();
-			String status = "";
-			for (LeadsEntity leadsEntity : leads) {
-				if (leadsEntity.getStatus() == 1) {
-					status = "New";
-				} else if (leadsEntity.getStatus() == 2) {
-					status = "Open";
-				} else if (leadsEntity.getStatus() == 3) {
-					status = "Closed";
-				} else if (leadsEntity.getStatus() == 4) {
-					status = "Deleted";
-				}
-				String assgniedTo = "";
-				if (leadsEntity.getAssignedTo() == 0) {
-					assgniedTo = "";
-				} else {
-					assgniedTo = userDao.getAssignedToName(leadsEntity.getAssignedTo());
-				}
-				Date createdDate = leadsEntity.getCreatedDate();
-				Date updateDate =leadsEntity.getLastUpdatedDate();
-				DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-				String createdDateString = dateFormat.format(createdDate);
-				String updateDateString = "";
-				if (updateDate != null) {
-					updateDateString = dateFormat.format(updateDate);
-				}
-				
-				LeadsEntityBean leadsEntityBean = new LeadsEntityBean(leadsEntity.getLeadiId(),leadsEntity.getName(),leadsEntity.getMobileNo(),leadsEntity.getEmailId(),
-						status,getCourses().get(leadsEntity.getCourse()),getCourseCategories().get(leadsEntity.getCourseCategeory()),
-						getLeadSourceMapping().get(leadsEntity.getLeadSource()),assgniedTo,createdDateString,updateDateString,
-						leadsEntity.getCity(),leadsEntity.getComments(),leadsEntity.getReason(),leadsEntity.getAddress(),leadsEntity.getArea(),
-						leadsEntity.getLocation(),leadsEntity.getModeofTraining(),leadsEntity.getTypeofTraining());
-				leadBeanList.add(leadsEntityBean);
-			}
-			return leadBeanList;
-		}
-		return null;
+		List<LeadsEntityBean> leadBeanList = getLeadsEntityBeanByLeadsEntity(leads);
+		return leadBeanList;
 	}
 
 	public Map<Integer, String> getCourseCategories() {
@@ -228,7 +192,7 @@ public class UserServiceImpl implements UserService {
 
 		header.createCell(9).setCellValue("Created Date");
 		header.getCell(9).setCellStyle(style);
-		
+
 		header.createCell(10).setCellValue("Update Date");
 		header.getCell(10).setCellStyle(style);
 
@@ -257,31 +221,91 @@ public class UserServiceImpl implements UserService {
 		header.getCell(18).setCellStyle(style);
 
 		int rowCount = 1;
-		
-		for (LeadsEntityBean LeadsEntityBean : leadsEntityBeanList) {
+		if (null != leadsEntityBeanList) {
+			for (LeadsEntityBean LeadsEntityBean : leadsEntityBeanList) {
+				XSSFRow aRow = sheet.createRow(rowCount);
+				aRow.createCell(0).setCellValue(LeadsEntityBean.getEnqID());
+				aRow.createCell(1).setCellValue(LeadsEntityBean.getName());
+				aRow.createCell(2).setCellValue(LeadsEntityBean.getMobileNo());
+				aRow.createCell(3).setCellValue(LeadsEntityBean.getEmailId());
+				aRow.createCell(4).setCellValue(LeadsEntityBean.getStatus());
+				aRow.createCell(5).setCellValue(LeadsEntityBean.getCourse());
+				aRow.createCell(6).setCellValue(LeadsEntityBean.getCategeory());
+				aRow.createCell(7).setCellValue(LeadsEntityBean.getSourceLead());
+				aRow.createCell(8).setCellValue(LeadsEntityBean.getAssignedTo());
+				aRow.createCell(9).setCellValue(LeadsEntityBean.getCreatedTime());
+				aRow.createCell(10).setCellValue(LeadsEntityBean.getUpdatedTime());
+				aRow.createCell(11).setCellValue(LeadsEntityBean.getCity());
+				aRow.createCell(12).setCellValue(LeadsEntityBean.getComments());
+				aRow.createCell(13).setCellValue(LeadsEntityBean.getReason());
+				aRow.createCell(14).setCellValue(LeadsEntityBean.getAddress());
+				aRow.createCell(15).setCellValue(LeadsEntityBean.getArea());
+				aRow.createCell(16).setCellValue(LeadsEntityBean.getLocation());
+				aRow.createCell(17).setCellValue(LeadsEntityBean.getModeOfTraining());
+				aRow.createCell(18).setCellValue(LeadsEntityBean.getTypeOfTraining());
+				rowCount++;
+			}
+		} else {
 			XSSFRow aRow = sheet.createRow(rowCount);
-			aRow.createCell(0).setCellValue(LeadsEntityBean.getEnqID());
-			aRow.createCell(1).setCellValue(LeadsEntityBean.getName());
-			aRow.createCell(2).setCellValue(LeadsEntityBean.getMobileNo());
-			aRow.createCell(3).setCellValue(LeadsEntityBean.getEmailId());
-			aRow.createCell(4).setCellValue(LeadsEntityBean.getStatus());
-			aRow.createCell(5).setCellValue(LeadsEntityBean.getCourse());
-			aRow.createCell(6).setCellValue(LeadsEntityBean.getCategeory());
-			aRow.createCell(7).setCellValue(LeadsEntityBean.getSourceLead());
-			aRow.createCell(8).setCellValue(LeadsEntityBean.getAssignedTo());
-			aRow.createCell(9).setCellValue(LeadsEntityBean.getCreatedTime());
-			aRow.createCell(10).setCellValue(LeadsEntityBean.getUpdatedTime());
-			aRow.createCell(11).setCellValue(LeadsEntityBean.getCity());
-			aRow.createCell(12).setCellValue(LeadsEntityBean.getComments());
-			aRow.createCell(13).setCellValue(LeadsEntityBean.getReason());
-			aRow.createCell(14).setCellValue(LeadsEntityBean.getAddress());
-			aRow.createCell(15).setCellValue(LeadsEntityBean.getArea());
-			aRow.createCell(16).setCellValue(LeadsEntityBean.getLocation());
-			aRow.createCell(17).setCellValue(LeadsEntityBean.getModeOfTraining());
-			aRow.createCell(18).setCellValue(LeadsEntityBean.getTypeOfTraining());
-			rowCount++;
+			aRow.createCell(0).setCellValue("No Leads");
 		}
 
 		return workbook;
+	}
+
+	private List<LeadsEntityBean> getLeadsEntityBeanByLeadsEntity(List<LeadsEntity> leads) {
+		if (leads != null) {
+			List<LeadsEntityBean> leadBeanList = new ArrayList<LeadsEntityBean>();
+			String status = "";
+			for (LeadsEntity leadsEntity : leads) {
+				if (leadsEntity.getStatus() == 1) {
+					status = "New";
+				} else if (leadsEntity.getStatus() == 2) {
+					status = "Open";
+				} else if (leadsEntity.getStatus() == 3) {
+					status = "Closed";
+				} else if (leadsEntity.getStatus() == 4) {
+					status = "Deleted";
+				}
+				String assgniedTo = "";
+				if (leadsEntity.getAssignedTo() == 0) {
+					assgniedTo = "";
+				} else {
+					assgniedTo = userDao.getAssignedToName(leadsEntity.getAssignedTo());
+				}
+				Date createdDate = leadsEntity.getCreatedDate();
+				Date updateDate = leadsEntity.getLastUpdatedDate();
+				DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+				String createdDateString = dateFormat.format(createdDate);
+				String updateDateString = "";
+				if (updateDate != null) {
+					updateDateString = dateFormat.format(updateDate);
+				}
+
+				LeadsEntityBean leadsEntityBean = new LeadsEntityBean(leadsEntity.getLeadiId(), leadsEntity.getName(),
+						leadsEntity.getMobileNo(), leadsEntity.getEmailId(), status,
+						getCourses().get(leadsEntity.getCourse()),
+						getCourseCategories().get(leadsEntity.getCourseCategeory()),
+						getLeadSourceMapping().get(leadsEntity.getLeadSource()), assgniedTo, createdDateString,
+						updateDateString, leadsEntity.getCity(), leadsEntity.getComments(), leadsEntity.getReason(),
+						leadsEntity.getAddress(), leadsEntity.getArea(), leadsEntity.getLocation(),
+						leadsEntity.getModeofTraining(), leadsEntity.getTypeofTraining());
+				leadBeanList.add(leadsEntityBean);
+			}
+			return leadBeanList;
+		}
+		return null;
+	}
+
+	@Transactional
+	public List<LeadsEntityBean> getLeadsListForDownload(List<Integer> downloadLeadIdsList) {
+		List<LeadsEntity> leads = userDao.getLeadsListForDownload(downloadLeadIdsList);
+		List<LeadsEntityBean> leadBeanList = getLeadsEntityBeanByLeadsEntity(leads);
+		return leadBeanList;
+	}
+
+	@Transactional
+	public List<CourseEntity> getCourseList(int categoryId) {
+		return userDao.getCourseList(categoryId);
 	}
 }

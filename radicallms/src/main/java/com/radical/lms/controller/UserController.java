@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
+import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.UsersEntity;
 import com.radical.lms.quartz.MailReadingJob;
@@ -77,18 +78,14 @@ public class UserController {
 		} else {
 			dashBoardForm = new DashBoardForm();
 			dashBoardForm.setPageNumber(1);
-			dashBoardForm.setPageLimit(5);
+			dashBoardForm.setPageLimit(10);
 		}
 		
 		if (!isFromPagination) {
 			dashBoardForm.setPageNumber(1);
 		}
 
-		if (!isFromFilter) {
-			dashBoardForm.setFromDate("");
-			dashBoardForm.setToDate("");
-			dashBoardForm.setCourse(0);
-		}
+		
 
 		List countList = this.userService.getCountByStatusType(dashBoardForm);
 		Map<Integer, Integer> countMap = new ConcurrentHashMap<Integer, Integer>();
@@ -145,10 +142,10 @@ public class UserController {
 		}
 
 		List<Integer> limitList = new ArrayList<Integer>();
-		limitList.add(5);
 		limitList.add(10);
-		limitList.add(15);
 		limitList.add(20);
+		limitList.add(30);
+		limitList.add(40);
 		dashBoardForm.setLimitList(limitList);
 		List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
 		Map<Integer, String> coursesMap = this.userService.getCourses();
@@ -231,7 +228,7 @@ public class UserController {
 
 	@RequestMapping(value = "/filterByDateAndCourse", method = RequestMethod.POST)
 	public String filterByDateAndCourse(@RequestParam("fromDate") String fromDate,
-			@RequestParam("toDate") String toDate, @RequestParam("course") int course,
+			@RequestParam("toDate") String toDate, @RequestParam("courseCategeory") int category , @RequestParam("course") int course,
 			@RequestParam("filterType") int filterType, HttpServletRequest request, HttpServletResponse response) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
@@ -241,6 +238,7 @@ public class UserController {
 		dashBoardForm.setFromDate(fromDate);
 		dashBoardForm.setToDate(toDate);
 		dashBoardForm.setCourse(course);
+		dashBoardForm.setCategory(category);
 		dashBoardForm.setFilterType(filterType);
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		if (filterType == 0) {
@@ -299,13 +297,19 @@ public class UserController {
 		return "redirect:/dashboard?leadStatus="+leadsEntity.getStatus();
 	}
 	@RequestMapping(value = "/downloadLeadsToSheet", method = RequestMethod.POST)
-	public String downloadLeadsToSheet(HttpServletRequest request, HttpServletResponse response) {
+	public String downloadLeadsToSheet(HttpServletRequest request, HttpServletResponse response ,@RequestParam("leadIds") String downloadLeadIds) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
-		List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
+		
+		String[] downloadLeadIdsSplitArray = downloadLeadIds.split(",");
+		List<Integer> downloadLeadIdsList = new ArrayList<Integer>();
+		for (String leadId : downloadLeadIdsSplitArray) {
+			downloadLeadIdsList.add(Integer.parseInt(leadId));
+		}
+		List<LeadsEntityBean> leadsList = this.userService.getLeadsListForDownload(downloadLeadIdsList);
 		XSSFWorkbook workbook = this.userService.downloadLeadsSheet(leadsList);
 		try {
 			String fileName = "leadsdump-" + new Date().getTime() + ".xlsx";
@@ -319,7 +323,28 @@ public class UserController {
 			e1.printStackTrace();
 		}
 		return null;
-
+	}
+	@RequestMapping(value = "/getCoursesBasedOnCategoryId", method = RequestMethod.POST)
+	@ResponseBody
+	public List<CourseEntity> getCourseBasedOnCategoryId(@RequestParam String categeoryId) {
+		int intCategoryId = Integer.parseInt(categeoryId);
+		List<CourseEntity> courseList = this.userService.getCourseList(intCategoryId);
+		return courseList;
+	}
+	
+	@RequestMapping(value = "/clearFilter", method = RequestMethod.GET)
+	public String clearFilter(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		DashBoardForm dashBoardForm = null;
+		if (session.getAttribute("dashBoardForm") != null) {
+			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		}
+		dashBoardForm.setFromDate("");
+		dashBoardForm.setToDate("");
+		dashBoardForm.setCourse(0);
+		dashBoardForm.setCategory(0);
+		session.setAttribute("dashBoardForm", dashBoardForm);
+		return "redirect:/dashboard?leadStatus=1";
 	}
 
 }
