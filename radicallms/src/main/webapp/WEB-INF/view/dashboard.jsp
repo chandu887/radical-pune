@@ -79,36 +79,19 @@ function validateAddLeadform() {
 	
 function getCourseList(courseID,categeoryID) {
 	var categeoryId = $("#"+categeoryID).val();
-	//alert(courseID);
-	//alert(categeoryId);
-	var statedropdown= $("#"+courseID);
-	//alert("hi "+statedropdown);
-	var check = "courseName";
-    statedropdown.empty();
-	//alert(categeoryId);
+	var coursedropdown= $("#"+courseID);
+	coursedropdown.empty();
     $.ajax({
         type : "post", 
         url : basepath + "/getCoursesBasedOnCategoryId", 
         data : "categeoryId=" + categeoryId,
         success : function(data) {
-          if(statedropdown == check){
-        	 alert("Hi"); 
-         statedropdown.append('<option value="0" selected>Select Course</option>');
-        } 
-        //var options = '<option value="0" disabled selected>Select Course1</option>';
-        //alert(data.length);
              for (i=0 ; i<data.length;i++) {
-         //  	alert(data[i].courseId+":"+data[i].courseName);
-           //options += 
-   			statedropdown.append($('<option>', { value: data[i].courseId, text: data[i].courseName}, '</option>'));
+            	 coursedropdown.append($('<option>', { value: data[i].courseId, text: data[i].courseName}, '</option>'));
              }
-             
-          // $("'#"+courseID+"'").selectpicker('refresh');
              $("#"+courseID).selectpicker('refresh');
-            // $('#addCourseName').selectpicker('refresh');
-             
         },
-        error : function(e) {
+	    error : function(e) {
          alert('Error: ' + e); 
         }
        });
@@ -294,7 +277,10 @@ var basepath = "${pageContext.request.contextPath}";
     		$('#editAssigned').selectpicker('val', data.assignedTo);
     		$('#editSource').selectpicker('val', data.leadSource);
     		$('#editCategory').selectpicker('val', data.courseCategeory);
+    		
+    		//$('#editCourse').select2({  placeholder: {  id: data.course, text: 'ELECTONICS'}});
     		$('#editCourse').selectpicker('val', data.course);
+    		
     		$('#editMode').selectpicker('val', data.modeofTraining);
     		$('#editType').selectpicker('val', data.typeofTraining);
     		$('#editComments').val(data.comments);
@@ -829,7 +815,7 @@ var basepath = "${pageContext.request.contextPath}";
 						<div class="col-sm-6">
 							<div class="form-group">
 								<label for="pwd">Assigned to</label><br> <select
-									class="selectpicker" multiple title="Assigned to"
+									class="selectpicker" title="Assigned to"
 									id="editAssigned" name="assignedTo">
 									<option value="1">Person 1</option>
 									<option value="2">Person 2</option>
@@ -849,8 +835,8 @@ var basepath = "${pageContext.request.contextPath}";
 							</div>
 							<div class="form-group">
 								<label for="pwd">Category</label><br> <select
-									class="addlead-course form-control" title="Select Category" id="editCategory"
-									name="courseCategeory">
+									class="selectpicker" title="Select Category" id="editCategory"
+									name="courseCategeory" onchange="getCourseList('editCourse','editCategory');">
 									<c:forEach var="category" items="${courseCategories}">
 										<option value="${category.key}">${category.value}</option>
 									</c:forEach>
@@ -858,7 +844,7 @@ var basepath = "${pageContext.request.contextPath}";
 							</div>
 							<div class="form-group">
 								<label for="pwd">Course</label><br> <select
-									class="addlead-course form-control" title="Select Course" id="editCourse"
+									class="selectpicker" title="Select Course" id="editCourse"
 									name="course">
 									<c:forEach var="courses" items="${coursesMap}">
 										<option value="${courses.key}">${courses.value}</option>
