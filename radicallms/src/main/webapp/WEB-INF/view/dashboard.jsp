@@ -11,6 +11,8 @@
 <meta charset="utf-8">
 <title>LMS Dashboard</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
+<link href="<c:url value="/resources/css/select2.css"/>"
+	rel="stylesheet" />
 <!-- Bootstrap -->
 <link
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
@@ -26,27 +28,55 @@
 </head>
 
 <script src="<c:url value="/resources/js/jquery1_8_1.js" />"></script>
+<script src="<c:url value="/resources/js/jquery.min.js"/>"></script>
+<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
+<script src="<c:url value="/resources/js/bootstrap-select.min.js"/>"></script>
+<script src="<c:url value="/resources/js/bootstrap-datepicker.min.js"/>"></script>
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
 <script
-	src="<c:url value="/resources/js/jquery.min.js"/>" ></script>
-<script
-	src="<c:url value="/resources/js/bootstrap.min.js"/>" ></script>
-<script
-	src="<c:url value="/resources/js/bootstrap-select.min.js"/>" ></script>
-<script
-	src="<c:url value="/resources/js/bootstrap-datepicker.min.js"/>" ></script>
-	  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
-	
+	src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
 <script>
 function validateAddLeadform() {
-	//var courseIds=[];
-	/* $.each($("input[name='addCourseName']:checked"), function() {
-		courseIds.push($(this).val());
-	});
-	alert("courseIdslength"+courseIds.length); */
+	var mobileNo = $('#mobileNo').val();
+	var courseId = $('#addCourseName').val();
+	 var courseCategeoryName = $('#courseCategeoryName').val();
+	 	 var leadSource = $('#leadSource').val(); 
+	  	
+	 	 var mobileNumberChecking = /^[7-9][0-9]*$/;
+	 	 if(!isBlank(mobileNo) && !isInteger(mobileNo)) {
+	          alert('Please enter a valid mobile no.');
+	              $('#mobileNo').val("");
+	              return false;
+	     	} else if(mobileNo.length < 10 && mobileNo.length > 10) {
+	         	alert('Please enter a valid mobile no.');
+	                $('#mobileNo').val("");
+	        	return false;
+	     	} else if (!mobileNo.match(mobileNumberChecking)) {
+	      		alert('Please Enter a valid Mobile No.');
+	                $('#mobileNo').val("");
+	        	return false;
+	     	}  else if(courseCategeoryName==0 || courseCategeoryName==null){
+	     		alert('Please select Category.');
+	     		return false;
+	     	}  else if (courseId == null){
+	     		alert('Please select Course.');
+	     		return false;
+	     	} else if(leadSource == null || leadSource ==0){
+	     		alert('Please select Lead Source.');
+	     		return false;
+	     	}
+	  	return true;
+	  }
+	 function isInteger(s) {
+	 	return (s.toString().search(/^-?[0-9]+$/) == 0);
+	 }
+	 function isBlank(inputStr) {
+	 	return !(inputStr && inputStr.length)
+	 }
 	
-	return true;
-}
 function getCourseList(courseID,categeoryID) {
 	var categeoryId = $("#"+categeoryID).val();
 	//alert(courseID);
@@ -90,6 +120,10 @@ $(function () {
 	            $(document).ready(function () {
 	                $('.selectpicker').selectpicker();
 	                $('.datepicker').datepicker();
+	                $(".addlead-course").select2({
+	                		                    placeholder: "Select a Course",
+	                		                    allowClear: true
+	    	                  });
 	            });
 	        </script>
 </script>
@@ -279,17 +313,18 @@ var basepath = "${pageContext.request.contextPath}";
 			<div class="row">
 				<div class="col-md-8">
 					<span class="logo"><a href="clearFilter"><img
-						src="<c:url value="/resources/images/logo.png"/>" /></a></span>
-					<span class="searchform">
-						<form:form method="post" action="searchByCourse" id="searchByCourseForm" class="form-inline" role="form"> 
-							<input id="courseList" name="course" type ="text" placeholder="Search Lead" value="${dashBoardForm.searchData}">
+							src="<c:url value="/resources/images/logo.png"/>" /></a></span> <span
+						class="searchform"> <form:form method="post"
+							action="searchByCourse" id="searchByCourseForm"
+							class="form-inline" role="form">
+							<input id="courseList" name="course" type="text"
+								placeholder="Search Lead" value="${dashBoardForm.searchData}">
 							<button type="submit">Search</button>
 						</form:form>
 					</span>
 				</div>
 				<div class="col-md-4">
-					<span class="pull-right account"><a
-						href="logout">Logout</a></span>
+					<span class="pull-right account"><a href="logout">Logout</a></span>
 				</div>
 			</section>
 			<c:if test="${dashBoardForm.currentStatus == 1}">
@@ -318,9 +353,8 @@ var basepath = "${pageContext.request.contextPath}";
 				<li><a href="dashboard?leadStatus=0" class="${allActive}"><i
 						class="fa fa-bars" aria-hidden="true"></i> All
 						${dashBoardForm.totalLeadsCount}</a></li>
-						<li class="right"><a href="clearFilter" role="button"
-					><i class="fa fa-filter"
-						aria-hidden="true"></i> Clear Filter</a></li>
+				<li class="right"><a href="clearFilter" role="button"><i
+						class="fa fa-filter" aria-hidden="true"></i> Clear Filter</a></li>
 				<li class="right"><a data-toggle="modal" role="button"
 					data-target="#filter"><i class="fa fa-filter"
 						aria-hidden="true"></i> Filter</a></li>
@@ -583,8 +617,7 @@ var basepath = "${pageContext.request.contextPath}";
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
 						<h4 class="modal-title">Download Lead</h4>
 					</div>
-					<input type="hidden" id="downloadLeadIds" name="leadIds"
-							value="">
+					<input type="hidden" id="downloadLeadIds" name="leadIds" value="">
 					<div class="modal-body">
 						<p>Are you sure you want to Download leads?</p>
 						<div class="modal-footer">
@@ -631,16 +664,17 @@ var basepath = "${pageContext.request.contextPath}";
 						</div>
 						<div class="form-group">
 							<label for="pwd">Category</label><br> <select
-								class="selectpicker" id="courseCategeory" name="courseCategeory" onchange="getCourseList('courseName','courseCategeory');">
+								class="addlead-course form-control" id="courseCategeory" name="courseCategeory"
+								onchange="getCourseList('courseName','courseCategeory');">
 								<option value="0">Select Category</option>
 								<c:forEach var="category" items="${courseCategories}">
-										<option value="${category.key}">${category.value}</option>
+									<option value="${category.key}">${category.value}</option>
 								</c:forEach>
 							</select>
 						</div>
 						<div class="form-group">
 							<label for="pwd">Course</label><br> <select
-								class="selectpicker" id="courseName" name="course">
+								class="addlead-course form-control" id="courseName" name="course">
 								<option value="0">Select Course</option>
 							</select>
 						</div>
@@ -686,16 +720,19 @@ var basepath = "${pageContext.request.contextPath}";
 						</div>
 						<div class="form-group wd50">
 							<label for="pwd">Category</label><br> <select
-								class="selectpicker" id="courseCategeoryName" name="courseCategeory" onchange="getCourseList('addCourseName','courseCategeoryName');">
+								class="addlead-course form-control" id="courseCategeoryName"
+								name="courseCategeory"
+								onchange="getCourseList('addCourseName','courseCategeoryName');">
 								<option value="0">Select Category</option>
 								<c:forEach var="category" items="${courseCategories}">
-										<option value="${category.key}">${category.value}</option>
+									<option value="${category.key}">${category.value}</option>
 								</c:forEach>
 							</select>
 						</div>
 						<div class="form-group wd50">
 							<label for="pwd">Course</label><br> <select
-								class="selectpicker" multiple title ="Select Course" id="addCourseName" name="course">
+								class="addlead-course form-control" multiple title="Select Course"
+								id="addCourseName" name="courseList">
 								<!-- <option value="0">Select Course</option> -->
 							</select>
 						</div>
@@ -718,9 +755,8 @@ var basepath = "${pageContext.request.contextPath}";
 							</select>
 						</div> --%>
 						<div class="form-group">
-							<label for="pwd">Source Lead</label> <select
-								class="selectpicker" title="Select Source" id="leadSource"
-								name="leadSource">
+							<label for="pwd">Source Lead</label> <select class="selectpicker"
+								title="Select Source" id="leadSource" name="leadSource">
 								<c:forEach var="leadSource" items="${leadSourceMapping}">
 									<option value="${leadSource.key}">${leadSource.value}</option>
 								</c:forEach>
@@ -733,7 +769,7 @@ var basepath = "${pageContext.request.contextPath}";
 
 						<div class="modal-footer">
 							<button type="submit" class="btn btn-success">Add Lead</button>
-							<button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
 						</div>
 					</form:form>
 				</div>
@@ -813,7 +849,7 @@ var basepath = "${pageContext.request.contextPath}";
 							</div>
 							<div class="form-group">
 								<label for="pwd">Category</label><br> <select
-									class="selectpicker" title="Select Category" id="editCategory"
+									class="addlead-course form-control" title="Select Category" id="editCategory"
 									name="courseCategeory">
 									<c:forEach var="category" items="${courseCategories}">
 										<option value="${category.key}">${category.value}</option>
@@ -822,7 +858,7 @@ var basepath = "${pageContext.request.contextPath}";
 							</div>
 							<div class="form-group">
 								<label for="pwd">Course</label><br> <select
-									class="selectpicker" title="Select Course" id="editCourse"
+									class="addlead-course form-control" title="Select Course" id="editCourse"
 									name="course">
 									<c:forEach var="courses" items="${coursesMap}">
 										<option value="${courses.key}">${courses.value}</option>

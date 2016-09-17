@@ -197,21 +197,25 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/addlead", method = RequestMethod.POST)
-	public String addLead(@ModelAttribute(value = "addLeadForm") LeadsEntity leadsEntity, Model model/*, @RequestParam("courseIds") String courseIds*/) {
-		String courseIds = "15,18,29";
-		String[] courseIdsArray = courseIds.split(",");
-		for (String course : courseIdsArray) {
-		int courseId = Integer.parseInt(course);
-		int courseCategeory = this.userService.getCoursesCategeoryMapping().get(courseId);
-		//int courseCategeory = this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
-		leadsEntity.setCourse(courseId);
-		leadsEntity.setStatus(1);
-		leadsEntity.setCourseCategeory(courseCategeory);
-		leadsEntity.setCreatedDate(new Date());
-		leadsEntity.setLastUpdatedDate(new Date());
-		this.leadService.saveLead(leadsEntity);
+	public String addLead(@ModelAttribute(value = "addLeadForm") LeadsEntity leadFormEntity, Model model, @RequestParam("courseList") List<Integer> courseIdList) {
+		for (Integer courseId : courseIdList) {
+			LeadsEntity leadsEntity = new LeadsEntity();
+			leadsEntity.setName(leadFormEntity.getName());
+			leadsEntity.setMobileNo(leadFormEntity.getMobileNo());
+			leadsEntity.setEmailId(leadFormEntity.getEmailId());
+			leadsEntity.setLeadSource(leadFormEntity.getLeadSource());
+			leadsEntity.setComments(leadFormEntity.getComments());
+			/*int courseId = Integer.parseInt(course);*/
+			int courseCategeory = this.userService.getCoursesCategeoryMapping().get(courseId);
+			//int courseCategeory = this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
+			leadsEntity.setCourse(courseId);
+			leadsEntity.setStatus(1);
+			leadsEntity.setCourseCategeory(courseCategeory);
+			leadsEntity.setCreatedDate(new Date());
+			leadsEntity.setLastUpdatedDate(new Date());
+			this.leadService.saveLead(leadsEntity);
 		}
-		return "redirect:/dashboard?leadStatus="+leadsEntity.getStatus();
+		return "redirect:/dashboard?leadStatus="+leadFormEntity.getStatus();
 	}
 
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
