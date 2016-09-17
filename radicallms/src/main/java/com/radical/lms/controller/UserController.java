@@ -215,7 +215,7 @@ public class UserController {
 			leadsEntity.setLastUpdatedDate(new Date());
 			this.leadService.saveLead(leadsEntity);
 		}
-		return "redirect:/dashboard?leadStatus="+leadFormEntity.getStatus();
+		return "redirect:/dashboard?leadStatus=1";
 	}
 
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
