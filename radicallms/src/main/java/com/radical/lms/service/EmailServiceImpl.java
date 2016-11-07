@@ -46,7 +46,7 @@ public class EmailServiceImpl implements EmailService{
         Session session = Session.getInstance(props, null);
         try {
         	Store store = session.getStore();
-        	store.connect("imap.gmail.com", "emailtest887@gmail.com", "radical@123");
+        	//store.connect("imap.gmail.com", "emailtest887@gmail.com", "radical@123");
         	setStore(store);
 		} catch (NoSuchProviderException e) {
 			e.printStackTrace();

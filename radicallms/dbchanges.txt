@@ -21,3 +21,13 @@ ADD COLUMN `location` VARCHAR(100) NULL AFTER `area`,
 ADD COLUMN `modeoftraining` VARCHAR(20) NULL AFTER `location`,
 ADD COLUMN `typeoftraining` VARCHAR(20) NULL AFTER `modeoftraining`;
 
+
+03/11/2016
+-----------------
+ALTER TABLE `radicallms`.`courses` 
+ADD COLUMN `subject` VARCHAR(250) NULL AFTER `coursename`,
+ADD COLUMN `messagebody` TEXT NULL AFTER `subject`;
+
+ALTER TABLE `radicallms`.`sendemail` 
+CHANGE COLUMN `senderemailid` `courseid` INT(2) NULL ;
+

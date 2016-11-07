@@ -187,4 +187,17 @@ public class UserDaoImpl implements UserDao {
 		List<CourseEntity> courseList = query.list(); 
 		return courseList;
 	}
+	
+	public CourseEntity getCourseListBasedOnCourseId(int courseId) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where courseId=:courseId");
+		query.setInteger("courseId", courseId);
+		CourseEntity courseList = (CourseEntity) query.uniqueResult(); 
+		return courseList;
+	}
+	
+	@Transactional
+	public void saveTemplate(CourseEntity courseEntity) {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.saveOrUpdate(courseEntity);
+	}
 }

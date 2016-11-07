@@ -4,14 +4,22 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.mail.BodyPart;
+import javax.mail.Message.RecipientType;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -24,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
+import com.radical.lms.constants.Constants;
 import com.radical.lms.dao.UserDao;
 import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
@@ -335,4 +344,63 @@ public class UserServiceImpl implements UserService {
 	public List<CourseEntity> getCourseList(int categoryId) {
 		return userDao.getCourseList(categoryId);
 	}
+	
+	@Transactional
+	public CourseEntity getCourseListBasedOnCourseId(int courseId) {
+		return userDao.getCourseListBasedOnCourseId(courseId);
+	}
+	
+	@Transactional
+	public void saveTemplate(CourseEntity courseEntity) {
+		userDao.saveTemplate(courseEntity);
+	}
+	
+	@Transactional
+	public void sendMail(String mailId) {
+		try {
+			properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(Constants.LMS_PROP));
+
+			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
+			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
+
+			Properties props = System.getProperties();
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.host", "smtp.gmail.com");
+			props.setProperty("mail.transport.protocol", "smtps");
+			props.put("mail.smtp.user", userid);
+			props.put("mail.smtp.password", password);
+			props.put("mail.smtp.port", "587");
+			props.put("mail.smtps.auth", "true");
+			Session session = Session.getDefaultInstance(props, null);
+			MimeMessage message = new MimeMessage(session);
+			InternetAddress fromAddress = null;
+			InternetAddress toAddress = null;
+			try {
+				fromAddress = new InternetAddress(userid);
+				toAddress = new InternetAddress(mailId);
+			} catch (AddressException e) {
+				e.printStackTrace();
+			}
+
+			message.setFrom(fromAddress);
+			message.setRecipient(RecipientType.TO, toAddress);
+			String subject = "Welcome to HTC ";
+			message.setSubject(subject);
+			BodyPart messageBodyPartBody = new MimeBodyPart();
+			String body = "Hi ..THis is First Welcome mail from HTC";
+			messageBodyPartBody.setContent(body, "text/html");
+			MimeMultipart multipart = new MimeMultipart("related");
+			multipart.addBodyPart(messageBodyPartBody);
+			message.setContent(multipart);
+			Transport transport = session.getTransport("smtps");
+			transport.connect("smtp.gmail.com", userid, password);
+			transport.sendMessage(message, message.getAllRecipients());
+			transport.close();
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+
+	}
+
 }

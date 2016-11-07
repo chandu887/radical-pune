@@ -80,12 +80,10 @@ public class UserController {
 			dashBoardForm.setPageNumber(1);
 			dashBoardForm.setPageLimit(10);
 		}
-		
+
 		if (!isFromPagination) {
 			dashBoardForm.setPageNumber(1);
 		}
-
-		
 
 		List countList = this.userService.getCountByStatusType(dashBoardForm);
 		Map<Integer, Integer> countMap = new ConcurrentHashMap<Integer, Integer>();
@@ -108,20 +106,20 @@ public class UserController {
 		dashBoardForm.setNewCount((int) newCount);
 		dashBoardForm.setOpenCount((int) openCount);
 		dashBoardForm.setClosedCount((int) closeCount);
-		
+
 		dashBoardForm.setCurrentStatus(leadStatus);
 
 		int pageTotalCount = 0;
-		
+
 		if (leadStatus == 0) {
 			pageTotalCount = totalCount;
 		} else {
 			pageTotalCount = (int) countMap.get(leadStatus).intValue();
 		}
-		
+
 		dashBoardForm.setPageTotalCount(pageTotalCount);
 		dashBoardForm.setTotalLeadsCount(totalCount);
-		
+
 		List<Integer> pageList = new ArrayList<Integer>();
 		int page = 1;
 		int i;
@@ -147,11 +145,16 @@ public class UserController {
 		limitList.add(30);
 		limitList.add(40);
 		dashBoardForm.setLimitList(limitList);
+		
 		List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
+		map.addAttribute("leadsList", leadsList);
+		
+		
+		
 		Map<Integer, String> coursesMap = this.userService.getCourses();
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
-		Map<Integer, String> courseCategories= userService.getCourseCategories();
-		map.addAttribute("leadsList", leadsList);
+		Map<Integer, String> courseCategories = userService.getCourseCategories();
+		
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
 		map.addAttribute("leadSourceMapping", leadSourceMapping);
@@ -175,7 +178,7 @@ public class UserController {
 		}
 		return "loginfailure";
 	}
-	
+
 	@RequestMapping(value = "/loginpage", method = RequestMethod.GET)
 	public String loginpage() {
 		return "login";
@@ -197,7 +200,8 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/addlead", method = RequestMethod.POST)
-	public String addLead(@ModelAttribute(value = "addLeadForm") LeadsEntity leadFormEntity, Model model, @RequestParam("courseList") List<Integer> courseIdList) {
+	public String addLead(@ModelAttribute(value = "addLeadForm") LeadsEntity leadFormEntity, Model model,
+			@RequestParam("courseList") List<Integer> courseIdList) {
 		for (Integer courseId : courseIdList) {
 			LeadsEntity leadsEntity = new LeadsEntity();
 			leadsEntity.setName(leadFormEntity.getName());
@@ -205,9 +209,10 @@ public class UserController {
 			leadsEntity.setEmailId(leadFormEntity.getEmailId());
 			leadsEntity.setLeadSource(leadFormEntity.getLeadSource());
 			leadsEntity.setComments(leadFormEntity.getComments());
-			/*int courseId = Integer.parseInt(course);*/
+			/* int courseId = Integer.parseInt(course); */
 			int courseCategeory = this.userService.getCoursesCategeoryMapping().get(courseId);
-			//int courseCategeory = this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
+			// int courseCategeory =
+			// this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
 			leadsEntity.setCourse(courseId);
 			leadsEntity.setStatus(1);
 			leadsEntity.setCourseCategeory(courseCategeory);
@@ -239,8 +244,9 @@ public class UserController {
 
 	@RequestMapping(value = "/filterByDateAndCourse", method = RequestMethod.POST)
 	public String filterByDateAndCourse(@RequestParam("fromDate") String fromDate,
-			@RequestParam("toDate") String toDate, @RequestParam("courseCategeory") int category , @RequestParam("course") int course,
-			@RequestParam("filterType") int filterType, HttpServletRequest request, HttpServletResponse response) {
+			@RequestParam("toDate") String toDate, @RequestParam("courseCategeory") int category,
+			@RequestParam("course") int course, @RequestParam("filterType") int filterType, HttpServletRequest request,
+			HttpServletResponse response) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
@@ -291,29 +297,29 @@ public class UserController {
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 	}
-	
+
 	@RequestMapping(value = "/searchByCourse", method = RequestMethod.POST)
 	public String searchByCourse(HttpServletRequest request, @RequestParam("course") String courseName) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		dashBoardForm.setSearchData(courseName);
-		
-		if (userService.getCategoryNameIdMapping().containsKey(courseName)) {			
+
+		if (userService.getCategoryNameIdMapping().containsKey(courseName)) {
 			dashBoardForm.setCategory(userService.getCategoryNameIdMapping().get(courseName));
-		} else if (userService.getCourseNameIdMapping().containsKey(courseName)) {			
+		} else if (userService.getCourseNameIdMapping().containsKey(courseName)) {
 			dashBoardForm.setCourse(userService.getCourseNameIdMapping().get(courseName));
 		}
-		
+
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 	}
-	
+
 	@RequestMapping(value = "/getLeadInfo", method = RequestMethod.POST)
 	@ResponseBody
 	public LeadsEntity getLeadInfoByLeadId(@RequestParam("leadId") int leadId) {
 		return leadService.getLeadByLeadId(leadId);
 	}
-	
+
 	@RequestMapping(value = "/editlead", method = RequestMethod.POST)
 	public String editLead(@ModelAttribute(value = "editLeadForm") LeadsEntity leadsEntity, Model model) {
 		LeadsEntity lead = leadService.getLeadByLeadId(leadsEntity.getLeadiId());
@@ -321,16 +327,18 @@ public class UserController {
 		leadsEntity.setLastUpdatedDate(new Date());
 		leadsEntity.setReason(lead.getReason());
 		leadService.saveLead(leadsEntity);
-		return "redirect:/dashboard?leadStatus="+leadsEntity.getStatus();
+		return "redirect:/dashboard?leadStatus=" + leadsEntity.getStatus();
 	}
+
 	@RequestMapping(value = "/downloadLeadsToSheet", method = RequestMethod.POST)
-	public String downloadLeadsToSheet(HttpServletRequest request, HttpServletResponse response ,@RequestParam("leadIds") String downloadLeadIds) {
+	public String downloadLeadsToSheet(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("leadIds") String downloadLeadIds) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
-		
+
 		String[] downloadLeadIdsSplitArray = downloadLeadIds.split(",");
 		List<Integer> downloadLeadIdsList = new ArrayList<Integer>();
 		for (String leadId : downloadLeadIdsSplitArray) {
@@ -351,6 +359,7 @@ public class UserController {
 		}
 		return null;
 	}
+
 	@RequestMapping(value = "/getCoursesBasedOnCategoryId", method = RequestMethod.POST)
 	@ResponseBody
 	public List<CourseEntity> getCourseBasedOnCategoryId(@RequestParam String categeoryId) {
@@ -358,7 +367,7 @@ public class UserController {
 		List<CourseEntity> courseList = this.userService.getCourseList(intCategoryId);
 		return courseList;
 	}
-	
+
 	@RequestMapping(value = "/clearFilter", method = RequestMethod.GET)
 	public String clearFilter(HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -373,6 +382,24 @@ public class UserController {
 		dashBoardForm.setSearchData("");
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=1";
+	}
+
+	@RequestMapping(value = "/createMailTemplate", method = RequestMethod.POST)
+	public String editTemplate(@ModelAttribute(value = "createMailTemplateForm") CourseEntity courseEntity,
+			Model model) {
+		CourseEntity course = userService.getCourseListBasedOnCourseId(courseEntity.getCourseId());
+		course.setSubject(courseEntity.getSubject());
+		course.setMessagebody(courseEntity.getMessagebody());
+		userService.saveTemplate(course);
+		return "redirect:/dashboard?leadStatus=1";
+	}
+
+	@RequestMapping(value = "/sendTemplatedMail", method = RequestMethod.POST)
+	public String sendTemplatedMail(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("leadIds") String downloadLeadIds, @RequestParam("categeoryId") int category,
+			@RequestParam("courseId") int course) {
+		HttpSession session = request.getSession();
+		return null;
 	}
 
 }

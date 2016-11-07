@@ -33,4 +33,9 @@ public interface UserDao {
 	List<LeadsEntity> getLeadsListForDownload(List<Integer> downloadLeadIdsList);
 	
 	List<CourseEntity> getCourseList(int intCategoryId);
+	
+	CourseEntity getCourseListBasedOnCourseId(int courseId);
+	
+	void saveTemplate(CourseEntity courseEntity);
+	
 }

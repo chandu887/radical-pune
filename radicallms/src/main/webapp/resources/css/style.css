@@ -24,7 +24,7 @@ a i{color: #025930}
 .action-btns ul li a i{ color: #fff;}
 .action-btns { margin: 0 0 20px;}
 .action-btns ul li:hover .childemail{ display: block}
-.childemail {display:none; padding: 7px 0 0 !important; position: absolute; top: 30px;    width: 160px;}
+.childemail {display:none; padding: 7px 0 0 !important; position: absolute; top: 18px;    width: 191px;}
 .childemail li { background: #000 !important; border-radius: 0 !important; border-top: 1px solid #ccc; float: left; margin: 0 !important; text-align: left;width: 100%;}
 .childemail:after, .childemail:before {bottom: 87%;left: 50%;border: solid transparent;content: " ";height: 0;width: 0;position: absolute;pointer-events: none;}
 .childemail::before {  border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #000;  border-width: 8px; margin-left: -73px;}
@@ -50,3 +50,5 @@ section { position: relative;}
 .form-container h1{color: #fff; margin: 0 0 15px 0; font-size: 25px; text-align: center;text-transform: uppercase}
 .error{ color: #ff0000; display: block;font-size: 12px; margin: 0 0 4px; padding: 8px 0; width: 96%;}
 body.login{background: #55b460;}
+
+.modal-content{overflow: hidden;}

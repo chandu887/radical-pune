@@ -21,6 +21,28 @@ public class CourseEntity {
 
 	@Column(name = "coursename")
 	private String courseName;
+	
+	@Column(name = "subject")
+	private String subject;
+	
+	@Column(name = "messagebody")
+	private String messagebody;
+	
+	public String getSubject() {
+		return subject;
+	}
+
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	public String getMessagebody() {
+		return messagebody;
+	}
+
+	public void setMessagebody(String messagebody) {
+		this.messagebody = messagebody;
+	}
 
 	public CourseEntity() {
 

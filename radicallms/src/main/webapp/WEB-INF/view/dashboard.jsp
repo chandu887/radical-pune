@@ -252,6 +252,19 @@ var basepath = "${pageContext.request.contextPath}";
 			}
 		});
 		
+		$("#sendTemplatedMail").click(function() {
+			var leadIds = [];
+			$.each($("input[name='leadId']:checked"), function() {
+				leadIds.push($(this).val());
+			});
+			if (leadIds.length == 0) {
+				alert("please select any enquiry");
+			} else {
+			$('#sendTemplatedMailLeadIds').val(leadIds.join(","));
+			$("#sendTemplatedMailForm").submit();
+			}
+		});
+		
         $("#showingId").change(function() {
         	$("#getShowingForm").submit();
         });
@@ -265,6 +278,7 @@ var basepath = "${pageContext.request.contextPath}";
     
     function getLeadInfo(leadId) {
     	$.post(basepath + "/getLeadInfo?leadId="+leadId, function(data) {
+    		alert(data.course);
     		$('#editLeadId').val(data.leadiId);
     		$('#editStatus').val(data.status);
     		$('#editName').val(data.name);
@@ -290,6 +304,10 @@ var basepath = "${pageContext.request.contextPath}";
     function validateEditLeadForm (){
     	return true;
     }
+    function validateCreateTemplateForm (){
+    	return true;
+    }
+
 
 </script>
 <body>
@@ -374,8 +392,14 @@ var basepath = "${pageContext.request.contextPath}";
 						<li><a rel="tooltip" data-original-title='SMA & Email'
 							role="button"><i class="fa fa-envelope" aria-hidden="true"></i></a>
 							<ul class="childemail">
-								<li><a>Templated Email</a></li>
-								<li><a>Custom Email</a></li>
+								<li><a data-toggle="modal" data-target="#templatedemail">Templated
+										Email</a></li>
+								<li><a data-toggle="modal" data-target="#freeemail">Free
+										Text Email/SMS</a></li>
+								<li><a data-toggle="modal" data-target="#createTemple">Create
+										Templated Email</a></li>
+								<li><a href="allemailtemplates.html">View All Templated
+										Email</a></li>
 							</ul></li>
 
 					</ul>
@@ -650,7 +674,8 @@ var basepath = "${pageContext.request.contextPath}";
 						</div>
 						<div class="form-group">
 							<label for="pwd">Category</label><br> <select
-								class="addlead-course form-control" id="courseCategeory" name="courseCategeory"
+								class="addlead-course form-control" id="courseCategeory"
+								name="courseCategeory"
 								onchange="getCourseList('courseName','courseCategeory');">
 								<option value="0">Select Category</option>
 								<c:forEach var="category" items="${courseCategories}">
@@ -660,7 +685,8 @@ var basepath = "${pageContext.request.contextPath}";
 						</div>
 						<div class="form-group">
 							<label for="pwd">Course</label><br> <select
-								class="addlead-course form-control" id="courseName" name="course">
+								class="addlead-course form-control" id="courseName"
+								name="course">
 								<option value="0">Select Course</option>
 							</select>
 						</div>
@@ -717,8 +743,8 @@ var basepath = "${pageContext.request.contextPath}";
 						</div>
 						<div class="form-group wd50">
 							<label for="pwd">Course</label><br> <select
-								class="addlead-course form-control" multiple title="Select Course"
-								id="addCourseName" name="courseList">
+								class="addlead-course form-control" multiple
+								title="Select Course" id="addCourseName" name="courseList">
 								<!-- <option value="0">Select Course</option> -->
 							</select>
 						</div>
@@ -815,8 +841,8 @@ var basepath = "${pageContext.request.contextPath}";
 						<div class="col-sm-6">
 							<div class="form-group">
 								<label for="pwd">Assigned to</label><br> <select
-									class="selectpicker" title="Assigned to"
-									id="editAssigned" name="assignedTo">
+									class="selectpicker" title="Assigned to" id="editAssigned"
+									name="assignedTo">
 									<option value="1">Person 1</option>
 									<option value="2">Person 2</option>
 									<option value="3">Person 3</option>
@@ -836,7 +862,8 @@ var basepath = "${pageContext.request.contextPath}";
 							<div class="form-group">
 								<label for="pwd">Category</label><br> <select
 									class="selectpicker" title="Select Category" id="editCategory"
-									name="courseCategeory" onchange="getCourseList('editCourse','editCategory');">
+									name="courseCategeory"
+									onchange="getCourseList('editCourse','editCategory');">
 									<c:forEach var="category" items="${courseCategories}">
 										<option value="${category.key}">${category.value}</option>
 									</c:forEach>
@@ -887,5 +914,153 @@ var basepath = "${pageContext.request.contextPath}";
 			</div>
 		</div>
 	</div>
+	<div id="freeemail" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Send Non-Templated Email/SMS</h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<div class="col-sm-12">
+							<div class="form-group">
+								<label for="pwd">SMS</label><br>
+								<textarea class="form-control" placeholder="Please enter SMS"
+									rows="5"></textarea>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Email</label><br> <input
+									class="form-control" placeholder="Email Subject" />
+							</div>
+							<div class="form-group">
+								<label for="pwd">Email Content</label><br>
+								<textarea class="form-control"
+									placeholder="Please enter Email Content" rows="10"></textarea>
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-success">Send
+									Template</button>
+								<button type="button" class="btn btn-danger"
+									data-dismiss="modal">Cancel</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!--templatedemail-->
+	<div id="templatedemail" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Send Templated Email</h4>
+				</div>
+				<div class="modal-body">
+					<form:form method="post" action="sendTemplatedMail"
+			      	id="sendTemplatedMailForm" role="form">
+						<div class="col-sm-12">
+							<div class="form-group">
+							
+								<label for="pwd">Category</label><br> <select
+									class="selectpicker" title="Select Category"
+									id="sendTemplatedMailCategeory" name="categeoryId"
+									onchange="getCourseList('"sendTemplatedMailCourse"','"sendTemplatedMailCategeory"');">
+									<c:forEach var="category" items="${courseCategories}">
+										<option value="${category.key}">${category.value}</option>
+									</c:forEach>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Course</label><br> <select
+									class="selectpicker" title="Select Course"
+									id="sendTemplatedMailCourse" name="courseId">
+									<c:forEach var="courses" items="${coursesMap}">
+										<option value="${courses.key}">${courses.value}</option>
+									</c:forEach>
+								</select>
+							</div>
+							<input type="hidden" id="sendTemplatedMailLeadIds" name="leadIds" value="">
+							<!-- <div class="form-group">
+								<label for="pwd">Select Email:</label><br>
+								<div class="radio">
+									<label><input type="radio" name="optradio" value="">Email</label>
+								</div>
+								<div class="radio">
+									<label><input type="radio" name="optradio" value="">SMS</label>
+								</div>
+							</div> -->
+						</div>
+						<div class="col-sm-12">
+							<div class="modal-footer">
+								<button type="button" class="btn btn-success" id="sendTemplatedMail">Send
+									Template</button>
+								<button type="button" class="btn btn-danger"
+									data-dismiss="modal">Cancel</button>
+							</div>
+						</div>
+					</form:form>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="createTemple" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Send Templated Email/SMS</h4>
+				</div>
+				<div class="modal-body">
+					<form:form method="post" action="createMailTemplate" name="createMailTemplateForm"
+						onsubmit="return validateCreateTemplateForm()" role="form">
+						<div class="col-sm-12">
+							<div class="form-group">
+								<label for="email">Subject</label> <input type="text"
+									class="form-control" id="subject" name="subject"
+									placeholder="Please enter Subject">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Message</label>
+								<textarea placeholder="Please enter message here"
+									class="form-control"  id= "messageBody" name="messagebody" rows="10"></textarea>
+							</div>
+							<div class="form-group">
+							
+								<label for="pwd">Category</label><br> <select
+									class="selectpicker" title="Select Category"
+									id="createTempateCategory" name="categeoryId"
+									onchange="getCourseList('createTemplateCourse','createTempateCategory');">
+									<c:forEach var="category" items="${courseCategories}">
+										<option value="${category.key}">${category.value}</option>
+									</c:forEach>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Course</label><br> <select
+									class="selectpicker" title="Select Course"
+									id="createTemplateCourse" name="courseId">
+									<c:forEach var="courses" items="${coursesMap}">
+										<option value="${courses.key}">${courses.value}</option>
+									</c:forEach>
+								</select>
+							</div>
+							<button type="submit" class="btn btn-success">Create
+								Template</button>
+								<button type="button" class="btn btn-danger"
+									data-dismiss="modal">Cancel</button>
+						</div>
+					</form:form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
 </body>
 </html>

@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.entity.CourseEntity;
+import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.UsersEntity;
 
 public interface UserService {
@@ -43,5 +44,11 @@ public interface UserService {
 	List<LeadsEntityBean> getLeadsListForDownload(List<Integer> downloadLeadIdsList);
 	
 	List<CourseEntity> getCourseList(int intCategoryId);
+	
+	CourseEntity getCourseListBasedOnCourseId(int courseId);
+	
+	void saveTemplate(CourseEntity courseEntity);
+	
+	void sendMail(String mailId);
 	
 }
