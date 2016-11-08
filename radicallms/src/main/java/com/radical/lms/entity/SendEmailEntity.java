@@ -13,8 +13,8 @@ public class SendEmailEntity {
 	@Column(name = "receiveremailid")
 	private String receiverMailId;
 
-	@Column(name = "senderemailid")
-	private String senderMailId;
+	@Column(name = "courseid")
+	private int courseId;
 
 	@Column(name = "status")
 	private int status;
@@ -29,10 +29,10 @@ public class SendEmailEntity {
 
 	}
 
-	public SendEmailEntity(String receiverMailId, String senderMailId, int status, Date createdTime,
+	public SendEmailEntity(String receiverMailId, int courseId, int status, Date createdTime,
 			Date emailSendTime) {
 		this.receiverMailId = receiverMailId;
-		this.senderMailId = senderMailId;
+		this.courseId = courseId;
 		this.status = status;
 		this.createdTime = createdTime;
 		this.emailSendTime = emailSendTime;
@@ -47,12 +47,12 @@ public class SendEmailEntity {
 		this.receiverMailId = receiverMailId;
 	}
 
-	public String getSenderMailId() {
-		return senderMailId;
+	public int getCourseId() {
+		return courseId;
 	}
 
-	public void setSenderMailId(String senderMailId) {
-		this.senderMailId = senderMailId;
+	public void setCourseId(int courseId) {
+		this.courseId = courseId;
 	}
 
 	public int getStatus() {
