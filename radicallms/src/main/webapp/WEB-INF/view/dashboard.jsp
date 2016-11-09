@@ -280,9 +280,16 @@ var basepath = "${pageContext.request.contextPath}";
          });
          
          $("#sendNonTemplatedMailOrSms").click(function() {
-        	 alert("oye");
-        	alert($('input[name=optradio]:checked').val());
-        	$("#nonTemplatedEmailOrSmsForm").submit();
+        	 var leadIds = [];
+ 			$.each($("input[name='leadId']:checked"), function() {
+ 				leadIds.push($(this).val());
+ 			});
+ 			if (leadIds.length == 0) {
+ 				alert("please select any enquiry");
+ 			} else {
+ 			$('#sendNonTemplatedMailLeadIds').val(leadIds.join(","));
+ 			$("#nonTemplatedEmailOrSmsForm").submit();
+ 			}
  		});
 
 	});
@@ -960,6 +967,7 @@ var basepath = "${pageContext.request.contextPath}";
 								<textarea  maxlength="160" class="form-control" name = "nonTemplatedSms" placeholder="Please enter SMS"
 									rows="5"></textarea>
 							</div>
+							<input type="hidden" id="sendNonTemplatedMailLeadIds" name="leadIds" value="">
 							<div class="form-group" id="mailDiv">
 								<label for="pwd">Email</label><br> <input
 									class="form-control" placeholder="Email Subject" name = "nonTemplatedEmailSubject"/>

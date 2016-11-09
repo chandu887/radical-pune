@@ -395,37 +395,49 @@ public class UserController {
 
 	@RequestMapping(value = "/sendTemplatedMail", method = RequestMethod.POST)
 	public String sendTemplatedMail(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("leadIds") String downloadLeadIds, @RequestParam("categeoryId") int category,
+			@RequestParam("leadIds") String sendTemplateLeadIds, @RequestParam("categeoryId") int category,
 			@RequestParam("courseId") int course) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
-		SendEmailEntity sendEmailEntity= new SendEmailEntity();
-		String[] downloadLeadIdsSplitArray = downloadLeadIds.split(",");
-		for (String leadId : downloadLeadIdsSplitArray) {
+		SendEmailEntity sendEmailEntity = new SendEmailEntity();
+		String[] sendTemplateLeadIdsSplitArray = sendTemplateLeadIds.split(",");
+		for (String leadId : sendTemplateLeadIdsSplitArray) {
 			LeadsEntity lead = leadService.getLeadByLeadId(Integer.parseInt(leadId));
 			sendEmailEntity.setCourseId(course);
 			sendEmailEntity.setReceiverMailId(lead.getEmailId());
 			sendEmailEntity.setStatus(0);
-			sendEmailEntity.setCreatedTime(new Date());	
+			sendEmailEntity.setCreatedTime(new Date());
 			userService.sendTemplatedEmail(sendEmailEntity);
 		}
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 	}
-	
+
 	@RequestMapping(value = "/nonTemplatedEmailOrSms", method = RequestMethod.POST)
 	public String nonTemplatedEmailOrSms(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("nonTemplatedSms") String sms, @RequestParam("nonTemplatedEmailSubject") String subject,
 			@RequestParam("nonTemplatedEmailBody") String mailbody,
-			@RequestParam("optradio") int type) {
+			@RequestParam("leadIds") String sendNonTemplateLeadIds, @RequestParam("optradio") int type) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
-		System.out.println("sms"+sms);
+		String[] sendNonTemplateLeadIdsSplitArray = sendNonTemplateLeadIds.split(",");
+		for (String leadId : sendNonTemplateLeadIdsSplitArray) {
+			LeadsEntity lead = leadService.getLeadByLeadId(Integer.parseInt(leadId));
+			if (type == 1) {
+				if(lead.getEmailId()!=null){
+				userService.sendMail(lead.getEmailId());
+				}
+			} else if (type == 0) {
+				if(lead.getMobileNo()!=null){
+				userService.sendSms(sms, lead.getMobileNo());
+				}
+			}
+		}
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 	}
 

@@ -1,5 +1,13 @@
 package com.radical.lms.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,11 +63,10 @@ public class UserServiceImpl implements UserService {
 	private Map<Integer, Integer> coursesCategeoryMapping = new ConcurrentHashMap<Integer, Integer>();
 
 	private Map<Integer, String> leadSourceMapping = new ConcurrentHashMap<Integer, String>();
-	
+
 	private Map<String, Integer> categoryNameIdMapping = new ConcurrentHashMap<String, Integer>();
 
 	private Map<String, Integer> courseNameIdMapping = new ConcurrentHashMap<String, Integer>();
-
 
 	public void init() {
 		loadCache();
@@ -164,7 +171,7 @@ public class UserServiceImpl implements UserService {
 	public void setLeadSourceMapping(Map<Integer, String> leadSourceMapping) {
 		this.leadSourceMapping = leadSourceMapping;
 	}
-	
+
 	public Map<String, Integer> getCategoryNameIdMapping() {
 		return categoryNameIdMapping;
 	}
@@ -345,17 +352,17 @@ public class UserServiceImpl implements UserService {
 	public List<CourseEntity> getCourseList(int categoryId) {
 		return userDao.getCourseList(categoryId);
 	}
-	
+
 	@Transactional
 	public CourseEntity getCourseListBasedOnCourseId(int courseId) {
 		return userDao.getCourseListBasedOnCourseId(courseId);
 	}
-	
+
 	@Transactional
 	public void saveTemplate(CourseEntity courseEntity) {
 		userDao.saveTemplate(courseEntity);
 	}
-	
+
 	@Transactional
 	public void sendMail(String mailId) {
 		try {
@@ -403,10 +410,40 @@ public class UserServiceImpl implements UserService {
 		}
 
 	}
-	
+
 	@Transactional
 	public void sendTemplatedEmail(SendEmailEntity sendEmailEntity) {
 		userDao.sendTemplatedEmail(sendEmailEntity);
+	}
+
+	@Transactional
+	public void sendSms(String sms, String mobileNumber) {
+		try {
+			String sendSms = URLEncoder.encode(sms, "UTF-8");
+			String url = "http://sms.xpresssms.in/api/api.php?ver=1&mode=1&action=push_sms&type=1&route=1&login_name=radtec&api_password=e51354d757f40f75d8d6&message="
+					+ sendSms + "&number=" + mobileNumber + "&sender=RadTec";
+			URL obj = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+			con.setRequestMethod("GET");
+			int responseCode = con.getResponseCode();
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }

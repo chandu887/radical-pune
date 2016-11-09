@@ -54,4 +54,6 @@ public interface UserService {
 	
 	void sendTemplatedEmail(SendEmailEntity sendEmailEntity);
 	
+	void sendSms(String sms,String mobileNumber);
+	
 }
