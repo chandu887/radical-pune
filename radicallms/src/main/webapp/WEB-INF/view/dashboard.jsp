@@ -269,12 +269,10 @@ var basepath = "${pageContext.request.contextPath}";
         	$("#getShowingForm").submit();
         });
         $('#emailRadio').change(function () {
-            alert("from email");
             document.getElementById('smsDiv').style.display  = 'none';
             document.getElementById('mailDiv').style.display = 'block';
          });
          $('#smsRadio').change(function () {
-        	 alert("from sms");
         	 document.getElementById('mailDiv').style.display = 'none';
              document.getElementById('smsDiv').style.display = 'block';
          });

@@ -396,7 +396,7 @@ public class UserServiceImpl implements UserService {
 	public void sendSms(String sms, String mobileNumber) {
 		try {
 			String sendSms = URLEncoder.encode(sms, "UTF-8");
-			String url = "http://sms.xpresssms.in/api/api.php?ver=1&mode=1&action=push_sms&type=1&route=1&login_name=radtec&api_password=e51354d757f40f75d8d6&message="
+			String url = "http://sms.xpresssms.in/api/api.php?ver=1&mode=2&action=push_sms&type=1&route=1&login_name=radtec&api_password=e51354d757f40f75d8d6&message="
 					+ sendSms + "&number=" + mobileNumber + "&sender=RadTec";
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
