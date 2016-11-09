@@ -38,6 +38,7 @@ import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadSourcesEntity;
 import com.radical.lms.entity.LeadsEntity;
+import com.radical.lms.entity.SendEmailEntity;
 import com.radical.lms.entity.UsersEntity;
 
 @Service
@@ -401,6 +402,11 @@ public class UserServiceImpl implements UserService {
 			ex.printStackTrace();
 		}
 
+	}
+	
+	@Transactional
+	public void sendTemplatedEmail(SendEmailEntity sendEmailEntity) {
+		userDao.sendTemplatedEmail(sendEmailEntity);
 	}
 
 }

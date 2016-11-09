@@ -9,6 +9,7 @@ import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadsEntity;
+import com.radical.lms.entity.SendEmailEntity;
 import com.radical.lms.entity.UsersEntity;
 
 public interface UserService {
@@ -50,5 +51,7 @@ public interface UserService {
 	void saveTemplate(CourseEntity courseEntity);
 	
 	void sendMail(String mailId);
+	
+	void sendTemplatedEmail(SendEmailEntity sendEmailEntity);
 	
 }

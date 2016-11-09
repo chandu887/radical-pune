@@ -8,6 +8,7 @@ import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadSourcesEntity;
 import com.radical.lms.entity.LeadsEntity;
+import com.radical.lms.entity.SendEmailEntity;
 import com.radical.lms.entity.UsersEntity;
 
 public interface UserDao {
@@ -37,5 +38,7 @@ public interface UserDao {
 	CourseEntity getCourseListBasedOnCourseId(int courseId);
 	
 	void saveTemplate(CourseEntity courseEntity);
+	
+	void sendTemplatedEmail(SendEmailEntity sendEmailEntity);
 	
 }

@@ -11,6 +11,7 @@
         <mapping class="com.radical.lms.entity.CourseCategeoryEntity" /> 
         <mapping class="com.radical.lms.entity.CourseEntity" />
         <mapping class="com.radical.lms.entity.LeadSourcesEntity" />
+        <mapping class="com.radical.lms.entity.SendEmailEntity"/>
         		
      </session-factory>
 </hibernate-configuration>

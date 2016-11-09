@@ -268,8 +268,25 @@ var basepath = "${pageContext.request.contextPath}";
         $("#showingId").change(function() {
         	$("#getShowingForm").submit();
         });
+        $('#emailRadio').change(function () {
+            alert("from email");
+            document.getElementById('smsDiv').style.display  = 'none';
+            document.getElementById('mailDiv').style.display = 'block';
+         });
+         $('#smsRadio').change(function () {
+        	 alert("from sms");
+        	 document.getElementById('mailDiv').style.display = 'none';
+             document.getElementById('smsDiv').style.display = 'block';
+         });
+         
+         $("#sendNonTemplatedMailOrSms").click(function() {
+        	 alert("oye");
+        	alert($('input[name=optradio]:checked').val());
+        	$("#nonTemplatedEmailOrSmsForm").submit();
+ 		});
 
 	});
+	
 	
     function getPagination(pageno) {
     	$('#currentPage').val(pageno);
@@ -307,6 +324,10 @@ var basepath = "${pageContext.request.contextPath}";
     function validateCreateTemplateForm (){
     	return true;
     }
+    
+   
+    
+    
 
 
 </script>
@@ -922,32 +943,41 @@ var basepath = "${pageContext.request.contextPath}";
 					<h4 class="modal-title">Send Non-Templated Email/SMS</h4>
 				</div>
 				<div class="modal-body">
-					<form role="form">
+					<form:form method="post" action="nonTemplatedEmailOrSms" id="nonTemplatedEmailOrSmsForm"
+						 role="form">
 						<div class="col-sm-12">
-							<div class="form-group">
+						<div class="form-group">
+								<label for="pwd">Select Email/SMS:</label><br>
+								<div class="radio">
+									<label><input type="radio" id="emailRadio" name="optradio" value="1" checked="true">Email</label>
+								</div>
+								<div class="radio">
+									<label><input type="radio" id="smsRadio" name="optradio" value="0" >SMS</label>
+								</div>
+							</div>
+							<div class="form-group" id="smsDiv" style="display:none;">
 								<label for="pwd">SMS</label><br>
-								<textarea class="form-control" placeholder="Please enter SMS"
+								<textarea  maxlength="160" class="form-control" name = "nonTemplatedSms" placeholder="Please enter SMS"
 									rows="5"></textarea>
 							</div>
-							<div class="form-group">
+							<div class="form-group" id="mailDiv">
 								<label for="pwd">Email</label><br> <input
-									class="form-control" placeholder="Email Subject" />
-							</div>
-							<div class="form-group">
+									class="form-control" placeholder="Email Subject" name = "nonTemplatedEmailSubject"/>
 								<label for="pwd">Email Content</label><br>
 								<textarea class="form-control"
-									placeholder="Please enter Email Content" rows="10"></textarea>
+									placeholder="Please enter Email Content" rows="10" name = "nonTemplatedEmailBody"></textarea>
 							</div>
+							
 						</div>
 						<div class="col-sm-12">
 							<div class="modal-footer">
-								<button type="submit" class="btn btn-success">Send
+								<button type="button" class="btn btn-success" id="sendNonTemplatedMailOrSms">Send
 									Template</button>
 								<button type="button" class="btn btn-danger"
 									data-dismiss="modal">Cancel</button>
 							</div>
 						</div>
-					</form>
+					</form:form>
 				</div>
 			</div>
 		</div>

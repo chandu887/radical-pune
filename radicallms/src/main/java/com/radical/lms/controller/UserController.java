@@ -31,6 +31,7 @@ import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadsEntity;
+import com.radical.lms.entity.SendEmailEntity;
 import com.radical.lms.entity.UsersEntity;
 import com.radical.lms.quartz.MailReadingJob;
 import com.radical.lms.service.LeadService;
@@ -145,16 +146,14 @@ public class UserController {
 		limitList.add(30);
 		limitList.add(40);
 		dashBoardForm.setLimitList(limitList);
-		
+
 		List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
 		map.addAttribute("leadsList", leadsList);
-		
-		
-		
+
 		Map<Integer, String> coursesMap = this.userService.getCourses();
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
 		Map<Integer, String> courseCategories = userService.getCourseCategories();
-		
+
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
 		map.addAttribute("leadSourceMapping", leadSourceMapping);
@@ -399,7 +398,35 @@ public class UserController {
 			@RequestParam("leadIds") String downloadLeadIds, @RequestParam("categeoryId") int category,
 			@RequestParam("courseId") int course) {
 		HttpSession session = request.getSession();
-		return null;
+		DashBoardForm dashBoardForm = null;
+		if (session.getAttribute("dashBoardForm") != null) {
+			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		}
+		SendEmailEntity sendEmailEntity= new SendEmailEntity();
+		String[] downloadLeadIdsSplitArray = downloadLeadIds.split(",");
+		for (String leadId : downloadLeadIdsSplitArray) {
+			LeadsEntity lead = leadService.getLeadByLeadId(Integer.parseInt(leadId));
+			sendEmailEntity.setCourseId(course);
+			sendEmailEntity.setReceiverMailId(lead.getEmailId());
+			sendEmailEntity.setStatus(0);
+			sendEmailEntity.setCreatedTime(new Date());	
+			userService.sendTemplatedEmail(sendEmailEntity);
+		}
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+	}
+	
+	@RequestMapping(value = "/nonTemplatedEmailOrSms", method = RequestMethod.POST)
+	public String nonTemplatedEmailOrSms(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam("nonTemplatedSms") String sms, @RequestParam("nonTemplatedEmailSubject") String subject,
+			@RequestParam("nonTemplatedEmailBody") String mailbody,
+			@RequestParam("optradio") int type) {
+		HttpSession session = request.getSession();
+		DashBoardForm dashBoardForm = null;
+		if (session.getAttribute("dashBoardForm") != null) {
+			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		}
+		System.out.println("sms"+sms);
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 	}
 
 }

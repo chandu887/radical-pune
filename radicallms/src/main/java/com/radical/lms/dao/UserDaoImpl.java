@@ -20,6 +20,7 @@ import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadSourcesEntity;
 import com.radical.lms.entity.LeadsEntity;
+import com.radical.lms.entity.SendEmailEntity;
 import com.radical.lms.entity.UsersEntity;
 
 @Repository
@@ -199,5 +200,11 @@ public class UserDaoImpl implements UserDao {
 	public void saveTemplate(CourseEntity courseEntity) {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.saveOrUpdate(courseEntity);
+	}
+	
+	@Transactional
+	public void sendTemplatedEmail(SendEmailEntity sendEmailEntity) {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.save(sendEmailEntity);
 	}
 }
