@@ -1,7 +1,5 @@
 package com.radical.lms.controller;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,11 +27,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
+import com.radical.lms.beans.MailTemplateBean;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.SendEmailEntity;
 import com.radical.lms.entity.UsersEntity;
 import com.radical.lms.quartz.MailReadingJob;
+import com.radical.lms.quartz.MailSendingJob;
+import com.radical.lms.service.EmailService;
 import com.radical.lms.service.LeadService;
 import com.radical.lms.service.UserService;
 
@@ -45,6 +46,9 @@ public class UserController {
 
 	@Autowired
 	private LeadService leadService;
+	
+	@Autowired
+	private EmailService emailService;
 
 	private boolean getData = false;
 
@@ -70,7 +74,8 @@ public class UserController {
 	@RequestMapping(value = "/dashboard", method = RequestMethod.GET)
 	public String dashBoard(HttpServletRequest request, @RequestParam("leadStatus") int leadStatus, ModelMap map,
 			@RequestParam(value = "isFromFilter", defaultValue = "false", required = false) Boolean isFromFilter,
-			@RequestParam(value = "isFromPagination", defaultValue = "false", required = false) Boolean isFromPagination) {
+			@RequestParam(value = "isFromPagination", defaultValue = "false", required = false) Boolean isFromPagination,
+			@RequestParam(value = "isFromViewMailTemplate", defaultValue = "false", required = false) Boolean isFromViewMailTemplate) {
 		HttpSession session = request.getSession();
 
 		DashBoardForm dashBoardForm = null;
@@ -110,14 +115,20 @@ public class UserController {
 
 		dashBoardForm.setCurrentStatus(leadStatus);
 
+		Map<Integer, String> coursesMap = this.userService.getCourses();
+		
 		int pageTotalCount = 0;
 
-		if (leadStatus == 0) {
-			pageTotalCount = totalCount;
+		if (isFromViewMailTemplate) {
+			pageTotalCount = countMap.size();
 		} else {
-			pageTotalCount = (int) countMap.get(leadStatus).intValue();
+			if (leadStatus == 0) {
+				pageTotalCount = totalCount;
+			} else {
+				pageTotalCount = (int) countMap.get(leadStatus).intValue();
+			}			
 		}
-
+		
 		dashBoardForm.setPageTotalCount(pageTotalCount);
 		dashBoardForm.setTotalLeadsCount(totalCount);
 
@@ -146,14 +157,21 @@ public class UserController {
 		limitList.add(30);
 		limitList.add(40);
 		dashBoardForm.setLimitList(limitList);
-
-		List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
-		map.addAttribute("leadsList", leadsList);
-
-		Map<Integer, String> coursesMap = this.userService.getCourses();
+		
+		
+		if (isFromViewMailTemplate) {
+			List<MailTemplateBean> templateList = userService.getCoursesList(dashBoardForm);
+			map.addAttribute("templateList", templateList);
+			dashBoardForm.setViewPage("viewMailTemplate");
+		} else {			
+			List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
+			map.addAttribute("leadsList", leadsList);
+			dashBoardForm.setViewPage("viewLeads");
+		}
+		
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
 		Map<Integer, String> courseCategories = userService.getCourseCategories();
-
+		
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
 		map.addAttribute("leadSourceMapping", leadSourceMapping);
@@ -193,7 +211,7 @@ public class UserController {
 
 	@RequestMapping(value = "/testCron", method = RequestMethod.GET)
 	public String testCron(HttpServletRequest request) throws JobExecutionException {
-		MailReadingJob mail = new MailReadingJob();
+		MailSendingJob mail = new MailSendingJob();
 		mail.executeInternal(null);
 		return "login";
 	}
@@ -384,11 +402,12 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/createMailTemplate", method = RequestMethod.POST)
-	public String editTemplate(@ModelAttribute(value = "createMailTemplateForm") CourseEntity courseEntity,
+	public String saveTemplate(@ModelAttribute(value = "createMailTemplateForm") CourseEntity courseEntity,
 			Model model) {
 		CourseEntity course = userService.getCourseListBasedOnCourseId(courseEntity.getCourseId());
 		course.setSubject(courseEntity.getSubject());
 		course.setMessagebody(courseEntity.getMessagebody());
+		course.setCreatedTime(new Date());
 		userService.saveTemplate(course);
 		return "redirect:/dashboard?leadStatus=1";
 	}
@@ -430,7 +449,7 @@ public class UserController {
 			LeadsEntity lead = leadService.getLeadByLeadId(Integer.parseInt(leadId));
 			if (type == 1) {
 				if(lead.getEmailId()!=null){
-				userService.sendMail(lead.getEmailId());
+					emailService.sendMail(lead.getEmailId(), subject, mailbody);
 				}
 			} else if (type == 0) {
 				if(lead.getMobileNo()!=null){
@@ -439,6 +458,22 @@ public class UserController {
 			}
 		}
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+	}
+	
+	@RequestMapping(value = "/viewTemplatedMail", method = RequestMethod.GET)
+	public String viewTemplatedMail() {
+		return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true";
+	}
+
+	@RequestMapping(value = "/editMailTemplate", method = RequestMethod.POST)
+	public String editTemplate(@ModelAttribute(value = "editMailTemplateForm") CourseEntity courseEntity,
+			Model model) {
+		CourseEntity course = userService.getCourseListBasedOnCourseId(courseEntity.getCourseId());
+		course.setSubject(courseEntity.getSubject());
+		course.setMessagebody(courseEntity.getMessagebody());
+		course.setCreatedTime(new Date());
+		userService.saveTemplate(course);
+		return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true";
 	}
 
 }

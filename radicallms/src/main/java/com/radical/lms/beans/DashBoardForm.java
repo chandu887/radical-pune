@@ -21,6 +21,8 @@ public class DashBoardForm {
 	int filterType;
 	List<Integer> limitList;
 	String searchData;
+	String viewPage;
+	String emailTemplateCount;
 	
 	public int getPageLimit() {
 		return pageLimit;
@@ -131,4 +133,17 @@ public class DashBoardForm {
 	public void setSearchData(String searchData) {
 		this.searchData = searchData;
 	}
+	public String getViewPage() {
+		return viewPage;
+	}
+	public void setViewPage(String viewPage) {
+		this.viewPage = viewPage;
+	}
+	public String getEmailTemplateCount() {
+		return emailTemplateCount;
+	}
+	public void setEmailTemplateCount(String emailTemplateCount) {
+		this.emailTemplateCount = emailTemplateCount;
+	}
+	
 }

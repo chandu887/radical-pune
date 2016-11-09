@@ -136,6 +136,18 @@ public class UserDaoImpl implements UserDao {
 		}
 		return null;
 	}
+	
+	@Transactional
+	public List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity");
+		query.setFirstResult(dashBoardForm.getStartLimit()-1);
+		query.setMaxResults(dashBoardForm.getPageLimit());
+		List<CourseEntity> courseList = query.list();
+		if (courseList != null && !courseList.isEmpty()) {
+			return courseList;
+		}
+		return null;
+	}
 
 	@Transactional
 	public List<LeadSourcesEntity> getLeadSources() {

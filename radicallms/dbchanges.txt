@@ -31,3 +31,6 @@ ADD COLUMN `messagebody` TEXT NULL AFTER `subject`;
 ALTER TABLE `radicallms`.`sendemail` 
 CHANGE COLUMN `senderemailid` `courseid` INT(2) NULL ;
 
+ALTER TABLE `radicallms`.`courses` 
+ADD COLUMN `createdtime` DATETIME NULL DEFAULT NULL AFTER `messagebody`;
+

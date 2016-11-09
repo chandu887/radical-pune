@@ -1,5 +1,7 @@
 package com.radical.lms.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,6 +29,9 @@ public class CourseEntity {
 	
 	@Column(name = "messagebody")
 	private String messagebody;
+	
+	@Column(name = "createdtime")
+	private Date createdTime;
 	
 	public String getSubject() {
 		return subject;
@@ -76,5 +81,14 @@ public class CourseEntity {
 	public void setCourseName(String courseName) {
 		this.courseName = courseName;
 	}
+
+	public Date getCreatedTime() {
+		return createdTime;
+	}
+
+	public void setCreatedTime(Date createdTime) {
+		this.createdTime = createdTime;
+	}
+	
 
 }

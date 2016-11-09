@@ -2,6 +2,7 @@ package com.radical.lms.service;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -14,13 +15,23 @@ import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.Transport;
+import javax.mail.Message.RecipientType;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.radical.lms.constants.Constants;
 import com.radical.lms.dao.EmailDao;
 import com.radical.lms.entity.EmailTimeEntity;
 import com.radical.lms.entity.LeadsEntity;
+import com.radical.lms.entity.SendEmailEntity;
 
 public class EmailServiceImpl implements EmailService{
 	
@@ -34,19 +45,50 @@ public class EmailServiceImpl implements EmailService{
 	@Autowired
 	private UserService userService;
 	
+	Session session = null;
+	
 	Store store = null;
 	
+	private Properties properties = new Properties();
+	
 	public void init() {
+		setEmailSession();
 		setMailStore();
 	}
 	
+	private void setEmailSession() {
+		try {
+			properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(Constants.LMS_PROP));
+			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
+			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
+			String host = properties.getProperty("host");
+			String port = properties.getProperty("port");
+			Properties props = System.getProperties();
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.host", host);
+			props.setProperty("mail.transport.protocol", "smtps");
+			props.put("mail.smtp.user", userid);
+			props.put("mail.smtp.password", password);
+			props.put("mail.smtp.port", port);
+			props.put("mail.smtps.auth", "true");
+			session = Session.getDefaultInstance(props, null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+
+	}
+	
 	private void setMailStore() {
+		String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
+		String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
+		
 		Properties props = new Properties();
         props.setProperty("mail.store.protocol", "imaps");
         Session session = Session.getInstance(props, null);
         try {
         	Store store = session.getStore();
-        	//store.connect("imap.gmail.com", "emailtest887@gmail.com", "radical@123");
+        	store.connect("imap.gmail.com", userid, password);
         	setStore(store);
 		} catch (NoSuchProviderException e) {
 			e.printStackTrace();
@@ -230,6 +272,49 @@ public class EmailServiceImpl implements EmailService{
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error while Processing sulekha+ mail" + e.getMessage());
+		}
+	}
+	
+	public List<SendEmailEntity> getEmailEntries() {
+		return emailDao.getEmailEntries();
+	}
+	
+	public void updateEmailEntries(SendEmailEntity emailEntry) {
+		emailDao.updateEmailEntries(emailEntry);
+	}
+	
+	@Transactional
+	public boolean sendMail(String toMailId, String subject, String mailBody) {
+		try {
+			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
+			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
+			String host = properties.getProperty("host");
+			MimeMessage message = new MimeMessage(session);
+			InternetAddress fromAddress = null;
+			InternetAddress toAddress = null;
+			try {
+				fromAddress = new InternetAddress(userid);
+				toAddress = new InternetAddress(toMailId);
+			} catch (AddressException e) {
+				e.printStackTrace();
+			}
+
+			message.setFrom(fromAddress);
+			message.setRecipient(RecipientType.TO, toAddress);
+			message.setSubject(subject);
+			BodyPart messageBodyPartBody = new MimeBodyPart();
+			messageBodyPartBody.setContent(mailBody, "text/html");
+			MimeMultipart multipart = new MimeMultipart("related");
+			multipart.addBodyPart(messageBodyPartBody);
+			message.setContent(multipart);
+			Transport transport = session.getTransport("smtps");
+			transport.connect(host, userid, password);
+			transport.sendMessage(message, message.getAllRecipients());
+			transport.close();
+			return true;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
 		}
 	}
 	

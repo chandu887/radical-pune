@@ -25,6 +25,8 @@ public interface UserDao {
 	
 	List<CourseEntity> getCourses();
 	
+	List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm);
+	
 	List<LeadSourcesEntity> getLeadSources();
 	
 	String leadsChangeStatus(List<Integer>changeStatusLeadIdsList,int statusType,String reason);

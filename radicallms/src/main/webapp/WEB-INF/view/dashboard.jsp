@@ -302,7 +302,6 @@ var basepath = "${pageContext.request.contextPath}";
     
     function getLeadInfo(leadId) {
     	$.post(basepath + "/getLeadInfo?leadId="+leadId, function(data) {
-    		alert(data.course);
     		$('#editLeadId').val(data.leadiId);
     		$('#editStatus').val(data.status);
     		$('#editName').val(data.name);
@@ -325,6 +324,13 @@ var basepath = "${pageContext.request.contextPath}";
     	});
     }
     
+    
+    
+    function getTemplateInfo(courseId, mailSubject, mailBody) {
+    	$('#editCourseId').val(courseId);
+    	$('#editSubject').val(mailSubject);
+    	$('#editMessageBody').val(mailBody);
+    }
     function validateEditLeadForm (){
     	return true;
     }
@@ -426,12 +432,14 @@ var basepath = "${pageContext.request.contextPath}";
 										Text Email/SMS</a></li>
 								<li><a data-toggle="modal" data-target="#createTemple">Create
 										Templated Email</a></li>
-								<li><a href="allemailtemplates.html">View All Templated
+								<li><a href="viewTemplatedMail">View All Templated
 										Email</a></li>
 							</ul></li>
 
 					</ul>
 				</div>
+
+				<c:if test="${dashBoardForm.viewPage == 'viewLeads'}">
 				<div class="count">
 					<form:form method="post" action="getShowingData"
 						id="getShowingForm" class="form-inline" role="form">
@@ -443,52 +451,52 @@ var basepath = "${pageContext.request.contextPath}";
 						</select>
 					</form:form>
 				</div>
-
-				<table class="table table-bordered">
-					<thead>
-						<tr>
-							<th></th>
-							<th></th>
-							<th>Status</th>
-							<th>ENQ ID</th>
-							<th>Name</th>
-							<th>Mobile</th>
-							<th>Course</th>
-							<th>Category</th>
-							<th>Source Lead</th>
-							<th>Assigned To</th>
-							<th>Time Created</th>
-						</tr>
-					</thead>
-
-					<tbody>
-						<c:if test="${leadsList != null}">
-							<c:forEach items="${leadsList}" var="lead">
-								<tr>
-									<td><input type="checkbox" value="${lead.enqID}"
-										name="leadId"></td>
-									<td><a data-toggle="modal" role="button"
-										data-target="#editlead" onclick="getLeadInfo(${lead.enqID})"><i
-											class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
-									<td>${lead.status}</td>
-									<td>ENQ ${lead.enqID}</td>
-									<td>${lead.name}</td>
-									<td>${lead.mobileNo}</td>
-									<td>${lead.course}</td>
-									<td>${lead.categeory}</td>
-									<td>${lead.sourceLead}</td>
-									<td>${lead.assignedTo}</td>
-									<td>${lead.createdTime}</td>
-								</tr>
-							</c:forEach>
-						</c:if>
-
-					</tbody>
-				</table>
-				<span class="pull-left">Showing ${dashBoardForm.startLimit}
+				
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th></th>
+								<th></th>
+								<th>Status</th>
+								<th>ENQ ID</th>
+								<th>Name</th>
+								<th>Mobile</th>
+								<th>Course</th>
+								<th>Category</th>
+								<th>Source Lead</th>
+								<th>Assigned To</th>
+								<th>Time Created</th>
+							</tr>
+						</thead>
+	
+						<tbody>
+							<c:if test="${leadsList != null}">
+								<c:forEach items="${leadsList}" var="lead">
+									<tr>
+										<td><input type="checkbox" value="${lead.enqID}"
+											name="leadId"></td>
+										<td><a data-toggle="modal" role="button"
+											data-target="#editlead" onclick="getLeadInfo(${lead.enqID})"><i
+												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+										<td>${lead.status}</td>
+										<td>ENQ ${lead.enqID}</td>
+										<td>${lead.name}</td>
+										<td>${lead.mobileNo}</td>
+										<td>${lead.course}</td>
+										<td>${lead.categeory}</td>
+										<td>${lead.sourceLead}</td>
+										<td>${lead.assignedTo}</td>
+										<td>${lead.createdTime}</td>
+									</tr>
+								</c:forEach>
+							</c:if>
+	
+						</tbody>
+					</table>
+					<span class="pull-left">Showing ${dashBoardForm.startLimit}
 					to ${dashBoardForm.endLimit} of ${dashBoardForm.pageTotalCount}
 					entries</span>
-				<ul class="pagination pull-right">
+					<ul class="pagination pull-right">
 					<c:forEach items="${dashBoardForm.pageList}" var="page"
 						varStatus="pageIndex">
 						<li
@@ -500,7 +508,38 @@ var basepath = "${pageContext.request.contextPath}";
 						id="getPaginationForm" class="form-inline" role="form">
 						<input type="hidden" id="currentPage" name="currentPage" value="">
 					</form:form>
-				</ul>
+					</ul>
+				</c:if>
+				<c:if test="${dashBoardForm.viewPage == 'viewMailTemplate'}">
+				 <table class="table table-bordered">
+					<thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>Course</th>
+                                <th>Category</th>
+                                <th>Subject</th>
+                                <th>Time Created</th>
+                            </tr>
+                        </thead>
+                        
+                        <c:forEach items="${templateList}" var="template">
+									<tr>
+										<td><input type="checkbox" value="${template.courseId}"
+											name="leadId"></td>
+										<td><a data-toggle="modal" role="button"
+											data-target="#editTemple" onclick="getTemplateInfo(${template.courseId}, '${template.mailSubject}', '${template.mailBody}')"><i
+												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+										<td>${template.courseName}</td>
+										<td>${template.categoryName}</td>
+										<td>${template.mailSubject}</td>
+										<td>${template.createdTime}</td>
+										
+									</tr>
+								</c:forEach>
+                    </table>
+				</c:if>
+				
 				</section>
 			</c:if>
 
@@ -1089,6 +1128,39 @@ var basepath = "${pageContext.request.contextPath}";
 								</select>
 							</div>
 							<button type="submit" class="btn btn-success">Create
+								Template</button>
+								<button type="button" class="btn btn-danger"
+									data-dismiss="modal">Cancel</button>
+						</div>
+					</form:form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+<div id="editTemple" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Edit Templated Email/SMS</h4>
+				</div>
+				<div class="modal-body">
+					<form:form method="post" action="editMailTemplate" name="editMailTemplateForm"
+						onsubmit="return validateCreateTemplateForm()" role="form">
+						<input type="hidden" id="editCourseId" name="courseId" value="">
+						<div class="col-sm-12">
+							<div class="form-group">
+								<label for="email">Subject</label> <input type="text"
+									class="form-control" id="editSubject" name="subject"
+									placeholder="Please enter Subject">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Message</label>
+								<textarea placeholder="Please enter message here"
+									class="form-control"  id= "editMessageBody" name="messagebody" rows="10"></textarea>
+							</div>
+							<button type="submit" class="btn btn-success">Edit
 								Template</button>
 								<button type="button" class="btn btn-danger"
 									data-dismiss="modal">Cancel</button>

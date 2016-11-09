@@ -10,10 +10,21 @@
         <property name="jobClass" value="com.radical.lms.quartz.MailReadingJob" />
         <property name="durability" value="true" /> 
     </bean>
+    
+    <bean name="mailSendingJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="com.radical.lms.quartz.MailSendingJob" />
+        <property name="durability" value="true" /> 
+    </bean>
  
     <!-- Run the job every 3 minutes -->
     <bean id="mailReadingCronTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="mailReadingJobDetail" />
+        <property name="cronExpression" value="0 0/5 * * * ?" />
+        <!-- <property name="cronExpression" value="0/25 * * * * ?" /> -->
+    </bean>
+    
+    <bean id="mailSendingCronTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="mailSendingJobDetail" />
         <property name="cronExpression" value="0 0/5 * * * ?" />
         <!-- <property name="cronExpression" value="0/25 * * * * ?" /> -->
     </bean>
@@ -24,12 +35,14 @@
         <property name="jobDetails">
             <list>
                 <ref bean="mailReadingJobDetail" />
+                <ref bean="mailSendingJobDetail" />
             </list>
         </property>
  
         <property name="triggers">
             <list>
-          <ref bean="mailReadingCronTrigger" />
+          <!-- <ref bean="mailReadingCronTrigger" />
+          	   <ref bean="mailSendingCronTrigger" /> -->
             </list>
         </property>
     </bean>

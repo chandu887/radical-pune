@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
+import com.radical.lms.beans.MailTemplateBean;
 import com.radical.lms.constants.Constants;
 import com.radical.lms.dao.UserDao;
 import com.radical.lms.entity.CourseCategeoryEntity;
@@ -362,60 +363,35 @@ public class UserServiceImpl implements UserService {
 	public void saveTemplate(CourseEntity courseEntity) {
 		userDao.saveTemplate(courseEntity);
 	}
-
-	@Transactional
-	public void sendMail(String mailId) {
-		try {
-			properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(Constants.LMS_PROP));
-
-			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
-			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
-
-			Properties props = System.getProperties();
-			props.put("mail.smtp.starttls.enable", "true");
-			props.put("mail.smtp.host", "smtp.gmail.com");
-			props.setProperty("mail.transport.protocol", "smtps");
-			props.put("mail.smtp.user", userid);
-			props.put("mail.smtp.password", password);
-			props.put("mail.smtp.port", "587");
-			props.put("mail.smtps.auth", "true");
-			Session session = Session.getDefaultInstance(props, null);
-			MimeMessage message = new MimeMessage(session);
-			InternetAddress fromAddress = null;
-			InternetAddress toAddress = null;
-			try {
-				fromAddress = new InternetAddress(userid);
-				toAddress = new InternetAddress(mailId);
-			} catch (AddressException e) {
-				e.printStackTrace();
-			}
-
-			message.setFrom(fromAddress);
-			message.setRecipient(RecipientType.TO, toAddress);
-			String subject = "Welcome to HTC ";
-			message.setSubject(subject);
-			BodyPart messageBodyPartBody = new MimeBodyPart();
-			String body = "Hi ..THis is First Welcome mail from HTC";
-			messageBodyPartBody.setContent(body, "text/html");
-			MimeMultipart multipart = new MimeMultipart("related");
-			multipart.addBodyPart(messageBodyPartBody);
-			message.setContent(multipart);
-			Transport transport = session.getTransport("smtps");
-			transport.connect("smtp.gmail.com", userid, password);
-			transport.sendMessage(message, message.getAllRecipients());
-			transport.close();
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-	}
-
+	
 	@Transactional
 	public void sendTemplatedEmail(SendEmailEntity sendEmailEntity) {
 		userDao.sendTemplatedEmail(sendEmailEntity);
 	}
-
+	
+	@Transactional
+	public List<MailTemplateBean> getCoursesList(DashBoardForm dashBoardForm) {
+		List<MailTemplateBean> templateList = new ArrayList<MailTemplateBean>();
+		List<CourseEntity> coursesList = userDao.getCoursesList(dashBoardForm);
+		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		for (CourseEntity courseEntity : coursesList) {
+			MailTemplateBean templateBean = new MailTemplateBean();
+			templateBean.setCourseId(courseEntity.getCourseId());
+			templateBean.setCourseName(courseEntity.getCourseName());
+			templateBean.setCategoryName(getCourseCategories().get(courseEntity.getCategeoryId()));
+			templateBean.setMailSubject(courseEntity.getSubject());
+			templateBean.setMailBody(courseEntity.getMessagebody());
+			
+			
+			
+			if (courseEntity.getCreatedTime() != null) {
+				templateBean.setCreatedTime(dateFormat.format(courseEntity.getCreatedTime()));
+			}
+			templateList.add(templateBean);
+		}
+		return templateList;
+	}
+	
 	@Transactional
 	public void sendSms(String sms, String mobileNumber) {
 		try {
