@@ -396,8 +396,9 @@ public class UserServiceImpl implements UserService {
 	public void sendSms(String sms, String mobileNumber) {
 		try {
 			String sendSms = URLEncoder.encode(sms, "UTF-8");
-			String url = "http://sms.xpresssms.in/api/api.php?ver=1&mode=2&action=push_sms&type=1&route=1&login_name=radtec&api_password=e51354d757f40f75d8d6&message="
+			String url = "http://sms.xpresssms.in/api/api.php?ver=1&mode=1&action=push_sms&type=1&route=2&login_name=radtec&api_password=e51354d757f40f75d8d6&message="
 					+ sendSms + "&number=" + mobileNumber + "&sender=RadTec";
+			System.out.println(url);
 			URL obj = new URL(url);
 			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 			con.setRequestMethod("GET");
@@ -408,6 +409,7 @@ public class UserServiceImpl implements UserService {
 			while ((inputLine = in.readLine()) != null) {
 				response.append(inputLine);
 			}
+			System.out.println("Response Code"+response);
 			in.close();
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
