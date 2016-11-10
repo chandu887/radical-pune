@@ -437,9 +437,14 @@ var basepath = "${pageContext.request.contextPath}";
 					</ul>
 				</div>
 
-				<c:if test="${dashBoardForm.viewPage == 'viewLeads'}">
 				<div class="count">
-					<form:form method="post" action="getShowingData"
+				<c:if test="${dashBoardForm.viewPage == 'viewLeads'}">
+				<c:set var="showingUrl" value="getShowingData" />
+				</c:if>
+				<c:if test="${dashBoardForm.viewPage == 'viewMailTemplate'}">
+				<c:set var="showingUrl" value="getShowingData?isFromViewMailTemplate=true" />
+				</c:if>
+				<form:form method="post" action="${showingUrl}"
 						id="getShowingForm" class="form-inline" role="form">
 				Showing <select id="showingId" name="pageLimit">
 							<c:forEach items="${dashBoardForm.limitList}" var="limit">
@@ -449,6 +454,8 @@ var basepath = "${pageContext.request.contextPath}";
 						</select>
 					</form:form>
 				</div>
+				
+				<c:if test="${dashBoardForm.viewPage == 'viewLeads'}">
 				
 					<table class="table table-bordered">
 						<thead>
@@ -491,22 +498,6 @@ var basepath = "${pageContext.request.contextPath}";
 	
 						</tbody>
 					</table>
-					<span class="pull-left">Showing ${dashBoardForm.startLimit}
-					to ${dashBoardForm.endLimit} of ${dashBoardForm.pageTotalCount}
-					entries</span>
-					<ul class="pagination pull-right">
-					<c:forEach items="${dashBoardForm.pageList}" var="page"
-						varStatus="pageIndex">
-						<li
-							class="<c:if test="${dashBoardForm.pageNumber == page}">active</c:if>">
-							<a href="javascript:void(0)" onclick="getPagination(${page})">${page}</a>
-						</li>
-					</c:forEach>
-					<form:form method="post" action="getPaginationData"
-						id="getPaginationForm" class="form-inline" role="form">
-						<input type="hidden" id="currentPage" name="currentPage" value="">
-					</form:form>
-					</ul>
 				</c:if>
 				<c:if test="${dashBoardForm.viewPage == 'viewMailTemplate'}">
 				 <table class="table table-bordered">
@@ -537,7 +528,28 @@ var basepath = "${pageContext.request.contextPath}";
 								</c:forEach>
                     </table>
 				</c:if>
-				
+				<span class="pull-left">Showing ${dashBoardForm.startLimit}
+					to ${dashBoardForm.endLimit} of ${dashBoardForm.pageTotalCount}
+					entries</span>
+					<ul class="pagination pull-right">
+					<c:forEach items="${dashBoardForm.pageList}" var="page"
+						varStatus="pageIndex">
+						<li
+							class="<c:if test="${dashBoardForm.pageNumber == page}">active</c:if>">
+							<a href="javascript:void(0)" onclick="getPagination(${page})">${page}</a>
+						</li>
+					</c:forEach>
+					<c:if test="${dashBoardForm.viewPage == 'viewLeads'}">
+					<c:set var="paginationUrl" value="getPaginationData" />
+					</c:if>
+					<c:if test="${dashBoardForm.viewPage == 'viewMailTemplate'}">
+					<c:set var="paginationUrl" value="getPaginationData?isFromViewMailTemplate=true" />
+					</c:if>
+					<form:form method="post" action="${paginationUrl}"
+						id="getPaginationForm" class="form-inline" role="form">
+						<input type="hidden" id="currentPage" name="currentPage" value="">
+					</form:form>
+					</ul>
 				</section>
 			</c:if>
 

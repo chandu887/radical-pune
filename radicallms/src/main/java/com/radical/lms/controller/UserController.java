@@ -84,7 +84,7 @@ public class UserController {
 		} else {
 			dashBoardForm = new DashBoardForm();
 			dashBoardForm.setPageNumber(1);
-			dashBoardForm.setPageLimit(10);
+			dashBoardForm.setPageLimit(20);
 		}
 
 		if (!isFromPagination) {
@@ -120,7 +120,7 @@ public class UserController {
 		int pageTotalCount = 0;
 
 		if (isFromViewMailTemplate) {
-			pageTotalCount = countMap.size();
+			pageTotalCount = coursesMap.size();
 		} else {
 			if (leadStatus == 0) {
 				pageTotalCount = totalCount;
@@ -152,12 +152,12 @@ public class UserController {
 		}
 
 		List<Integer> limitList = new ArrayList<Integer>();
-		limitList.add(10);
 		limitList.add(20);
-		limitList.add(30);
 		limitList.add(40);
+		limitList.add(60);
+		limitList.add(80);
+		limitList.add(100);
 		dashBoardForm.setLimitList(limitList);
-		
 		
 		if (isFromViewMailTemplate) {
 			List<MailTemplateBean> templateList = userService.getCoursesList(dashBoardForm);
@@ -297,22 +297,32 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/getPaginationData", method = RequestMethod.POST)
-	public String getPaginationData(HttpServletRequest request, @RequestParam("currentPage") int currentPage) {
+	public String getPaginationData(HttpServletRequest request, @RequestParam("currentPage") int currentPage,
+			@RequestParam(value = "isFromViewMailTemplate", defaultValue = "false", required = false) Boolean isFromViewMailTemplate) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		dashBoardForm.setPageNumber(currentPage);
 		session.setAttribute("dashBoardForm", dashBoardForm);
-		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus() + "&isFromPagination=true";
+		if (isFromViewMailTemplate) {
+			return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true&isFromPagination=true";
+		} else {			
+			return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus()+"&isFromPagination=true";
+		}
 	}
 
 	@RequestMapping(value = "/getShowingData", method = RequestMethod.POST)
-	public String getShowingData(HttpServletRequest request, @RequestParam("pageLimit") int pageLimit) {
+	public String getShowingData(HttpServletRequest request, @RequestParam("pageLimit") int pageLimit,
+			@RequestParam(value = "isFromViewMailTemplate", defaultValue = "false", required = false) Boolean isFromViewMailTemplate) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		dashBoardForm.setPageNumber(1);
 		dashBoardForm.setPageLimit(pageLimit);
 		session.setAttribute("dashBoardForm", dashBoardForm);
-		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+		if (isFromViewMailTemplate) {
+			return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true";
+		} else {			
+			return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+		}
 	}
 
 	@RequestMapping(value = "/searchByCourse", method = RequestMethod.POST)
