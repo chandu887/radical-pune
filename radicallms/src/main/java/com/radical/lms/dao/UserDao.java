@@ -43,4 +43,5 @@ public interface UserDao {
 	
 	void sendTemplatedEmail(SendEmailEntity sendEmailEntity);
 	
+	int getTemplatesCount(DashBoardForm dashBoardForm);
 }

@@ -424,4 +424,9 @@ public class UserServiceImpl implements UserService {
 
 	}
 
+	@Transactional
+	public int getTemplatesCount(DashBoardForm dashBoardForm) {
+		return userDao.getTemplatesCount(dashBoardForm);
+	}
+
 }

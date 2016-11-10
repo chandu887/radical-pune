@@ -140,8 +140,8 @@ public class UserDaoImpl implements UserDao {
 	@Transactional
 	public List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm) {
 		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where subject IS NOT NULL");
-		//query.setFirstResult(dashBoardForm.getStartLimit()-1);
-		//query.setMaxResults(dashBoardForm.getPageLimit());
+		query.setFirstResult(dashBoardForm.getStartLimit()-1);
+		query.setMaxResults(dashBoardForm.getPageLimit());
 		List<CourseEntity> courseList = query.list();
 		if (courseList != null && !courseList.isEmpty()) {
 			return courseList;
@@ -218,5 +218,19 @@ public class UserDaoImpl implements UserDao {
 	public void sendTemplatedEmail(SendEmailEntity sendEmailEntity) {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.save(sendEmailEntity);
+	}
+	
+	@Transactional
+	public int getTemplatesCount(DashBoardForm dashBoardForm) {
+				
+		String query = "select count(*) from CourseEntity where subject IS NOT NULL";
+		Query sqlQuery = this.sessionFactory.getCurrentSession().createQuery(query);
+		List result = sqlQuery.list();
+		long count = 0;
+		if (null != result && !result.isEmpty()) {
+			count = (Long) result.get(0);
+		}
+		return (int)count;
+		
 	}
 }

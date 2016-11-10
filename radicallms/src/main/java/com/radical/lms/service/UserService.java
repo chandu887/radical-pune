@@ -53,6 +53,8 @@ public interface UserService {
 	
 	List<MailTemplateBean> getCoursesList(DashBoardForm dashBoardForm);
 	
+	int getTemplatesCount(DashBoardForm dashBoardForm);
+	
 	void sendTemplatedEmail(SendEmailEntity sendEmailEntity);
 	
 	void sendSms(String sms,String mobileNumber);

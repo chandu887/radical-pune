@@ -114,13 +114,11 @@ public class UserController {
 		dashBoardForm.setClosedCount((int) closeCount);
 
 		dashBoardForm.setCurrentStatus(leadStatus);
-
-		Map<Integer, String> coursesMap = this.userService.getCourses();
 		
 		int pageTotalCount = 0;
 
 		if (isFromViewMailTemplate) {
-			pageTotalCount = coursesMap.size();
+			pageTotalCount = userService.getTemplatesCount(dashBoardForm);
 		} else {
 			if (leadStatus == 0) {
 				pageTotalCount = totalCount;
@@ -171,6 +169,7 @@ public class UserController {
 		
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
 		Map<Integer, String> courseCategories = userService.getCourseCategories();
+		Map<Integer, String> coursesMap = this.userService.getCourses();
 		
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
