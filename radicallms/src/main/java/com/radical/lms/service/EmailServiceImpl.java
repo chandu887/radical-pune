@@ -125,7 +125,7 @@ public class EmailServiceImpl implements EmailService {
 				if (lastEmailTimeInMillis >= emailReceivedDate.getTime()) {
 					break;
 				}
-				if (addressArray[0].toString().equalsIgnoreCase("ganeshkumar gara <ganeshkumar.gara@gmail.com>")) {
+				/*if (addressArray[0].toString().equalsIgnoreCase("Radicaltechnologies <radicaltechnologies.co.in@gmail.com>")) {*/
 
 					String mailsubject = message.getSubject();
 					Multipart multiPart = (Multipart) message.getContent();
@@ -144,7 +144,7 @@ public class EmailServiceImpl implements EmailService {
 					} else if (mailsubject.contains("Quick Inquiry Details")) {
 						leadsEntity = processRadicalMailContent(mailContent, emailReceivedDate);
 					}
-				}
+//				}
 			}
 		} catch (MessagingException e) {
 			e.printStackTrace();

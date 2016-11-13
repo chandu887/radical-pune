@@ -41,8 +41,8 @@
  
         <property name="triggers">
             <list>
-          <!-- <ref bean="mailReadingCronTrigger" />
-          	   <ref bean="mailSendingCronTrigger" /> -->
+           <ref bean="mailReadingCronTrigger" />
+           <ref bean="mailSendingCronTrigger" /> 
             </list>
         </property>
     </bean>
