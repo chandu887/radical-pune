@@ -170,6 +170,8 @@ public class UserController {
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
 		Map<Integer, String> courseCategories = userService.getCourseCategories();
 		Map<Integer, String> coursesMap = this.userService.getCourses();
+		List<MailTemplateBean> courseTemplates = userService.getCoursesList(dashBoardForm);
+		map.addAttribute("courseTemplates", courseTemplates);
 		
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
@@ -210,6 +212,7 @@ public class UserController {
 
 	@RequestMapping(value = "/testCron", method = RequestMethod.GET)
 	public String testCron(HttpServletRequest request) throws JobExecutionException {
+		MailReadingJob mail = new MailReadingJob();
 		MailSendingJob mail = new MailSendingJob();
 		mail.executeInternal(null);
 		return "login";
