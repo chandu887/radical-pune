@@ -128,10 +128,24 @@ public class EmailServiceImpl implements EmailService {
 				/*if (addressArray[0].toString().equalsIgnoreCase("Radicaltechnologies <radicaltechnologies.co.in@gmail.com>")) {*/
 
 					String mailsubject = message.getSubject();
-					Multipart multiPart = (Multipart) message.getContent();
-					BodyPart bodyPart = multiPart.getBodyPart(0);
-					String mailContent = (String) bodyPart.getContent();
+					//Multipart multiPart = (Multipart) message.getContent();
+					//BodyPart bodyPart = multiPart.getBodyPart(0);
+					String mailContent =""; ;//= (String) bodyPart.getContent();
 
+					Object content = message.getContent();  
+					if (content instanceof String)  
+					{  
+						mailContent = (String)content;  
+					}  
+					else if (content instanceof Multipart)  
+					{  
+						Multipart multiPart = (Multipart) content;
+						BodyPart bodyPart = multiPart.getBodyPart(0);
+						mailContent = (String) bodyPart.getContent();
+  
+					}
+					
+					
 					if (mailsubject.contains("Yet5.com")) {
 						leadsEntity = processYet5MailContent(mailContent, emailReceivedDate);
 					} else if (mailsubject.contains("enquiry for you at")) {
