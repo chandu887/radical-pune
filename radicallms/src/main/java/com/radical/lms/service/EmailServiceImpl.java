@@ -127,11 +127,13 @@ public class EmailServiceImpl implements EmailService {
 				}
 				/*if (addressArray[0].toString().equalsIgnoreCase("Radicaltechnologies <radicaltechnologies.co.in@gmail.com>")) {*/
 
-					String mailsubject = message.getSubject();
-					//Multipart multiPart = (Multipart) message.getContent();
-					//BodyPart bodyPart = multiPart.getBodyPart(0);
-					String mailContent =""; ;//= (String) bodyPart.getContent();
+					/*String mailsubject = message.getSubject();
+					Multipart multiPart = (Multipart) message.getContent();
+					BodyPart bodyPart = multiPart.getBodyPart(0);
+					String mailContent = (String) bodyPart.getContent();*/
 
+					String mailsubject = message.getSubject();
+					String mailContent = "";
 					Object content = message.getContent();  
 					if (content instanceof String)  
 					{  
@@ -193,10 +195,10 @@ public class EmailServiceImpl implements EmailService {
 		try {
 			String[] spiltContent = mailContent.split("\\n");
 			System.out.println(spiltContent);
-			String name = spiltContent[1].substring(5).trim();
-			String email = spiltContent[2].substring(6).trim();
-			String mobileNumber = spiltContent[3].substring(6).trim();
-			String course = spiltContent[4].substring(12).trim();
+			String name = spiltContent[6].replace("</td>", "").substring(65).trim();
+			String email = spiltContent[10].replace("</td>", "").substring(65).trim();
+			String mobileNumber = spiltContent[14].replace("</td>", "").substring(65).trim();
+			String course = spiltContent[18].replace("</td>", "").substring(53).trim();
 
 			leadsEntity.setName(name);
 			leadsEntity.setMobileNo(mobileNumber);

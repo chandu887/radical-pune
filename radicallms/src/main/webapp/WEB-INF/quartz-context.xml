@@ -19,13 +19,13 @@
     <!-- Run the job every 3 minutes -->
     <bean id="mailReadingCronTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="mailReadingJobDetail" />
-        <property name="cronExpression" value="0 0/5 * * * ?" />
+        <property name="cronExpression" value="0 0/1 * * * ?" />
         <!-- <property name="cronExpression" value="0/25 * * * * ?" /> -->
     </bean>
     
     <bean id="mailSendingCronTrigger"  class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="mailSendingJobDetail" />
-        <property name="cronExpression" value="0 0/5 * * * ?" />
+        <property name="cronExpression" value="0 0/1 * * * ?" />
         <!-- <property name="cronExpression" value="0/25 * * * * ?" /> -->
     </bean>
  
