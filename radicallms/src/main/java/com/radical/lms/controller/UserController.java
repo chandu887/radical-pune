@@ -238,6 +238,17 @@ public class UserController {
 			leadsEntity.setCreatedDate(new Date());
 			leadsEntity.setLastUpdatedDate(new Date());
 			this.leadService.saveLead(leadsEntity);
+			if (leadsEntity != null) {
+				if (leadsEntity.getEmailId() != null) {
+					if (leadsEntity.getCourse() != 0) {
+						emailService.sendMail(leadsEntity.getEmailId(), "Welcome to Radical Technologies",
+								"Dear User, Thanks For Contacting us");
+					}
+				}
+				if (leadsEntity.getMobileNo() != null) {
+					userService.sendSms("Dear User, Thanks For Contacting us", leadsEntity.getMobileNo());
+				}
+			}
 		}
 		return "redirect:/dashboard?leadStatus=1";
 	}
