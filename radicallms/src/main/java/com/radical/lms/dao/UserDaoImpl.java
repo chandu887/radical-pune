@@ -75,6 +75,12 @@ public class UserDaoImpl implements UserDao {
 		if (dashBoardForm.getCourse() != 0) {
 			queryStr += " and course = " + dashBoardForm.getCourse();
 		}
+		if(dashBoardForm.getEmail()!=null){
+			queryStr += " and emailId = '" + dashBoardForm.getEmail()+"'";
+		}
+		if(dashBoardForm.getMobileNumber()!=null){
+			queryStr += " and mobileNo = " + dashBoardForm.getMobileNumber();
+		}
 		if (dashBoardForm.getFromDate() != null && !dashBoardForm.getFromDate().equalsIgnoreCase("")
 				&& dashBoardForm.getToDate() != null && !dashBoardForm.getToDate().equalsIgnoreCase("")) {
 			try {

@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -343,11 +344,19 @@ public class UserController {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		dashBoardForm.setSearchData(courseName);
-
+		dashBoardForm.setCourse(0);
+		dashBoardForm.setCategory(0);
+		dashBoardForm.setMobileNumber(null);
+		dashBoardForm.setEmail(null);
+		
 		if (userService.getCategoryNameIdMapping().containsKey(courseName)) {
 			dashBoardForm.setCategory(userService.getCategoryNameIdMapping().get(courseName));
 		} else if (userService.getCourseNameIdMapping().containsKey(courseName)) {
 			dashBoardForm.setCourse(userService.getCourseNameIdMapping().get(courseName));
+		} else if(courseName.contains("@")){
+			dashBoardForm.setEmail(courseName);
+		} else if(NumberUtils.isNumber(courseName)){
+			dashBoardForm.setMobileNumber(courseName);
 		}
 
 		session.setAttribute("dashBoardForm", dashBoardForm);
@@ -420,6 +429,8 @@ public class UserController {
 		dashBoardForm.setCourse(0);
 		dashBoardForm.setCategory(0);
 		dashBoardForm.setSearchData("");
+		dashBoardForm.setMobileNumber(null);
+		dashBoardForm.setEmail(null);
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=1";
 	}

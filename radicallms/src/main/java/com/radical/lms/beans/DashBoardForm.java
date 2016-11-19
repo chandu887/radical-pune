@@ -24,6 +24,23 @@ public class DashBoardForm {
 	String viewPage;
 	String emailTemplateCount;
 	
+	String email;
+	String mobileNumber;
+	
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
+	}
+	
+	
 	public int getPageLimit() {
 		return pageLimit;
 	}
