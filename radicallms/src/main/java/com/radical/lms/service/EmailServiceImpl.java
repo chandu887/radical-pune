@@ -177,7 +177,7 @@ public class EmailServiceImpl implements EmailService {
 			if (leadsEntity.getEmailId() != null) {
 				/*if (leadsEntity.getCourse() != 0) {*/
 					sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,
-							Constants.MAIl_TEMPLATE);
+							null);
 				/*}*/
 			}
 			if (leadsEntity.getMobileNo() != null) {
@@ -362,6 +362,9 @@ public class EmailServiceImpl implements EmailService {
 	@Transactional
 	public boolean sendMail(String toMailId, String subject, String mailBody) {
 		try {
+			if(mailBody==null){
+				mailBody = properties.getProperty(Constants.MAIL_BODY);
+			}
 			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
 			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
 			String host = properties.getProperty("host");

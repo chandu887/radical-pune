@@ -87,7 +87,7 @@ public class UserDaoImpl implements UserDao {
 			 Date fromDate = new SimpleDateFormat("MM/dd/yyyy").parse(dashBoardForm.getFromDate());
 			 Date toDate = new SimpleDateFormat("MM/dd/yyyy").parse(dashBoardForm.getToDate());
 		    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			queryStr += " and createdDate BETWEEN '" + formatter.format(fromDate) + "' AND '" + formatter.format(toDate)+"'";
+			queryStr += " and createdDate BETWEEN '" + formatter.format(fromDate+" 00:00:00") + "' AND '" + formatter.format(toDate+" 23:59:59")+"'";
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

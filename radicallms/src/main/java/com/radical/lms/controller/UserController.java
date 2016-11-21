@@ -244,7 +244,7 @@ public class UserController {
 				if (leadsEntity.getEmailId() != null) {
 					if (leadsEntity.getCourse() != 0) {
 						emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,
-								Constants.MAIl_TEMPLATE);
+								null);
 					}
 				}
 				if (leadsEntity.getMobileNo() != null) {
