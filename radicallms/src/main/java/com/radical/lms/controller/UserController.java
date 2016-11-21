@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.beans.MailTemplateBean;
+import com.radical.lms.constants.Constants;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.SendEmailEntity;
@@ -47,7 +48,7 @@ public class UserController {
 
 	@Autowired
 	private LeadService leadService;
-	
+
 	@Autowired
 	private EmailService emailService;
 
@@ -115,7 +116,7 @@ public class UserController {
 		dashBoardForm.setClosedCount((int) closeCount);
 
 		dashBoardForm.setCurrentStatus(leadStatus);
-		
+
 		int pageTotalCount = 0;
 
 		if (isFromViewMailTemplate) {
@@ -125,9 +126,9 @@ public class UserController {
 				pageTotalCount = totalCount;
 			} else {
 				pageTotalCount = (int) countMap.get(leadStatus).intValue();
-			}			
+			}
 		}
-		
+
 		dashBoardForm.setPageTotalCount(pageTotalCount);
 		dashBoardForm.setTotalLeadsCount(totalCount);
 
@@ -157,23 +158,23 @@ public class UserController {
 		limitList.add(80);
 		limitList.add(100);
 		dashBoardForm.setLimitList(limitList);
-		
+
 		if (isFromViewMailTemplate) {
 			List<MailTemplateBean> templateList = userService.getCoursesList(dashBoardForm);
 			map.addAttribute("templateList", templateList);
 			dashBoardForm.setViewPage("viewMailTemplate");
-		} else {			
+		} else {
 			List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
 			map.addAttribute("leadsList", leadsList);
 			dashBoardForm.setViewPage("viewLeads");
 		}
-		
+
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
 		Map<Integer, String> courseCategories = userService.getCourseCategories();
 		Map<Integer, String> coursesMap = this.userService.getCourses();
 		List<MailTemplateBean> courseTemplates = userService.getCoursesList(dashBoardForm);
 		map.addAttribute("courseTemplates", courseTemplates);
-		
+
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
 		map.addAttribute("leadSourceMapping", leadSourceMapping);
@@ -214,7 +215,7 @@ public class UserController {
 	@RequestMapping(value = "/testCron", method = RequestMethod.GET)
 	public String testCron(HttpServletRequest request) throws JobExecutionException {
 		MailReadingJob mail = new MailReadingJob();
-		//MailSendingJob mail = new MailSendingJob();
+		// MailSendingJob mail = new MailSendingJob();
 		mail.executeInternal(null);
 		return "login";
 	}
@@ -242,12 +243,13 @@ public class UserController {
 			if (leadsEntity != null) {
 				if (leadsEntity.getEmailId() != null) {
 					if (leadsEntity.getCourse() != 0) {
-						emailService.sendMail(leadsEntity.getEmailId(), "Welcome to Radical Technologies",
-								"Dear User, Thanks For Contacting us");
+						emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,
+								Constants.MAIl_TEMPLATE);
 					}
 				}
 				if (leadsEntity.getMobileNo() != null) {
-					userService.sendSms("Dear User, Thanks For Contacting us", leadsEntity.getMobileNo());
+					userService.sendSms(Constants.SMS_TEMPLATE,
+							leadsEntity.getMobileNo());
 				}
 			}
 		}
@@ -319,8 +321,8 @@ public class UserController {
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		if (isFromViewMailTemplate) {
 			return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true&isFromPagination=true";
-		} else {			
-			return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus()+"&isFromPagination=true";
+		} else {
+			return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus() + "&isFromPagination=true";
 		}
 	}
 
@@ -334,7 +336,7 @@ public class UserController {
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		if (isFromViewMailTemplate) {
 			return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true";
-		} else {			
+		} else {
 			return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 		}
 	}
@@ -348,14 +350,14 @@ public class UserController {
 		dashBoardForm.setCategory(0);
 		dashBoardForm.setMobileNumber(null);
 		dashBoardForm.setEmail(null);
-		
+
 		if (userService.getCategoryNameIdMapping().containsKey(courseName)) {
 			dashBoardForm.setCategory(userService.getCategoryNameIdMapping().get(courseName));
 		} else if (userService.getCourseNameIdMapping().containsKey(courseName)) {
 			dashBoardForm.setCourse(userService.getCourseNameIdMapping().get(courseName));
-		} else if(courseName.contains("@")){
+		} else if (courseName.contains("@")) {
 			dashBoardForm.setEmail(courseName);
-		} else if(NumberUtils.isNumber(courseName)){
+		} else if (NumberUtils.isNumber(courseName)) {
 			dashBoardForm.setMobileNumber(courseName);
 		}
 
@@ -482,26 +484,25 @@ public class UserController {
 		for (String leadId : sendNonTemplateLeadIdsSplitArray) {
 			LeadsEntity lead = leadService.getLeadByLeadId(Integer.parseInt(leadId));
 			if (type == 1) {
-				if(lead.getEmailId()!=null){
+				if (lead.getEmailId() != null) {
 					emailService.sendMail(lead.getEmailId(), subject, mailbody);
 				}
 			} else if (type == 0) {
-				if(lead.getMobileNo()!=null){
-				userService.sendSms(sms, lead.getMobileNo());
+				if (lead.getMobileNo() != null) {
+					userService.sendSms(sms, lead.getMobileNo());
 				}
 			}
 		}
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 	}
-	
+
 	@RequestMapping(value = "/viewTemplatedMail", method = RequestMethod.GET)
 	public String viewTemplatedMail() {
 		return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true";
 	}
 
 	@RequestMapping(value = "/editMailTemplate", method = RequestMethod.POST)
-	public String editTemplate(@ModelAttribute(value = "editMailTemplateForm") CourseEntity courseEntity,
-			Model model) {
+	public String editTemplate(@ModelAttribute(value = "editMailTemplateForm") CourseEntity courseEntity, Model model) {
 		CourseEntity course = userService.getCourseListBasedOnCourseId(courseEntity.getCourseId());
 		course.setSubject(courseEntity.getSubject());
 		course.setMessagebody(courseEntity.getMessagebody());

@@ -910,8 +910,9 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Center Location</label><br> <select
 									class="selectpicker" title="Select Location" id="editCenter"
 									name="location">
-									<option value="Location 1">Location 1</option>
-									<option value="Location 2">Location 2</option>
+									<option value="Bangalore-Hsr">Bangalore-Hsr</option>
+									<option value="Aundh-Pune">Aundh-Pune</option>
+									<option value="Kharadi-Pune">Kharadi-Pune</option>
 								</select>
 							</div>
 						</div>
@@ -920,11 +921,11 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Assigned to</label><br> <select
 									class="selectpicker" title="Assigned to" id="editAssigned"
 									name="assignedTo">
-									<option value="1">Person 1</option>
-									<option value="2">Person 2</option>
-									<option value="3">Person 3</option>
-									<option value="4">Person 4</option>
-									<option value="5">Person 5</option>
+									<option value="2">Agent 1</option>
+									<option value="3">Agent 2</option>
+									<option value="4">Agent 3</option>
+									<option value="5">Agent 4</option>
+									<option value="6">Agent 5</option>
 								</select>
 							</div>
 							<div class="form-group">

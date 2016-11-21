@@ -175,13 +175,13 @@ public class EmailServiceImpl implements EmailService {
 		}
 		if (leadsEntity != null) {
 			if (leadsEntity.getEmailId() != null) {
-				if (leadsEntity.getCourse() != 0) {
-					sendMail(leadsEntity.getEmailId(), "Welcome to Radical Technologies",
-							"Dear User, Thanks For Contacting us");
-				}
+				/*if (leadsEntity.getCourse() != 0) {*/
+					sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,
+							Constants.MAIl_TEMPLATE);
+				/*}*/
 			}
 			if (leadsEntity.getMobileNo() != null) {
-				userService.sendSms("Dear User, Thanks For Contacting us", leadsEntity.getMobileNo());
+				userService.sendSms(Constants.SMS_TEMPLATE, leadsEntity.getMobileNo());
 			}
 		}
 		EmailTimeEntity emailTimeEntity = new EmailTimeEntity();
