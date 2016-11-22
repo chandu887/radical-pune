@@ -61,7 +61,9 @@ public class UserDaoImpl implements UserDao {
 		currentStatusList.add(1);
 		currentStatusList.add(2);
 		currentStatusList.add(3);
-		currentStatusList.add(4);
+		if(dashBoardForm.getEmail() == null && dashBoardForm.getMobileNumber() == null){
+			currentStatusList.add(4);
+		}
 		query.setParameterList("status", currentStatusList);
 		List countList = query.list();
 		return countList;
@@ -69,12 +71,12 @@ public class UserDaoImpl implements UserDao {
 	
 	private String generateQueryString(DashBoardForm dashBoardForm) {
 		String queryStr = " where status in (:status)";
-		if (dashBoardForm.getCategory()!=0){
-			queryStr += " and courseCategeory = " + dashBoardForm.getCategory();
-		}
 		if (dashBoardForm.getCourse() != 0) {
 			queryStr += " and course = " + dashBoardForm.getCourse();
+		} else if (dashBoardForm.getCategory() != 0){
+			queryStr += " and courseCategeory = " + dashBoardForm.getCategory();
 		}
+		
 		if(dashBoardForm.getEmail()!=null){
 			queryStr += " and emailId = '" + dashBoardForm.getEmail()+"'";
 		}
@@ -84,10 +86,10 @@ public class UserDaoImpl implements UserDao {
 		if (dashBoardForm.getFromDate() != null && !dashBoardForm.getFromDate().equalsIgnoreCase("")
 				&& dashBoardForm.getToDate() != null && !dashBoardForm.getToDate().equalsIgnoreCase("")) {
 			try {
-			 Date fromDate = new SimpleDateFormat("MM/dd/yyyy").parse(dashBoardForm.getFromDate());
-			 Date toDate = new SimpleDateFormat("MM/dd/yyyy").parse(dashBoardForm.getToDate());
-		    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			queryStr += " and createdDate BETWEEN '" + formatter.format(fromDate+" 00:00:00") + "' AND '" + formatter.format(toDate+" 23:59:59")+"'";
+			 Date fromDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(dashBoardForm.getFromDate()+" 00:00:00");
+			 Date toDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(dashBoardForm.getToDate()+" 23:59:59");
+			 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			 queryStr += " and createdDate BETWEEN '" + formatter.format(fromDate) + "' AND '" + formatter.format(toDate)+"'";
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -106,7 +108,10 @@ public class UserDaoImpl implements UserDao {
 			currentStatusList.add(1);
 			currentStatusList.add(2);
 			currentStatusList.add(3);
-			currentStatusList.add(4);
+			if(dashBoardForm.getEmail() == null && dashBoardForm.getMobileNumber() == null){
+				
+				currentStatusList.add(4);
+			}
 		}
 		
 		queryStr += " order by leadiId desc";

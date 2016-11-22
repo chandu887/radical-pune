@@ -81,6 +81,10 @@ function getCourseList(courseID,categeoryID) {
 	var categeoryId = $("#"+categeoryID).val();
 	var coursedropdown= $("#"+courseID);
 	coursedropdown.empty();
+	if (categeoryID == 'courseCategeory') {
+		coursedropdown.append($('<option>', { value: '0', text: 'Select Course'}, '</option>'));
+	}
+	
     $.ajax({
         type : "post", 
         url : basepath + "/getCoursesBasedOnCategoryId", 
