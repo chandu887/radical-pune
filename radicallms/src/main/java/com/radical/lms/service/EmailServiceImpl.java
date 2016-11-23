@@ -24,6 +24,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 import org.apache.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,80 +118,82 @@ public class EmailServiceImpl implements EmailService {
 			Message[] messages = inbox.getMessages(1, inbox.getMessageCount());
 
 			for (int i = messages.length - 1; i > 0; i--) {
-				Message message = messages[i];
-				Address[] addressArray = message.getFrom();
-				Date emailReceivedDate = message.getReceivedDate();
-				if (firstEmailTimeInMillis == 0) {
-					firstEmailTimeInMillis = emailReceivedDate.getTime();
-				}
-				if (lastEmailTimeInMillis >= emailReceivedDate.getTime()) {
-					break;
-				}
-				/*if (addressArray[0].toString().equalsIgnoreCase("Radicaltechnologies <radicaltechnologies.co.in@gmail.com>")) {*/
-
-					/*String mailsubject = message.getSubject();
-					Multipart multiPart = (Multipart) message.getContent();
-					BodyPart bodyPart = multiPart.getBodyPart(0);
-					String mailContent = (String) bodyPart.getContent();*/
-
+				try {
+					Message message = messages[i];
+					Address[] addressArray = message.getFrom();
+					Date emailReceivedDate = message.getReceivedDate();
+					if (firstEmailTimeInMillis == 0) {
+						firstEmailTimeInMillis = emailReceivedDate.getTime();
+					}
+					if (lastEmailTimeInMillis >= emailReceivedDate.getTime()) {
+						break;
+					}
 					String mailsubject = message.getSubject();
 					String mailContent = "";
-					Object content = message.getContent();  
-					if (content instanceof String)  
-					{  
-						mailContent = (String)content;  
-					}  
-					else if (content instanceof Multipart)  
-					{  
-						Multipart multiPart = (Multipart) content;
-						BodyPart bodyPart = multiPart.getBodyPart(0);
-						mailContent = (String) bodyPart.getContent();
-  
-					}
-					
-					
-					if (mailsubject.contains("Yet5.com")) {
-						leadsEntity = processYet5MailContent(mailContent, emailReceivedDate);
-					} else if (mailsubject.contains("enquiry for you at")) {
-						leadsEntity = processJustDailMailConten(mailContent, emailReceivedDate);
-					} /*
-						 * else if (mailsubject.contains("UrbanPro-Customers"))
-						 * { processUrbanProMailContent(mailContent, date); }
-						 */ else if (mailsubject.contains("A user contacted you through us")) {
-						leadsEntity = processSulekhaMailContent(mailContent, emailReceivedDate);
-					} else if (mailsubject.contains("Quick Inquiry Details")) {
-						leadsEntity = processRadicalMailContent(mailContent, emailReceivedDate);
-					}
-//				}
+						Object content = message.getContent();  
+						if (content instanceof String)  
+						{  
+							mailContent = (String)content;
+							Document doc = Jsoup.parse(mailContent);
+							mailContent = doc.text();
+							if (mailsubject.contains("Yet5.com : New Training Enquiry")) {
+								leadsEntity = processYet5MailContentHTML(mailContent, emailReceivedDate);
+							} else if (mailsubject.contains("enquiry for you at")) {
+								leadsEntity = processJustDailMailContentHTML(mailContent, emailReceivedDate);
+							} /*
+								 * else if (mailsubject.contains("UrbanPro-Customers"))
+								 * { processUrbanProMailContent(mailContent, date); }
+								 */ else if (mailsubject.contains("A user contacted you through us")) {
+								leadsEntity = processSulekhaMailContent(mailContent, emailReceivedDate);
+							}
+						}  
+						else if (content instanceof Multipart)  
+						{  
+							Multipart multiPart = (Multipart) content;
+							BodyPart bodyPart = multiPart.getBodyPart(0);
+							mailContent = (String) bodyPart.getContent();
+							
+							if (mailsubject.contains("Yet5.com : New Training Enquiry")) {
+								leadsEntity = processYet5MailContent(mailContent, emailReceivedDate);
+							} else if (mailsubject.contains("enquiry for you at")) {
+								leadsEntity = processJustDailMailContent(mailContent, emailReceivedDate);
+							} /*
+								 * else if (mailsubject.contains("UrbanPro-Customers"))
+								 * { processUrbanProMailContent(mailContent, date); }
+								 */ else if (mailsubject.contains("A user contacted you through us")) {
+								leadsEntity = processSulekhaMailContent(mailContent, emailReceivedDate);
+							}
+						}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				
 			}
 		} catch (MessagingException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+		
 
 		if (firstEmailTimeInMillis == 0) {
 			firstEmailTimeInMillis = lastEmailTimeInMillis;
 		}
-		if (leadsEntity != null) {
+		/*if (leadsEntity != null) {
 			if (leadsEntity.getEmailId() != null) {
-				/*if (leadsEntity.getCourse() != 0) {*/
 					sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,
 							null);
-				/*}*/
 			}
 			if (leadsEntity.getMobileNo() != null) {
 				userService.sendSms(Constants.SMS_TEMPLATE, leadsEntity.getMobileNo());
 			}
-		}
+		}*/
 		EmailTimeEntity emailTimeEntity = new EmailTimeEntity();
 		emailTimeEntity.setId(1);
 		emailTimeEntity.setLastEmailTime(firstEmailTimeInMillis);
 		emailDao.saveEmailTime(emailTimeEntity);
 	}
-
+	
 	private LeadsEntity processRadicalMailContent(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
@@ -236,7 +240,7 @@ public class EmailServiceImpl implements EmailService {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
 			String[] spiltContent = mailContent.split("\\n");
-			String[] nameArray = spiltContent[14].split(":");
+			String[] nameArray = spiltContent[142].split(":");
 			String name = nameArray[1].replace("*", "").trim();
 
 			String[] mobileNoArray = spiltContent[16].split(":");
@@ -278,6 +282,43 @@ public class EmailServiceImpl implements EmailService {
 		return leadsEntity;
 
 	}
+	
+	private LeadsEntity processYet5MailContentHTML(String mailContent, Date date) {
+		LeadsEntity leadsEntity = new LeadsEntity();
+		try {
+		String name = mailContent.substring(mailContent.indexOf("Name:"), mailContent.indexOf("Mobile No.:")).replace("Name:", "").trim();
+		String mobileNo = mailContent.substring(mailContent.indexOf("Mobile No.:"),mailContent.indexOf("Email ID")).replace("Mobile No.:", "").trim();
+		String email = mailContent.substring(mailContent.indexOf("Email ID:"),mailContent.indexOf("City & Area:")).replace("Email ID:", "").trim();
+		String course = mailContent.substring(mailContent.indexOf("Course:"),mailContent.indexOf("Comments:")).replace("Course:", "").trim();
+		leadsEntity.setName(name);
+		leadsEntity.setMobileNo(mobileNo);
+		leadsEntity.setEmailId(email);
+		leadsEntity.setStatus(1);
+		leadsEntity.setCreatedDate(date);
+		leadsEntity.setLastUpdatedDate(date);
+		int courseId = 0;
+		for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
+			if (course.equalsIgnoreCase(entry.getValue())) {
+				courseId = entry.getKey();
+				break;
+			}
+		}
+		int courseCategory = 0;
+		if (courseId != 0) {
+			courseCategory = userService.getCoursesCategeoryMapping().get(courseId);
+		}
+		leadsEntity.setCourse(courseId);
+		leadsEntity.setCourseCategeory(courseCategory);
+
+		leadsEntity.setLeadSource(getLeadSoureId("YET5"));
+
+		leadService.saveLead(leadsEntity);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Processing yet5 mail" + e.getMessage());
+		}
+		return leadsEntity;
+	}
 
 	private int getLeadSoureId(String leadSource) {
 		for (Map.Entry<Integer, String> entry : userService.getLeadSourceMapping().entrySet()) {
@@ -300,7 +341,7 @@ public class EmailServiceImpl implements EmailService {
 
 	}
 
-	private LeadsEntity processJustDailMailConten(String mailContent, Date date) {
+	private LeadsEntity processJustDailMailContent(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
 			System.out.println(mailContent);
@@ -331,6 +372,18 @@ public class EmailServiceImpl implements EmailService {
 		return leadsEntity;
 
 	}
+	private LeadsEntity processJustDailMailContentHTML(String mailContent, Date date) {
+		LeadsEntity leadsEntity = new LeadsEntity();
+		try {
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Processing JustDail mail" + e.getMessage());
+		}
+		return leadsEntity;
+
+	}
+		
 
 	private LeadsEntity processSulekhaMailContent(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();

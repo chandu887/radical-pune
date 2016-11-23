@@ -11,10 +11,10 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 import com.radical.lms.service.EmailService;
 
 public class MailReadingJob extends QuartzJobBean{
-
+	ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoaderListener.getCurrentWebApplicationContext().getServletContext());
 	@Override
 	public void executeInternal(JobExecutionContext arg0) throws JobExecutionException {
-		ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoaderListener.getCurrentWebApplicationContext().getServletContext());
+		
 
 		EmailService emailService = (EmailService) springContext.getBean("emailService");
 
