@@ -80,7 +80,7 @@ xmlns:mvc="http://www.springframework.org/schema/mvc"
     <bean id="userService" class="com.radical.lms.service.UserServiceImpl" init-method="init" ></bean> 
     
     <bean id="emailDao" class="com.radical.lms.dao.EmailDaoImpl"></bean>
-    <bean id="emailService" class="com.radical.lms.service.EmailServiceImpl" init-method="init"></bean> 
+    <bean id="emailService" class="com.radical.lms.service.EmailServiceImpl"></bean> 
     
     <bean id="leadDao" class="com.radical.lms.dao.LeadDaoImpl"></bean>
     <bean id="leadService" class="com.radical.lms.service.LeadServiceImpl"></bean>

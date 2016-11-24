@@ -51,7 +51,9 @@ public interface UserService {
 	
 	void saveTemplate(CourseEntity courseEntity);
 	
-	List<MailTemplateBean> getCoursesList(DashBoardForm dashBoardForm);
+	List<MailTemplateBean> getMailTemplateList(DashBoardForm dashBoardForm);
+	
+	List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm);
 	
 	int getTemplatesCount(DashBoardForm dashBoardForm);
 	

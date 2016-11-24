@@ -6,17 +6,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
 import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Folder;
 import javax.mail.Message;
+import javax.mail.Message.RecipientType;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.Transport;
-import javax.mail.Message.RecipientType;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
@@ -34,6 +35,7 @@ import com.radical.lms.dao.EmailDao;
 import com.radical.lms.entity.EmailTimeEntity;
 import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.SendEmailEntity;
+import com.radical.lms.thread.EmailThread;
 
 public class EmailServiceImpl implements EmailService {
 
@@ -52,10 +54,12 @@ public class EmailServiceImpl implements EmailService {
 	Store store = null;
 
 	private Properties properties = new Properties();
-
+	
+	@PostConstruct
 	public void init() {
 		setEmailSession();
 		setMailStore();
+		new Thread(new EmailThread()).start();
 	}
 
 	private void setEmailSession() {
@@ -130,26 +134,26 @@ public class EmailServiceImpl implements EmailService {
 					}
 					String mailsubject = message.getSubject();
 					String mailContent = "";
-						Object content = message.getContent();  
-						if (content instanceof String)  
+					//Object content = ;
+					if (mailsubject.contains("Yet5.com : New Training Enquiry")
+							|| mailsubject.contains("enquiry for you at")
+							|| mailsubject.contains("A user contacted you through us")) {
+						if (message.getContent() instanceof String)  
 						{  
-							mailContent = (String)content;
+							mailContent = (String) message.getContent();
 							Document doc = Jsoup.parse(mailContent);
 							mailContent = doc.text();
 							if (mailsubject.contains("Yet5.com : New Training Enquiry")) {
 								leadsEntity = processYet5MailContentHTML(mailContent, emailReceivedDate);
 							} else if (mailsubject.contains("enquiry for you at")) {
 								leadsEntity = processJustDailMailContentHTML(mailContent, emailReceivedDate);
-							} /*
-								 * else if (mailsubject.contains("UrbanPro-Customers"))
-								 * { processUrbanProMailContent(mailContent, date); }
-								 */ else if (mailsubject.contains("A user contacted you through us")) {
+							} else if (mailsubject.contains("A user contacted you through us")) {
 								leadsEntity = processSulekhaMailContent(mailContent, emailReceivedDate);
 							}
 						}  
-						else if (content instanceof Multipart)  
+						else if (message.getContent() instanceof Multipart)  
 						{  
-							Multipart multiPart = (Multipart) content;
+							Multipart multiPart = (Multipart) message.getContent();
 							BodyPart bodyPart = multiPart.getBodyPart(0);
 							mailContent = (String) bodyPart.getContent();
 							
@@ -157,15 +161,13 @@ public class EmailServiceImpl implements EmailService {
 								leadsEntity = processYet5MailContent(mailContent, emailReceivedDate);
 							} else if (mailsubject.contains("enquiry for you at")) {
 								leadsEntity = processJustDailMailContent(mailContent, emailReceivedDate);
-							} /*
-								 * else if (mailsubject.contains("UrbanPro-Customers"))
-								 * { processUrbanProMailContent(mailContent, date); }
-								 */ else if (mailsubject.contains("A user contacted you through us")) {
+							} else if (mailsubject.contains("A user contacted you through us")) {
 								leadsEntity = processSulekhaMailContent(mailContent, emailReceivedDate);
 							}
 						}
+					}
 				} catch (Exception e) {
-					// TODO: handle exception
+					e.printStackTrace();
 				}
 				
 			}

@@ -160,7 +160,7 @@ public class UserController {
 		dashBoardForm.setLimitList(limitList);
 
 		if (isFromViewMailTemplate) {
-			List<MailTemplateBean> templateList = userService.getCoursesList(dashBoardForm);
+			List<MailTemplateBean> templateList = userService.getMailTemplateList(dashBoardForm);
 			map.addAttribute("templateList", templateList);
 			dashBoardForm.setViewPage("viewMailTemplate");
 		} else {
@@ -172,7 +172,7 @@ public class UserController {
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
 		Map<Integer, String> courseCategories = userService.getCourseCategories();
 		Map<Integer, String> coursesMap = this.userService.getCourses();
-		List<MailTemplateBean> courseTemplates = userService.getCoursesList(dashBoardForm);
+		List<CourseEntity> courseTemplates = userService.getCoursesList(dashBoardForm);
 		map.addAttribute("courseTemplates", courseTemplates);
 
 		map.addAttribute("dashBoardForm", dashBoardForm);

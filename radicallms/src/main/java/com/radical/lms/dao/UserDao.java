@@ -25,7 +25,7 @@ public interface UserDao {
 	
 	List<CourseEntity> getCourses();
 	
-	List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm);
+	List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm, boolean flag);
 	
 	List<LeadSourcesEntity> getLeadSources();
 	

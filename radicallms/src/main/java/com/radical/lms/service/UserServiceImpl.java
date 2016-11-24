@@ -370,9 +370,9 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Transactional
-	public List<MailTemplateBean> getCoursesList(DashBoardForm dashBoardForm) {
+	public List<MailTemplateBean> getMailTemplateList(DashBoardForm dashBoardForm) {
 		List<MailTemplateBean> templateList = new ArrayList<MailTemplateBean>();
-		List<CourseEntity> coursesList = userDao.getCoursesList(dashBoardForm);
+		List<CourseEntity> coursesList = userDao.getCoursesList(dashBoardForm, true);
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		for (CourseEntity courseEntity : coursesList) {
 			MailTemplateBean templateBean = new MailTemplateBean();
@@ -391,6 +391,14 @@ public class UserServiceImpl implements UserService {
 		}
 		return templateList;
 	}
+	
+	@Transactional
+	public List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm) {
+		List<CourseEntity> coursesList = userDao.getCoursesList(dashBoardForm, false);
+		return coursesList;
+	}
+	
+	
 	
 	@Transactional
 	public void sendSms(String sms, String mobileNumber) {
