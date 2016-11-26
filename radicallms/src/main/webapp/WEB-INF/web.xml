@@ -7,6 +7,15 @@
     id="WebApp_ID" version="2.5">
     
   <display-name>Archetype Created Web Application</display-name>
+  
+<!--   <context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/applicationContext.xml</param-value>
+	</context-param>--> 
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
     <filter>
         <filter-name>UserAccess Filter</filter-name>
         <filter-class>
@@ -36,6 +45,7 @@
     </filter-mapping>
     
     
+    
     <servlet>
         <servlet-name>radicallms</servlet-name>
         <servlet-class>
@@ -52,8 +62,5 @@
 	    <param-value>
 	    /WEB-INF/radicallms-servlet.xml
 	    </param-value>
-	</context-param>
-    <!-- <listener>
-	    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-	</listener> -->
+	</context-param> 
 </web-app>

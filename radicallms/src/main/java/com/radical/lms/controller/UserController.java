@@ -54,9 +54,9 @@ public class UserController {
 
 	private boolean getData = false;
 
-	public void setUserService(UserService userService) {
+	/*public void setUserService(UserService userService) {
 		this.userService = userService;
-	}
+	}*/
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String homepage(ModelMap map, HttpServletRequest request) {

@@ -14,11 +14,9 @@ import com.radical.lms.service.UserService;
 
 public class EmailThread implements Runnable {
 
-	
 	public void run() {  
 		System.out.println("Emailthread calling");
 		try {
-			Thread.currentThread().sleep(300000);
 			ApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ContextLoaderListener.getCurrentWebApplicationContext().getServletContext());
 			System.out.println("Emailthread executing");
 			EmailService emailService = (EmailService) springContext.getBean("emailService");
@@ -40,11 +38,14 @@ public class EmailThread implements Runnable {
 				sendEmailEntity.setEmailSendTime(new Date());
 				emailService.updateEmailEntries(sendEmailEntity);
 			}
+			
+			Thread.currentThread().sleep(10000);
 			new Thread(new EmailThread()).start();
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+
 	}  
 	
 }
