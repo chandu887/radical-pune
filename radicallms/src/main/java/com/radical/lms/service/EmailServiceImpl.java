@@ -42,7 +42,7 @@ public class EmailServiceImpl implements EmailService {
 	final static Logger logger = Logger.getLogger(EmailServiceImpl.class);
 	@Autowired
 	private LeadService leadService;
-
+	
 	@Autowired
 	private EmailDao emailDao;
 
@@ -54,7 +54,7 @@ public class EmailServiceImpl implements EmailService {
 	Store store = null;
 
 	private Properties properties = new Properties();
-	
+
 	@PostConstruct
 	public void init() {
 		setEmailSession();
@@ -134,68 +134,65 @@ public class EmailServiceImpl implements EmailService {
 					}
 					String mailsubject = message.getSubject();
 					String mailContent = "";
-					//Object content = ;
-					if (mailsubject.contains("Yet5.com : New Training Enquiry")
-							|| mailsubject.contains("enquiry for you at")
-							|| mailsubject.contains("A user contacted you through us")) {
-						if (message.getContent() instanceof String)  
-						{  
-							mailContent = (String) message.getContent();
+					String mailId = addressArray[0].toString();
+					Object content = message.getContent();
+					if (mailId.contains("blrfeedback@justdial.com") || mailId.contains("care@yet5.com")
+							|| mailId.contains("ypleads@sulekhanotifications.com")) {
+						if (content instanceof String) {
+							mailContent = (String) content;
 							Document doc = Jsoup.parse(mailContent);
 							mailContent = doc.text();
-							if (mailsubject.contains("Yet5.com : New Training Enquiry")) {
+							if (mailId.contains("care@yet5.com")) {
 								leadsEntity = processYet5MailContentHTML(mailContent, emailReceivedDate);
-							} else if (mailsubject.contains("enquiry for you at")) {
+							} else if (mailId.contains("blrfeedback@justdial.com")) {
 								leadsEntity = processJustDailMailContentHTML(mailContent, emailReceivedDate);
-							} else if (mailsubject.contains("A user contacted you through us")) {
-								leadsEntity = processSulekhaMailContent(mailContent, emailReceivedDate);
+							} else if (mailId.contains("ypleads@sulekhanotifications.com")) {
+								leadsEntity = processSulekhaMailContentHTML(mailContent, emailReceivedDate);
 							}
-						}  
-						else if (message.getContent() instanceof Multipart)  
-						{  
-							Multipart multiPart = (Multipart) message.getContent();
+						} else if ((content instanceof Multipart)) {
+							Multipart multiPart = (Multipart) content;
 							BodyPart bodyPart = multiPart.getBodyPart(0);
 							mailContent = (String) bodyPart.getContent();
-							
-							if (mailsubject.contains("Yet5.com : New Training Enquiry")) {
+							if (mailId.contains("care@yet5.com")) {
 								leadsEntity = processYet5MailContent(mailContent, emailReceivedDate);
-							} else if (mailsubject.contains("enquiry for you at")) {
-								leadsEntity = processJustDailMailContent(mailContent, emailReceivedDate);
-							} else if (mailsubject.contains("A user contacted you through us")) {
-								leadsEntity = processSulekhaMailContent(mailContent, emailReceivedDate);
+							} else if (mailId.contains("blrfeedback@justdial.com")) {
+								if (mailsubject.contains("www.justdial.com")) {
+									leadsEntity = processJustDailMailContentTypeOne(mailContent, emailReceivedDate);
+								} else if (mailsubject.contains("enquiry for you at")) {
+									leadsEntity = processJustDailMailContentTypeTwo(mailContent, emailReceivedDate);
+								}
+							} else if (mailId.contains("ypleads@sulekhanotifications.com")) {
+								leadsEntity = processSulekhaMailContentHTMLNew(mailContent, emailReceivedDate);
 							}
 						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				
+
 			}
 		} catch (MessagingException e) {
 			e.printStackTrace();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-		
 
 		if (firstEmailTimeInMillis == 0) {
 			firstEmailTimeInMillis = lastEmailTimeInMillis;
 		}
-		/*if (leadsEntity != null) {
-			if (leadsEntity.getEmailId() != null) {
-					sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,
-							null);
-			}
-			if (leadsEntity.getMobileNo() != null) {
-				userService.sendSms(Constants.SMS_TEMPLATE, leadsEntity.getMobileNo());
-			}
-		}*/
+		/*
+		 * if (leadsEntity != null) { if (leadsEntity.getEmailId() != null) {
+		 * sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT, null); }
+		 * if (leadsEntity.getMobileNo() != null) {
+		 * userService.sendSms(Constants.SMS_TEMPLATE,
+		 * leadsEntity.getMobileNo()); } }
+		 */
 		EmailTimeEntity emailTimeEntity = new EmailTimeEntity();
 		emailTimeEntity.setId(1);
 		emailTimeEntity.setLastEmailTime(firstEmailTimeInMillis);
 		emailDao.saveEmailTime(emailTimeEntity);
 	}
-	
+
 	private LeadsEntity processRadicalMailContent(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
@@ -284,37 +281,42 @@ public class EmailServiceImpl implements EmailService {
 		return leadsEntity;
 
 	}
-	
+
 	private LeadsEntity processYet5MailContentHTML(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
-		String name = mailContent.substring(mailContent.indexOf("Name:"), mailContent.indexOf("Mobile No.:")).replace("Name:", "").trim();
-		String mobileNo = mailContent.substring(mailContent.indexOf("Mobile No.:"),mailContent.indexOf("Email ID")).replace("Mobile No.:", "").trim();
-		String email = mailContent.substring(mailContent.indexOf("Email ID:"),mailContent.indexOf("City & Area:")).replace("Email ID:", "").trim();
-		String course = mailContent.substring(mailContent.indexOf("Course:"),mailContent.indexOf("Comments:")).replace("Course:", "").trim();
-		leadsEntity.setName(name);
-		leadsEntity.setMobileNo(mobileNo);
-		leadsEntity.setEmailId(email);
-		leadsEntity.setStatus(1);
-		leadsEntity.setCreatedDate(date);
-		leadsEntity.setLastUpdatedDate(date);
-		int courseId = 0;
-		for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
-			if (course.equalsIgnoreCase(entry.getValue())) {
-				courseId = entry.getKey();
-				break;
+			String name = mailContent.substring(mailContent.indexOf("Name:"), mailContent.indexOf("Mobile No.:"))
+					.replace("Name:", "").trim();
+			String mobileNo = mailContent.substring(mailContent.indexOf("Mobile No.:"), mailContent.indexOf("Email ID"))
+					.replace("Mobile No.:", "").replace("+91", "").trim();
+			String email = mailContent.substring(mailContent.indexOf("Email ID:"), mailContent.indexOf("City & Area:"))
+					.replace("Email ID:", "").trim();
+			String course = mailContent.substring(mailContent.indexOf("Course:"), mailContent.indexOf("Comments:"))
+					.replace("Course:", "").trim();
+			leadsEntity.setName(name);
+			leadsEntity.setMobileNo(mobileNo);
+			leadsEntity.setEmailId(email);
+			leadsEntity.setStatus(1);
+			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLastUpdatedDate(date);
+			int courseId = 0;
+			System.out.println(email);
+			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
+				if (course.equalsIgnoreCase(entry.getValue())) {
+					courseId = entry.getKey();
+					break;
+				}
 			}
-		}
-		int courseCategory = 0;
-		if (courseId != 0) {
-			courseCategory = userService.getCoursesCategeoryMapping().get(courseId);
-		}
-		leadsEntity.setCourse(courseId);
-		leadsEntity.setCourseCategeory(courseCategory);
+			int courseCategory = 0;
+			if (courseId != 0) {
+				courseCategory = userService.getCoursesCategeoryMapping().get(courseId);
+			}
+			leadsEntity.setCourse(courseId);
+			leadsEntity.setCourseCategeory(courseCategory);
 
-		leadsEntity.setLeadSource(getLeadSoureId("YET5"));
+			leadsEntity.setLeadSource(getLeadSoureId("YET5"));
 
-		leadService.saveLead(leadsEntity);
+			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error while Processing yet5 mail" + e.getMessage());
@@ -374,10 +376,11 @@ public class EmailServiceImpl implements EmailService {
 		return leadsEntity;
 
 	}
+
 	private LeadsEntity processJustDailMailContentHTML(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error while Processing JustDail mail" + e.getMessage());
@@ -385,7 +388,49 @@ public class EmailServiceImpl implements EmailService {
 		return leadsEntity;
 
 	}
-		
+
+	private LeadsEntity processJustDailMailContentTypeTwo(String mailContent, Date date) {
+		LeadsEntity leadsEntity = new LeadsEntity();
+		try {
+			String[] spiltContent = mailContent.split("\\n");
+			String name = spiltContent[1].substring((spiltContent[1].indexOf("Caller Name:"))).replace("Caller Name:", "").replace("Caller", "").trim();
+			String course = spiltContent[2].substring(spiltContent[2].indexOf("Requirement:")).replace("Call Date &", "").replace("Requirement:", "").trim();
+			String city = spiltContent[3].substring(spiltContent[3].indexOf("LayoutCity:")).replace("Caller", "").replace("LayoutCity:", "").trim();
+			String mobileNumber = spiltContent[4].substring(spiltContent[4].indexOf("Phone:")).replace("Caller", "").replace("+91", "").replace("Phone:", "").trim();
+			String emailId = spiltContent[5].substring(spiltContent[5].indexOf("Email:")).replace("Get", "").replace("Email:", "").trim();
+			leadsEntity.setName(name);
+			leadsEntity.setMobileNo(mobileNumber);
+			leadsEntity.setEmailId(emailId);
+			leadsEntity.setStatus(1);
+			leadsEntity.setCity(city);
+			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLastUpdatedDate(date);
+			int courseId = 0;
+			System.out.println(emailId);
+			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
+				if (course.equalsIgnoreCase(entry.getValue())) {
+					courseId = entry.getKey();
+					break;
+				}
+			}
+			int courseCategory = 0;
+			if (courseId != 0) {
+				courseCategory = userService.getCoursesCategeoryMapping().get(courseId);
+			}
+			leadsEntity.setCourse(courseId);
+			leadsEntity.setCourseCategeory(courseCategory);
+
+			leadsEntity.setLeadSource(getLeadSoureId("Justdail"));
+
+			leadService.saveLead(leadsEntity);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Processing JustDail mail" + e.getMessage());
+		}
+		return leadsEntity;
+
+	}
 
 	private LeadsEntity processSulekhaMailContent(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();
@@ -417,7 +462,7 @@ public class EmailServiceImpl implements EmailService {
 	@Transactional
 	public boolean sendMail(String toMailId, String subject, String mailBody) {
 		try {
-			if(mailBody==null){
+			if (mailBody == null) {
 				mailBody = properties.getProperty(Constants.MAIL_BODY);
 			}
 			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
@@ -450,6 +495,118 @@ public class EmailServiceImpl implements EmailService {
 			ex.printStackTrace();
 			return false;
 		}
+	}
+
+	private LeadsEntity processJustDailMailContentTypeOne(String mailContent, Date date) {
+		LeadsEntity leadsEntity = new LeadsEntity();
+		try {
+			String[] spiltContent = mailContent.split("\\n");
+			String name = spiltContent[2].trim();
+			String course = spiltContent[5].trim();
+			String city = spiltContent[14].trim();
+			String mobilenumber = spiltContent[17].replace("+91", "").trim();
+			String emailId = null;
+			if(spiltContent[19].contains("Caller Email :")){
+				emailId = spiltContent[20].trim();
+			} 
+			System.out.println(emailId);
+			leadsEntity.setName(name);
+			leadsEntity.setCity(city);
+			leadsEntity.setMobileNo(mobilenumber);
+			leadsEntity.setEmailId(emailId);
+			leadsEntity.setStatus(1);
+			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLastUpdatedDate(date);
+			int courseId = 0;
+			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
+				if (course.equalsIgnoreCase(entry.getValue())) {
+					courseId = entry.getKey();
+					break;
+				}
+			}
+			int courseCategory = 0;
+			if (courseId != 0) {
+				courseCategory = userService.getCoursesCategeoryMapping().get(courseId);
+			}
+			leadsEntity.setCourse(courseId);
+			leadsEntity.setCourseCategeory(courseCategory);
+			leadsEntity.setLeadSource(getLeadSoureId("Justdail"));
+			leadService.saveLead(leadsEntity);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Processing JustDail mail" + e.getMessage());
+		}
+		return leadsEntity;
+
+	}
+
+	private LeadsEntity processSulekhaMailContentHTML(String mailContent, Date date) {
+		LeadsEntity leadsEntity = new LeadsEntity();
+		try {
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Processing sulekha mail" + e.getMessage());
+		}
+		return leadsEntity;
+	}
+
+	private LeadsEntity processSulekhaMailContentHTMLNew(String mailContent, Date date) {
+		LeadsEntity leadsEntity = new LeadsEntity();
+		try {
+			String[] spiltContent = mailContent.split("\\n");
+			String name = spiltContent[0]
+					.substring(spiltContent[0].indexOf("Customer's name:"), spiltContent[0].indexOf("Looking for:"))
+					.replace("Customer's name:", "").trim();
+			String course = null;
+			if(spiltContent[0].contains("Additional info:")){
+				course = spiltContent[0].substring(spiltContent[0].indexOf("Service preference:"),
+						spiltContent[0].indexOf("Additional info:")).replace("Service preference:", "").trim();
+			} else {
+				course = spiltContent[0].substring(spiltContent[0].indexOf("Service preference:"),
+						spiltContent[0].indexOf("Contact details")).replace("Service preference:", "").trim();
+			}
+			String city = spiltContent[0]
+					.substring(spiltContent[0].indexOf("City:"), spiltContent[0].indexOf("Locality:"))
+					.replace("City:", "").trim();
+			String mobileNumber = spiltContent[0]
+					.substring(spiltContent[0].indexOf("Mobile number:"),
+							spiltContent[0].indexOf("To call this user from"))
+					.replace("Mobile number:", "").replaceAll("\\W", "").replace("91", "").trim();
+			String emailId = null;
+			if ((spiltContent[0].indexOf("Email ID:")) != -1) {
+				emailId = spiltContent[0]
+						.substring(spiltContent[0].indexOf("Email ID:"), spiltContent[0].indexOf("Mobile number:"))
+						.replace("Email ID:", "").trim();
+			}
+			System.out.println(emailId);
+			int courseId = 0;
+			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
+				if (course.equalsIgnoreCase(entry.getValue())) {
+					courseId = entry.getKey();
+					break;
+				}
+			}
+			int courseCategory = 0;
+			if (courseId != 0) {
+				courseCategory = userService.getCoursesCategeoryMapping().get(courseId);
+			}
+			leadsEntity.setName(name);
+			leadsEntity.setCity(city);
+			leadsEntity.setCourse(courseId);
+			leadsEntity.setCourseCategeory(courseCategory);
+			leadsEntity.setMobileNo(mobileNumber);
+			leadsEntity.setEmailId(null);
+			leadsEntity.setStatus(1);
+			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLastUpdatedDate(date);
+			leadsEntity.setLeadSource(getLeadSoureId("sulekha"));
+			leadService.saveLead(leadsEntity);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Processing sulekha+ mail" + e.getMessage());
+		}
+		return leadsEntity;
 	}
 
 }

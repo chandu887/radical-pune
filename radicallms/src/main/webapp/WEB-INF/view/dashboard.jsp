@@ -37,8 +37,24 @@
 <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+	<script >
+	$(document).ready(function(){
+        $('#select_all').on('click',function(){
+            if(this.checked){
+            $('.checkbox').each(function(){
+                this.checked = true;
+            });
+            }else{
+                $('.checkbox').each(function(){
+                    this.checked = false;
+            });
+                }
+            });
+    });
+	</script>
 
 <script>
+
 function validateAddLeadform() {
 	var mobileNo = $('#mobileNo').val();
 	var courseId = $('#addCourseName').val();
@@ -464,7 +480,7 @@ var basepath = "${pageContext.request.contextPath}";
 					<table class="table table-bordered">
 						<thead>
 							<tr>
-								<th></th>
+								<th><input type="checkbox"  id="select_all" class="action_box"></th>
 								<th></th>
 								<th>Status</th>
 								<th>ENQ ID</th>
@@ -483,7 +499,7 @@ var basepath = "${pageContext.request.contextPath}";
 								<c:forEach items="${leadsList}" var="lead">
 									<tr>
 										<td><input type="checkbox" value="${lead.enqID}"
-											name="leadId"></td>
+											name="leadId" class="action_box checkbox"></td>
 										<td><a data-toggle="modal" role="button"
 											data-target="#editlead" onclick="getLeadInfo(${lead.enqID})"><i
 												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
