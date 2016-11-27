@@ -8,6 +8,13 @@ public class MailTemplateBean {
 	private String mailSubject;
 	private String mailBody;
 	private String createdTime;
+	private int categoryId;
+	public int getCategoryId() {
+		return categoryId;
+	}
+	public void setCategoryId(int categoryId) {
+		this.categoryId = categoryId;
+	}
 	public int getCourseId() {
 		return courseId;
 	}

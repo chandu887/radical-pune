@@ -114,7 +114,7 @@ public class UserDaoImpl implements UserDao {
 			}
 		}
 		
-		queryStr += " order by leadiId desc";
+		queryStr += " order by createdDate desc";
 		Query query = this.sessionFactory.getCurrentSession().createQuery(queryStr);
 		query.setParameterList("status", currentStatusList);
 		if(dashBoardForm.getFilterType() !=1 ){
@@ -158,6 +158,20 @@ public class UserDaoImpl implements UserDao {
 		List<CourseEntity> courseList = query.list();
 		if (courseList != null && !courseList.isEmpty()) {
 			return courseList;
+		}
+		return null;
+	}
+	
+	@Transactional
+	public List<CourseCategeoryEntity> getCategoryList(DashBoardForm dashBoardForm , boolean flag) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity where subject IS NOT NULL");
+		if (flag) {			
+			query.setFirstResult(dashBoardForm.getStartLimit()-1);
+			query.setMaxResults(dashBoardForm.getPageLimit());
+		}
+		List<CourseCategeoryEntity> categoryList = query.list();
+		if (categoryList != null && !categoryList.isEmpty()) {
+			return categoryList;
 		}
 		return null;
 	}
@@ -221,10 +235,17 @@ public class UserDaoImpl implements UserDao {
 		return courseList;
 	}
 	
+	public CourseCategeoryEntity getCategoryListBasedOnCourseId(int categoryId) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity where categoryId=:categoryId");
+		query.setInteger("categoryId", categoryId);
+		CourseCategeoryEntity categoryList = (CourseCategeoryEntity) query.uniqueResult(); 
+		return categoryList;
+	}
+	
 	@Transactional
-	public void saveTemplate(CourseEntity courseEntity) {
+	public void saveTemplate(CourseCategeoryEntity categoryEntity) {
 		Session session = this.sessionFactory.getCurrentSession();
-		session.saveOrUpdate(courseEntity);
+		session.saveOrUpdate(categoryEntity);
 	}
 	
 	@Transactional

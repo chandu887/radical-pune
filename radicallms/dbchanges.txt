@@ -34,3 +34,16 @@ CHANGE COLUMN `senderemailid` `courseid` INT(2) NULL ;
 ALTER TABLE `radicallms`.`courses` 
 ADD COLUMN `createdtime` DATETIME NULL DEFAULT NULL AFTER `messagebody`;
 
+27/11/2016
+=====================
+ALTER TABLE `radicallms`.`leads` 
+ADD COLUMN `coursename` VARCHAR(100) NULL DEFAULT NULL AFTER `typeoftraining`;
+
+ALTER TABLE `radicallms`.`coursecategory` 
+ADD COLUMN `subject` VARCHAR(250) NULL DEFAULT NULL AFTER `categoryname`,
+ADD COLUMN `messagebody` TEXT NULL DEFAULT NULL AFTER `subject`,
+ADD COLUMN `createdtime` DATETIME NULL DEFAULT NULL AFTER `messagebody`;
+
+
+
+

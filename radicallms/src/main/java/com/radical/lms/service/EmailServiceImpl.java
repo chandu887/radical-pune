@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.radical.lms.constants.Constants;
 import com.radical.lms.dao.EmailDao;
+import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.EmailTimeEntity;
 import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.SendEmailEntity;
@@ -42,7 +43,7 @@ public class EmailServiceImpl implements EmailService {
 	final static Logger logger = Logger.getLogger(EmailServiceImpl.class);
 	@Autowired
 	private LeadService leadService;
-	
+
 	@Autowired
 	private EmailDao emailDao;
 
@@ -180,13 +181,21 @@ public class EmailServiceImpl implements EmailService {
 		if (firstEmailTimeInMillis == 0) {
 			firstEmailTimeInMillis = lastEmailTimeInMillis;
 		}
-		/*
-		 * if (leadsEntity != null) { if (leadsEntity.getEmailId() != null) {
-		 * sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT, null); }
-		 * if (leadsEntity.getMobileNo() != null) {
-		 * userService.sendSms(Constants.SMS_TEMPLATE,
-		 * leadsEntity.getMobileNo()); } }
-		 */
+		
+		/*if (leadsEntity != null) {
+			if (leadsEntity.getEmailId() != null) {
+				if(leadsEntity.getCourseCategeory()!=0){
+					CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(leadsEntity.getCourseCategeory());
+					sendMail(leadsEntity.getEmailId(),category.getSubject(),category.getMessagebody());
+				} else {
+				sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,null);
+				}
+			}
+			if (leadsEntity.getMobileNo() != null) {
+				userService.sendSms(Constants.SMS_TEMPLATE, leadsEntity.getMobileNo());
+			}
+		}*/
+
 		EmailTimeEntity emailTimeEntity = new EmailTimeEntity();
 		emailTimeEntity.setId(1);
 		emailTimeEntity.setLastEmailTime(firstEmailTimeInMillis);
@@ -299,6 +308,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setStatus(1);
 			leadsEntity.setCreatedDate(date);
 			leadsEntity.setLastUpdatedDate(date);
+			leadsEntity.setCourseName(course);
 			int courseId = 0;
 			System.out.println(email);
 			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
@@ -393,11 +403,16 @@ public class EmailServiceImpl implements EmailService {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
 			String[] spiltContent = mailContent.split("\\n");
-			String name = spiltContent[1].substring((spiltContent[1].indexOf("Caller Name:"))).replace("Caller Name:", "").replace("Caller", "").trim();
-			String course = spiltContent[2].substring(spiltContent[2].indexOf("Requirement:")).replace("Call Date &", "").replace("Requirement:", "").trim();
-			String city = spiltContent[3].substring(spiltContent[3].indexOf("LayoutCity:")).replace("Caller", "").replace("LayoutCity:", "").trim();
-			String mobileNumber = spiltContent[4].substring(spiltContent[4].indexOf("Phone:")).replace("Caller", "").replace("+91", "").replace("Phone:", "").trim();
-			String emailId = spiltContent[5].substring(spiltContent[5].indexOf("Email:")).replace("Get", "").replace("Email:", "").trim();
+			String name = spiltContent[1].substring((spiltContent[1].indexOf("Caller Name:")))
+					.replace("Caller Name:", "").replace("Caller", "").trim();
+			String course = spiltContent[2].substring(spiltContent[2].indexOf("Requirement:"))
+					.replace("Call Date &", "").replace("Requirement:", "").trim();
+			String city = spiltContent[3].substring(spiltContent[3].indexOf("LayoutCity:")).replace("Caller", "")
+					.replace("LayoutCity:", "").trim();
+			String mobileNumber = spiltContent[4].substring(spiltContent[4].indexOf("Phone:")).replace("Caller", "")
+					.replace("+91", "").replace("Phone:", "").trim();
+			String emailId = spiltContent[5].substring(spiltContent[5].indexOf("Email:")).replace("Get", "")
+					.replace("Email:", "").trim();
 			leadsEntity.setName(name);
 			leadsEntity.setMobileNo(mobileNumber);
 			leadsEntity.setEmailId(emailId);
@@ -405,6 +420,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setCity(city);
 			leadsEntity.setCreatedDate(date);
 			leadsEntity.setLastUpdatedDate(date);
+			leadsEntity.setCourseName(course);
 			int courseId = 0;
 			System.out.println(emailId);
 			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
@@ -465,6 +481,9 @@ public class EmailServiceImpl implements EmailService {
 			if (mailBody == null) {
 				mailBody = properties.getProperty(Constants.MAIL_BODY);
 			}
+			if(subject ==null){
+				subject = Constants.MAIL_SUBJECT;
+			}
 			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
 			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
 			String host = properties.getProperty("host");
@@ -506,9 +525,9 @@ public class EmailServiceImpl implements EmailService {
 			String city = spiltContent[14].trim();
 			String mobilenumber = spiltContent[17].replace("+91", "").trim();
 			String emailId = null;
-			if(spiltContent[19].contains("Caller Email :")){
+			if (spiltContent[19].contains("Caller Email :")) {
 				emailId = spiltContent[20].trim();
-			} 
+			}
 			System.out.println(emailId);
 			leadsEntity.setName(name);
 			leadsEntity.setCity(city);
@@ -517,6 +536,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setStatus(1);
 			leadsEntity.setCreatedDate(date);
 			leadsEntity.setLastUpdatedDate(date);
+			leadsEntity.setCourseName(course);
 			int courseId = 0;
 			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
 				if (course.equalsIgnoreCase(entry.getValue())) {
@@ -559,7 +579,7 @@ public class EmailServiceImpl implements EmailService {
 					.substring(spiltContent[0].indexOf("Customer's name:"), spiltContent[0].indexOf("Looking for:"))
 					.replace("Customer's name:", "").trim();
 			String course = null;
-			if(spiltContent[0].contains("Additional info:")){
+			if (spiltContent[0].contains("Additional info:")) {
 				course = spiltContent[0].substring(spiltContent[0].indexOf("Service preference:"),
 						spiltContent[0].indexOf("Additional info:")).replace("Service preference:", "").trim();
 			} else {
@@ -579,6 +599,7 @@ public class EmailServiceImpl implements EmailService {
 						.substring(spiltContent[0].indexOf("Email ID:"), spiltContent[0].indexOf("Mobile number:"))
 						.replace("Email ID:", "").trim();
 			}
+
 			System.out.println(emailId);
 			int courseId = 0;
 			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
@@ -591,6 +612,7 @@ public class EmailServiceImpl implements EmailService {
 			if (courseId != 0) {
 				courseCategory = userService.getCoursesCategeoryMapping().get(courseId);
 			}
+			leadsEntity.setCourseName(course);
 			leadsEntity.setName(name);
 			leadsEntity.setCity(city);
 			leadsEntity.setCourse(courseId);

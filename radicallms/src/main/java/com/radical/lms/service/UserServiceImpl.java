@@ -326,10 +326,16 @@ public class UserServiceImpl implements UserService {
 				if (updateDate != null) {
 					updateDateString = dateFormat.format(updateDate);
 				}
+				String courseName="";
+				if(leadsEntity.getCourse()==0){
+					courseName = leadsEntity.getCourseName();
+				} else {
+					courseName = getCourses().get(leadsEntity.getCourse());
+				}
 
 				LeadsEntityBean leadsEntityBean = new LeadsEntityBean(leadsEntity.getLeadiId(), leadsEntity.getName(),
 						leadsEntity.getMobileNo(), leadsEntity.getEmailId(), status,
-						getCourses().get(leadsEntity.getCourse()),
+						courseName,
 						getCourseCategories().get(leadsEntity.getCourseCategeory()),
 						getLeadSourceMapping().get(leadsEntity.getLeadSource()), assgniedTo, createdDateString,
 						updateDateString, leadsEntity.getCity(), leadsEntity.getComments(), leadsEntity.getReason(),
@@ -358,10 +364,16 @@ public class UserServiceImpl implements UserService {
 	public CourseEntity getCourseListBasedOnCourseId(int courseId) {
 		return userDao.getCourseListBasedOnCourseId(courseId);
 	}
+	
+	
+	@Transactional
+	public CourseCategeoryEntity getCategoryListBasedOnCourseId(int categoryId) {
+		return userDao.getCategoryListBasedOnCourseId(categoryId);
+	}
 
 	@Transactional
-	public void saveTemplate(CourseEntity courseEntity) {
-		userDao.saveTemplate(courseEntity);
+	public void saveTemplate(CourseCategeoryEntity categoryEntiry) {
+		userDao.saveTemplate(categoryEntiry);
 	}
 	
 	@Transactional
@@ -372,20 +384,18 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public List<MailTemplateBean> getMailTemplateList(DashBoardForm dashBoardForm) {
 		List<MailTemplateBean> templateList = new ArrayList<MailTemplateBean>();
-		List<CourseEntity> coursesList = userDao.getCoursesList(dashBoardForm, true);
+		List<CourseCategeoryEntity> categoryList = userDao.getCategoryList(dashBoardForm, true);
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		for (CourseEntity courseEntity : coursesList) {
+		for (CourseCategeoryEntity categoryEntity : categoryList) {
 			MailTemplateBean templateBean = new MailTemplateBean();
-			templateBean.setCourseId(courseEntity.getCourseId());
-			templateBean.setCourseName(courseEntity.getCourseName());
-			templateBean.setCategoryName(getCourseCategories().get(courseEntity.getCategeoryId()));
-			templateBean.setMailSubject(courseEntity.getSubject());
-			templateBean.setMailBody(courseEntity.getMessagebody());
-			
-			
-			
-			if (courseEntity.getCreatedTime() != null) {
-				templateBean.setCreatedTime(dateFormat.format(courseEntity.getCreatedTime()));
+			/*templateBean.setCourseId(courseEntity.getCourseId());
+			templateBean.setCourseName(courseEntity.getCourseName());*/
+			templateBean.setCategoryId(categoryEntity.getCategoryId());
+			templateBean.setCategoryName(getCourseCategories().get(categoryEntity.getCategoryId()));
+			templateBean.setMailSubject(categoryEntity.getSubject());
+			templateBean.setMailBody(categoryEntity.getMessagebody());
+			if (categoryEntity.getCreatedTime() != null) {
+				templateBean.setCreatedTime(dateFormat.format(categoryEntity.getCreatedTime()));
 			}
 			templateList.add(templateBean);
 		}

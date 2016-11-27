@@ -344,8 +344,8 @@ var basepath = "${pageContext.request.contextPath}";
     
     
     
-    function getTemplateInfo(courseId, mailSubject, mailBody) {
-    	$('#editCourseId').val(courseId);
+    function getTemplateInfo(categoryId, mailSubject, mailBody) {
+    	$('#editCourseId').val(categoryId);
     	$('#editSubject').val(mailSubject);
     	$('#editMessageBody').val(mailBody);
     }
@@ -525,7 +525,6 @@ var basepath = "${pageContext.request.contextPath}";
                             <tr>
                                 <th></th>
                                 <th></th>
-                                <th>Course</th>
                                 <th>Category</th>
                                 <th>Subject</th>
                                 <th>Time Created</th>
@@ -534,12 +533,12 @@ var basepath = "${pageContext.request.contextPath}";
                         
                         <c:forEach items="${templateList}" var="template">
 									<tr>
-										<td><input type="checkbox" value="${template.courseId}"
+										<td><input type="checkbox" value="${template.categoryId}"
 											name="leadId"></td>
 										<td><a data-toggle="modal" role="button"
-											data-target="#editTemple" onclick="getTemplateInfo(${template.courseId}, '${template.mailSubject}', '${template.mailBody}')"><i
+											data-target="#editTemple" onclick="getTemplateInfo(${template.categoryId}, '${template.mailSubject}', '${template.mailBody}')"><i
 												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
-										<td>${template.courseName}</td>
+										
 										<td>${template.categoryName}</td>
 										<td>${template.mailSubject}</td>
 										<td>${template.createdTime}</td>
@@ -1142,14 +1141,14 @@ var basepath = "${pageContext.request.contextPath}";
 							
 								<label for="pwd">Category</label><br> <select
 									class="selectpicker" title="Select Category"
-									id="createTempateCategory" name="categeoryId"
+									id="createTempateCategory" name="categoryId"
 									onchange="getCourseList('createTemplateCourse','createTempateCategory');">
 									<c:forEach var="category" items="${courseCategories}">
 										<option value="${category.key}">${category.value}</option>
 									</c:forEach>
 								</select>
 							</div>
-							<div class="form-group">
+							<%-- <div class="form-group">
 								<label for="pwd">Course</label><br> <select
 									class="selectpicker" title="Select Course"
 									id="createTemplateCourse" name="courseId">
@@ -1157,7 +1156,7 @@ var basepath = "${pageContext.request.contextPath}";
 										<option value="${courses.key}">${courses.value}</option>
 									</c:forEach>
 								</select>
-							</div>
+							</div> --%>
 							<button type="submit" class="btn btn-success">Create
 								Template</button>
 								<button type="button" class="btn btn-danger"
@@ -1179,7 +1178,7 @@ var basepath = "${pageContext.request.contextPath}";
 				<div class="modal-body">
 					<form:form method="post" action="editMailTemplate" name="editMailTemplateForm"
 						onsubmit="return validateCreateTemplateForm()" role="form">
-						<input type="hidden" id="editCourseId" name="courseId" value="">
+						<input type="hidden" id="editCourseId" name="categoryId" value="">
 						<div class="col-sm-12">
 							<div class="form-group">
 								<label for="email">Subject</label> <input type="text"

@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.beans.MailTemplateBean;
+import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.SendEmailEntity;
@@ -49,7 +50,9 @@ public interface UserService {
 	
 	CourseEntity getCourseListBasedOnCourseId(int courseId);
 	
-	void saveTemplate(CourseEntity courseEntity);
+	CourseCategeoryEntity getCategoryListBasedOnCourseId(int categoryId);
+	
+	void saveTemplate(CourseCategeoryEntity category);
 	
 	List<MailTemplateBean> getMailTemplateList(DashBoardForm dashBoardForm);
 	

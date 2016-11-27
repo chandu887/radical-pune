@@ -27,6 +27,8 @@ public interface UserDao {
 	
 	List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm, boolean flag);
 	
+	List<CourseCategeoryEntity> getCategoryList(DashBoardForm dashBoardForm, boolean flag);
+	
 	List<LeadSourcesEntity> getLeadSources();
 	
 	String leadsChangeStatus(List<Integer>changeStatusLeadIdsList,int statusType,String reason);
@@ -39,7 +41,9 @@ public interface UserDao {
 	
 	CourseEntity getCourseListBasedOnCourseId(int courseId);
 	
-	void saveTemplate(CourseEntity courseEntity);
+	CourseCategeoryEntity getCategoryListBasedOnCourseId(int categoryId);
+	
+	void saveTemplate(CourseCategeoryEntity categoryEntity);
 	
 	void sendTemplatedEmail(SendEmailEntity sendEmailEntity);
 	

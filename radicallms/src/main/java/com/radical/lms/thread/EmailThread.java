@@ -39,7 +39,7 @@ public class EmailThread implements Runnable {
 				emailService.updateEmailEntries(sendEmailEntity);
 			}
 			
-			Thread.currentThread().sleep(300000);
+			Thread.currentThread().sleep(900000);
 			new Thread(new EmailThread()).start();
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -30,6 +30,7 @@ import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.beans.MailTemplateBean;
 import com.radical.lms.constants.Constants;
+import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.SendEmailEntity;
@@ -214,9 +215,10 @@ public class UserController {
 
 	@RequestMapping(value = "/testCron", method = RequestMethod.GET)
 	public String testCron(HttpServletRequest request) throws JobExecutionException {
-		MailReadingJob mail = new MailReadingJob();
+		/*MailReadingJob mail = new MailReadingJob();*/
+		emailService.readMailInbox();
 		// MailSendingJob mail = new MailSendingJob();
-		mail.executeInternal(null);
+		/*mail.executeInternal(null);*/
 		return "login";
 	}
 
@@ -242,9 +244,11 @@ public class UserController {
 			this.leadService.saveLead(leadsEntity);
 			if (leadsEntity != null) {
 				if (leadsEntity.getEmailId() != null) {
-					if (leadsEntity.getCourse() != 0) {
-						emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,
-								null);
+					if(leadsEntity.getCourseCategeory()!=0){
+						CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(leadsEntity.getCourseCategeory());
+						emailService.sendMail(leadsEntity.getEmailId(),category.getSubject(),category.getMessagebody());
+					} else {
+					emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,null);
 					}
 				}
 				if (leadsEntity.getMobileNo() != null) {
@@ -438,13 +442,18 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/createMailTemplate", method = RequestMethod.POST)
-	public String saveTemplate(@ModelAttribute(value = "createMailTemplateForm") CourseEntity courseEntity,
+	public String saveTemplate(@ModelAttribute(value = "createMailTemplateForm") CourseCategeoryEntity categeoryEntity,
 			Model model) {
-		CourseEntity course = userService.getCourseListBasedOnCourseId(courseEntity.getCourseId());
+		CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(categeoryEntity.getCategoryId());
+		category.setSubject(categeoryEntity.getSubject());
+		category.setMessagebody(categeoryEntity.getMessagebody());
+		category.setCreatedTime(new Date());
+		
+		/*CourseEntity course = userService.getCourseListBasedOnCourseId(courseEntity.getCourseId());
 		course.setSubject(courseEntity.getSubject());
 		course.setMessagebody(courseEntity.getMessagebody());
-		course.setCreatedTime(new Date());
-		userService.saveTemplate(course);
+		course.setCreatedTime(new Date());*/
+		userService.saveTemplate(category);
 		return "redirect:/dashboard?leadStatus=1";
 	}
 
@@ -502,12 +511,18 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/editMailTemplate", method = RequestMethod.POST)
-	public String editTemplate(@ModelAttribute(value = "editMailTemplateForm") CourseEntity courseEntity, Model model) {
-		CourseEntity course = userService.getCourseListBasedOnCourseId(courseEntity.getCourseId());
+	public String editTemplate(@ModelAttribute(value = "editMailTemplateForm")CourseCategeoryEntity categeoryEntity,
+			Model model) {
+		CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(categeoryEntity.getCategoryId());
+		category.setSubject(categeoryEntity.getSubject());
+		category.setMessagebody(categeoryEntity.getMessagebody());
+		category.setCreatedTime(new Date());
+		userService.saveTemplate(category);
+		/*CourseEntity course = userService.getCourseListBasedOnCourseId(courseEntity.getCourseId());
 		course.setSubject(courseEntity.getSubject());
 		course.setMessagebody(courseEntity.getMessagebody());
 		course.setCreatedTime(new Date());
-		userService.saveTemplate(course);
+		userService.saveTemplate(course);*/
 		return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true";
 	}
 
