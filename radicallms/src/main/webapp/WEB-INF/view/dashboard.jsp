@@ -1072,7 +1072,7 @@ var basepath = "${pageContext.request.contextPath}";
 					<form:form method="post" action="sendTemplatedMail"
 			      	id="sendTemplatedMailForm" role="form">
 						<div class="col-sm-12">
-							<%-- <div class="form-group">
+							 <div class="form-group">
 							
 								<label for="pwd">Category</label><br> <select
 									class="selectpicker" title="Select Category"
@@ -1082,8 +1082,8 @@ var basepath = "${pageContext.request.contextPath}";
 										<option value="${category.key}">${category.value}</option>
 									</c:forEach>
 								</select>
-							</div> --%>
-							<div class="form-group">
+							</div>
+							<%-- <div class="form-group">
 								<label for="pwd">Course</label><br> <select
 									class="selectpicker" title="Select Course"
 									id="sendTemplatedMailCourse" name="courseId">
@@ -1091,7 +1091,7 @@ var basepath = "${pageContext.request.contextPath}";
 										<option value="${courses.courseId}">${courses.courseName}</option>
 									</c:forEach>
 								</select>
-							</div>
+							</div> --%>
 							<input type="hidden" id="sendTemplatedMailLeadIds" name="leadIds" value="">
 							<!-- <div class="form-group">
 								<label for="pwd">Select Email:</label><br>

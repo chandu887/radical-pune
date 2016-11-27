@@ -403,9 +403,9 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Transactional
-	public List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm) {
-		List<CourseEntity> coursesList = userDao.getCoursesList(dashBoardForm, false);
-		return coursesList;
+	public List<CourseCategeoryEntity> getCategoryList(DashBoardForm dashBoardForm) {
+		List<CourseCategeoryEntity> categoryList = userDao.getCategoryList(dashBoardForm, false);
+		return categoryList;
 	}
 	
 	

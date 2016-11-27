@@ -56,7 +56,7 @@ public interface UserService {
 	
 	List<MailTemplateBean> getMailTemplateList(DashBoardForm dashBoardForm);
 	
-	List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm);
+	List<CourseCategeoryEntity> getCategoryList(DashBoardForm dashBoardForm);
 	
 	int getTemplatesCount(DashBoardForm dashBoardForm);
 	

@@ -173,7 +173,7 @@ public class UserController {
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
 		Map<Integer, String> courseCategories = userService.getCourseCategories();
 		Map<Integer, String> coursesMap = this.userService.getCourses();
-		List<CourseEntity> courseTemplates = userService.getCoursesList(dashBoardForm);
+		List<CourseCategeoryEntity> courseTemplates = userService.getCategoryList(dashBoardForm);
 		map.addAttribute("courseTemplates", courseTemplates);
 
 		map.addAttribute("dashBoardForm", dashBoardForm);
@@ -366,7 +366,7 @@ public class UserController {
 		}
 
 		session.setAttribute("dashBoardForm", dashBoardForm);
-		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+		return "redirect:/dashboard?leadStatus=0";// + dashBoardForm.getCurrentStatus();
 	}
 
 	@RequestMapping(value = "/getLeadInfo", method = RequestMethod.POST)

@@ -257,7 +257,7 @@ public class UserDaoImpl implements UserDao {
 	@Transactional
 	public int getTemplatesCount(DashBoardForm dashBoardForm) {
 				
-		String query = "select count(*) from CourseEntity where subject IS NOT NULL";
+		String query = "select count(*) from CourseCategeoryEntity where subject IS NOT NULL";
 		Query sqlQuery = this.sessionFactory.getCurrentSession().createQuery(query);
 		List result = sqlQuery.list();
 		long count = 0;
