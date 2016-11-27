@@ -572,10 +572,14 @@ var basepath = "${pageContext.request.contextPath}";
 				</section>
 			</c:if>
 
-			<c:if test="${dashBoardForm.pageTotalCount == 0}">
+			<c:if test="${dashBoardForm.pageTotalCount == 0 && dashBoardForm.viewPage == 'viewLeads'}">
 				<h3>No leads Found.</h3>
 			</c:if>
 
+				<c:if test="${dashBoardForm.pageTotalCount == 0 && dashBoardForm.viewPage == 'viewMailTemplate'}">
+				<h3>No mail templates Found.</h3>
+			</c:if>
+			
 		</div>
 	</div>
 
@@ -1076,8 +1080,7 @@ var basepath = "${pageContext.request.contextPath}";
 							
 								<label for="pwd">Category</label><br> <select
 									class="selectpicker" title="Select Category"
-									id="sendTemplatedMailCategeory" name="categeoryId"
-									onchange="getCourseList('"sendTemplatedMailCourse"','"sendTemplatedMailCategeory"');">
+									id="sendTemplatedMailCategeory" name="categeoryId">
 									<c:forEach var="category" items="${courseCategories}">
 										<option value="${category.key}">${category.value}</option>
 									</c:forEach>

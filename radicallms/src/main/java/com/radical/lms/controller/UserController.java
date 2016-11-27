@@ -173,8 +173,8 @@ public class UserController {
 		Map<Integer, String> leadSourceMapping = this.userService.getLeadSourceMapping();
 		Map<Integer, String> courseCategories = userService.getCourseCategories();
 		Map<Integer, String> coursesMap = this.userService.getCourses();
-		List<CourseCategeoryEntity> courseTemplates = userService.getCategoryList(dashBoardForm);
-		map.addAttribute("courseTemplates", courseTemplates);
+		/*List<CourseCategeoryEntity> courseTemplates = userService.getCategoryList(dashBoardForm);
+		map.addAttribute("courseTemplates", courseTemplates);*/
 
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
@@ -225,8 +225,10 @@ public class UserController {
 	@RequestMapping(value = "/addlead", method = RequestMethod.POST)
 	public String addLead(@ModelAttribute(value = "addLeadForm") LeadsEntity leadFormEntity, Model model,
 			@RequestParam("courseList") List<Integer> courseIdList) {
+		
+		LeadsEntity leadsEntity = null;
 		for (Integer courseId : courseIdList) {
-			LeadsEntity leadsEntity = new LeadsEntity();
+			leadsEntity = new LeadsEntity();
 			leadsEntity.setName(leadFormEntity.getName());
 			leadsEntity.setMobileNo(leadFormEntity.getMobileNo());
 			leadsEntity.setEmailId(leadFormEntity.getEmailId());
@@ -242,19 +244,20 @@ public class UserController {
 			leadsEntity.setCreatedDate(new Date());
 			leadsEntity.setLastUpdatedDate(new Date());
 			this.leadService.saveLead(leadsEntity);
-			if (leadsEntity != null) {
-				if (leadsEntity.getEmailId() != null) {
-					if(leadsEntity.getCourseCategeory()!=0){
-						CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(leadsEntity.getCourseCategeory());
-						emailService.sendMail(leadsEntity.getEmailId(),category.getSubject(),category.getMessagebody());
-					} else {
-					emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,null);
-					}
+		}
+		
+		if (leadsEntity != null) {
+			if (leadsEntity.getEmailId() != null) {
+				if(leadsEntity.getCourseCategeory()!=0){
+					CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(leadsEntity.getCourseCategeory());
+					emailService.sendMail(leadsEntity.getEmailId(),category.getSubject(),category.getMessagebody());
+				} else {
+				emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,null);
 				}
-				if (leadsEntity.getMobileNo() != null) {
-					userService.sendSms(Constants.SMS_TEMPLATE,
-							leadsEntity.getMobileNo());
-				}
+			}
+			if (leadsEntity.getMobileNo() != null) {
+				userService.sendSms(Constants.SMS_TEMPLATE,
+						leadsEntity.getMobileNo());
 			}
 		}
 		return "redirect:/dashboard?leadStatus=1";
@@ -459,14 +462,13 @@ public class UserController {
 
 	@RequestMapping(value = "/sendTemplatedMail", method = RequestMethod.POST)
 	public String sendTemplatedMail(HttpServletRequest request, HttpServletResponse response,
-			@RequestParam("leadIds") String sendTemplateLeadIds, @RequestParam("categeoryId") int category,
-			@RequestParam("courseId") int course) {
+			@RequestParam("leadIds") String sendTemplateLeadIds, @RequestParam("categeoryId") int category) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
-		SendEmailEntity sendEmailEntity = new SendEmailEntity();
+		/*SendEmailEntity sendEmailEntity = new SendEmailEntity();
 		String[] sendTemplateLeadIdsSplitArray = sendTemplateLeadIds.split(",");
 		for (String leadId : sendTemplateLeadIdsSplitArray) {
 			LeadsEntity lead = leadService.getLeadByLeadId(Integer.parseInt(leadId));
@@ -475,7 +477,24 @@ public class UserController {
 			sendEmailEntity.setStatus(0);
 			sendEmailEntity.setCreatedTime(new Date());
 			userService.sendTemplatedEmail(sendEmailEntity);
+		}*/
+		String[] sendTemplateLeadIdsSplitArray = sendTemplateLeadIds.split(",");
+		for (String leadId : sendTemplateLeadIdsSplitArray) {
+			LeadsEntity leadsEntity = leadService.getLeadByLeadId(Integer.parseInt(leadId));
+			
+			if (leadsEntity != null) {
+				if (leadsEntity.getEmailId() != null) {
+					if(leadsEntity.getCourseCategeory()!=0){
+						CourseCategeoryEntity categoryEntity = userService.getCategoryListBasedOnCourseId(leadsEntity.getCourseCategeory());
+						emailService.sendMail(leadsEntity.getEmailId(), categoryEntity.getSubject(), categoryEntity.getMessagebody());
+					} else {
+						emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,null);
+					}
+				}
+			}
 		}
+		
+		
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
 	}
 

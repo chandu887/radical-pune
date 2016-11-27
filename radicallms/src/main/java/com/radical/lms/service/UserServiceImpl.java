@@ -385,6 +385,9 @@ public class UserServiceImpl implements UserService {
 	public List<MailTemplateBean> getMailTemplateList(DashBoardForm dashBoardForm) {
 		List<MailTemplateBean> templateList = new ArrayList<MailTemplateBean>();
 		List<CourseCategeoryEntity> categoryList = userDao.getCategoryList(dashBoardForm, true);
+		if (categoryList == null) {
+			return templateList;
+		}
 		DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		for (CourseCategeoryEntity categoryEntity : categoryList) {
 			MailTemplateBean templateBean = new MailTemplateBean();

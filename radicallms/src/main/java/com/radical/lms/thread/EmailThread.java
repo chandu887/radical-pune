@@ -24,7 +24,7 @@ public class EmailThread implements Runnable {
 
 			emailService.readMailInbox();
 			
-			List<SendEmailEntity> emailEntries = emailService.getEmailEntries();
+			/*List<SendEmailEntity> emailEntries = emailService.getEmailEntries();
 			
 			for (SendEmailEntity sendEmailEntity : emailEntries) {
 				CourseEntity courseEntity = userService.getCourseListBasedOnCourseId(sendEmailEntity.getCourseId());
@@ -37,7 +37,7 @@ public class EmailThread implements Runnable {
 				}
 				sendEmailEntity.setEmailSendTime(new Date());
 				emailService.updateEmailEntries(sendEmailEntity);
-			}
+			}*/
 			
 			Thread.currentThread().sleep(900000);
 			new Thread(new EmailThread()).start();
