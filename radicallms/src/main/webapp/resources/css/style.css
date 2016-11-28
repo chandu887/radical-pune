@@ -36,8 +36,8 @@ section { position: relative;}
 .pagination{margin: 0 0 20px;}
 .wd50{ width: 50%; float: left}
 .btn-group, .btn-group-vertical {width: 98% !important;}
-.modal-body{ overflow: hidden;}
-
+#createTemple .modal-body, #freeemail .modal-body{ overflow: hidden;}
+#templatedemail .modal-body{min-height: 175px;}
 
 /*------- Login Page --------*/
 .form-container {bottom: 0; height: 168px; left: 0; margin: auto; position: fixed;right: 0;top: -150px;width: 450px;}
@@ -51,4 +51,9 @@ section { position: relative;}
 .error{ color: #ff0000; display: block;font-size: 12px; margin: 0 0 4px; padding: 8px 0; width: 96%;}
 body.login{background: #55b460;}
 
-.modal-content{overflow: hidden;}
+
+bootstrap-select.btn-group .dropdown-menu{
+width: 100%;
+}
+.bootstrap-select.btn-group .dropdown-menu.inner{
+max-height: 230px !important;}
