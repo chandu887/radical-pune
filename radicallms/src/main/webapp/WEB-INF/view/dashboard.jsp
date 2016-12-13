@@ -549,15 +549,31 @@ var basepath = "${pageContext.request.contextPath}";
 				</c:if>
 				<span class="pull-left">Showing ${dashBoardForm.startLimit}
 					to ${dashBoardForm.endLimit} of ${dashBoardForm.pageTotalCount}
-					entries</span>
+					entries
+				</span>
 					<ul class="pagination pull-right">
-					<c:forEach items="${dashBoardForm.pageList}" var="page"
-						varStatus="pageIndex">
-						<li
-							class="<c:if test="${dashBoardForm.pageNumber == page}">active</c:if>">
-							<a href="javascript:void(0)" onclick="getPagination(${page})">${page}</a>
+					<c:if test="${dashBoardForm.pageNumber ne 1}"> 
+						<li>
+							<a href="javascript:void(0)" onclick="getPagination(1)">First</a>
 						</li>
-					</c:forEach>
+						<li>
+							<a href="javascript:void(0)" onclick="getPagination(${dashBoardForm.pageNumber-1})">Pre</a>
+						</li>
+					
+					</c:if>
+						<li>
+							<a href="#">Page ${dashBoardForm.pageNumber} of ${dashBoardForm.totalPages}</a>
+						</li>
+					<c:if test="${dashBoardForm.pageNumber ne dashBoardForm.totalPages}">
+						<li>
+							<a href="javascript:void(0)" onclick="getPagination(${dashBoardForm.pageNumber+1})">Next</a>
+							
+						</li>
+						<li>
+							<a href="javascript:void(0)" onclick="getPagination(${dashBoardForm.totalPages})">Last</a>
+						</li>
+					</c:if>
+						
 					<c:if test="${dashBoardForm.viewPage == 'viewLeads'}">
 					<c:set var="paginationUrl" value="getPaginationData" />
 					</c:if>

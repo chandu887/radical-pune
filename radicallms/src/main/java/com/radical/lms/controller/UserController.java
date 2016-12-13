@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -133,16 +134,13 @@ public class UserController {
 		dashBoardForm.setPageTotalCount(pageTotalCount);
 		dashBoardForm.setTotalLeadsCount(totalCount);
 
-		List<Integer> pageList = new ArrayList<Integer>();
-		int page = 1;
-		int i;
-		for (i = 0; i < pageTotalCount; i = i + dashBoardForm.getPageLimit()) {
-			pageList.add(page);
-			page += 1;
-
+		int totalPages = (pageTotalCount / dashBoardForm.getPageLimit());
+		if (pageTotalCount % dashBoardForm.getPageLimit() > 0) {
+			totalPages += 1;
 		}
-
-		dashBoardForm.setPageList(pageList);
+		dashBoardForm.setTotalPages(totalPages);
+		
+		
 		int statLimit = ((dashBoardForm.getPageNumber() - 1) * dashBoardForm.getPageLimit()) + 1;
 		int endLimit = dashBoardForm.getPageLimit() * dashBoardForm.getPageNumber();
 		dashBoardForm.setStartLimit(statLimit);

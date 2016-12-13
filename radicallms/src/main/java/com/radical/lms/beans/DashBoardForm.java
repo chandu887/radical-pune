@@ -1,6 +1,7 @@
 package com.radical.lms.beans;
 
 import java.util.List;
+import java.util.Map;
 
 public class DashBoardForm {
 	int pageLimit;
@@ -26,6 +27,7 @@ public class DashBoardForm {
 	
 	String email;
 	String mobileNumber;
+	int totalPages;
 	
 	public String getEmail() {
 		return email;
@@ -162,5 +164,13 @@ public class DashBoardForm {
 	public void setEmailTemplateCount(String emailTemplateCount) {
 		this.emailTemplateCount = emailTemplateCount;
 	}
+	
+	public int getTotalPages() {
+		return totalPages;
+	}
+	public void setTotalPages(int totalPages) {
+		this.totalPages = totalPages;
+	}
+	
 	
 }
