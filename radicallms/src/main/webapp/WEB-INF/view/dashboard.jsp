@@ -393,6 +393,9 @@ var basepath = "${pageContext.request.contextPath}";
 			<c:if test="${dashBoardForm.currentStatus == 3}">
 				<c:set var="closeActive" value="active" />
 			</c:if>
+			<c:if test="${dashBoardForm.currentStatus == 5}">
+				<c:set var="hotActive" value="active" />
+			</c:if>
 			<c:if test="${dashBoardForm.currentStatus == 0}">
 				<c:set var="allActive" value="active" />
 			</c:if>
@@ -406,6 +409,9 @@ var basepath = "${pageContext.request.contextPath}";
 				<li><a href="dashboard?leadStatus=3" class="${closeActive}"><i
 						class="fa fa-folder-o" aria-hidden="true"></i> Closed
 						${dashBoardForm.closedCount}</a></li>
+				<li><a href="dashboard?leadStatus=5" class="${hotActive}"><i
+						class="fa fa-eye" aria-hidden="true"></i> Hot lead
+						${dashBoardForm.hotCount}</a></li>
 				<li><a href="dashboard?leadStatus=0" class="${allActive}"><i
 						class="fa fa-bars" aria-hidden="true"></i> All
 						${dashBoardForm.totalLeadsCount}</a></li>
@@ -620,6 +626,7 @@ var basepath = "${pageContext.request.contextPath}";
 								<option value="1">New</option>
 								<option value="2">Open</option>
 								<option value="3">Closed</option>
+								<option value="5">Hot Lead</option>
 							</select>
 						</div>
 						<div class="modal-footer">

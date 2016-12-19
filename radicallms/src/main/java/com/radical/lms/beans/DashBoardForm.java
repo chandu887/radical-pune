@@ -11,6 +11,7 @@ public class DashBoardForm {
 	int currentStatus;
 	int newCount;
 	int openCount;
+	int hotCount;
 	int closedCount;
 	int totalLeadsCount;
 	int pageTotalCount;
@@ -29,6 +30,12 @@ public class DashBoardForm {
 	String mobileNumber;
 	int totalPages;
 	
+	public int getHotCount() {
+		return hotCount;
+	}
+	public void setHotCount(int hotCount) {
+		this.hotCount = hotCount;
+	}
 	public String getEmail() {
 		return email;
 	}

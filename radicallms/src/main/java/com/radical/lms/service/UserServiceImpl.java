@@ -311,6 +311,8 @@ public class UserServiceImpl implements UserService {
 					status = "Closed";
 				} else if (leadsEntity.getStatus() == 4) {
 					status = "Deleted";
+				} else if(leadsEntity.getStatus() == 5 ) {
+					status = "Hot Lead";
 				}
 				String assgniedTo = "";
 				if (leadsEntity.getAssignedTo() == 0) {

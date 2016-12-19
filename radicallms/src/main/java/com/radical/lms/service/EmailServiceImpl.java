@@ -161,9 +161,15 @@ public class EmailServiceImpl implements EmailService {
 									leadsEntity = processJustDailMailContentTypeOne(mailContent, emailReceivedDate);
 								} else if (mailsubject.contains("enquiry for you at")) {
 									leadsEntity = processJustDailMailContentTypeTwo(mailContent, emailReceivedDate);
+								} else if (mailsubject.contains("VN Number")) {
+									leadsEntity = processJustDailMailContentTypeThree(mailContent, emailReceivedDate);
 								}
 							} else if (mailId.contains("ypleads@sulekhanotifications.com")) {
-								leadsEntity = processSulekhaMailContentHTMLNew(mailContent, emailReceivedDate);
+								if (mailContent.contains("Hi Radical Technologies")) {
+									leadsEntity = processSulekhaMailContentHTMLNew(mailContent, emailReceivedDate);
+								} else if (mailContent.contains("Dear Radical Technologies")) {
+									leadsEntity = processSulekhaMailContentHTMLNewTwo(mailContent, emailReceivedDate);
+								}
 							}
 						}
 					}
@@ -181,20 +187,18 @@ public class EmailServiceImpl implements EmailService {
 		if (firstEmailTimeInMillis == 0) {
 			firstEmailTimeInMillis = lastEmailTimeInMillis;
 		}
-		
-		/*if (leadsEntity != null) {
-			if (leadsEntity.getEmailId() != null) {
-				if(leadsEntity.getCourseCategeory()!=0){
-					CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(leadsEntity.getCourseCategeory());
-					sendMail(leadsEntity.getEmailId(),category.getSubject(),category.getMessagebody());
-				} else {
-				sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,null);
-				}
-			}
-			if (leadsEntity.getMobileNo() != null) {
-				userService.sendSms(Constants.SMS_TEMPLATE, leadsEntity.getMobileNo());
-			}
-		}*/
+
+		/*
+		 * if (leadsEntity != null) { if (leadsEntity.getEmailId() != null) {
+		 * if(leadsEntity.getCourseCategeory()!=0){ CourseCategeoryEntity
+		 * category = userService.getCategoryListBasedOnCourseId(leadsEntity.
+		 * getCourseCategeory());
+		 * sendMail(leadsEntity.getEmailId(),category.getSubject(),category.
+		 * getMessagebody()); } else { sendMail(leadsEntity.getEmailId(),
+		 * Constants.MAIL_SUBJECT,null); } } if (leadsEntity.getMobileNo() !=
+		 * null) { userService.sendSms(Constants.SMS_TEMPLATE,
+		 * leadsEntity.getMobileNo()); } }
+		 */
 
 		EmailTimeEntity emailTimeEntity = new EmailTimeEntity();
 		emailTimeEntity.setId(1);
@@ -399,6 +403,49 @@ public class EmailServiceImpl implements EmailService {
 
 	}
 
+	private LeadsEntity processJustDailMailContentTypeThree(String mailContent, Date date) {
+		LeadsEntity leadsEntity = new LeadsEntity();
+		try {
+			String[] spiltContent = mailContent.split("\\n");
+			if (spiltContent[0].contains("Caller Name :")) {
+				String name = spiltContent[0]
+						.substring(spiltContent[0].indexOf("Caller Name :"), spiltContent[0].indexOf("Caller Phone :"))
+						.replace("Caller Name :", "").trim();
+				leadsEntity.setName(name);
+			}
+			String mobileNextWord = "";
+			if (mailContent.split("\\n")[0].contains("Caller Email :")) {
+				mobileNextWord = "Caller Email :";
+			} else {
+				mobileNextWord = "Call Date :";
+			}
+			String mobileNumber = spiltContent[0]
+					.substring(spiltContent[0].indexOf("Caller Phone :"), spiltContent[0].indexOf(mobileNextWord))
+					.replace("Caller Phone :", "").replace("+91", "").trim();
+			if(spiltContent[0].contains("Caller Email :")){
+				String email = spiltContent[0].substring(spiltContent[0].indexOf("Caller Email :"), spiltContent[0].indexOf("Call Date :")).replace("Caller Email :", "").trim();
+				leadsEntity.setEmailId(email);
+			}
+			String cityName = spiltContent[0].substring(spiltContent[0].indexOf("City Name :"), spiltContent[0].indexOf("Get more leads")).replace("City Name :", "").trim();
+			leadsEntity.setMobileNo(mobileNumber);
+			leadsEntity.setStatus(1);
+			leadsEntity.setCity(cityName);
+			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLastUpdatedDate(date);
+			int courseId = 0;
+			int courseCategory = 0;
+			leadsEntity.setCourse(courseId);
+			leadsEntity.setCourseCategeory(courseCategory);
+			leadsEntity.setLeadSource(getLeadSoureId("Justdail"));
+			leadService.saveLead(leadsEntity);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Processing JustDail mail" + e.getMessage());
+		}
+		return leadsEntity;
+
+	}
+
 	private LeadsEntity processJustDailMailContentTypeTwo(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
@@ -481,7 +528,7 @@ public class EmailServiceImpl implements EmailService {
 			if (mailBody == null) {
 				mailBody = properties.getProperty(Constants.MAIL_BODY);
 			}
-			if(subject ==null){
+			if (subject == null) {
 				subject = Constants.MAIL_SUBJECT;
 			}
 			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
@@ -567,6 +614,48 @@ public class EmailServiceImpl implements EmailService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error while Processing sulekha mail" + e.getMessage());
+		}
+		return leadsEntity;
+	}
+
+	private LeadsEntity processSulekhaMailContentHTMLNewTwo(String mailContent, Date date) {
+		LeadsEntity leadsEntity = new LeadsEntity();
+		try {
+			String name = mailContent
+					.substring(mailContent.indexOf("just spoke to"), mailContent.indexOf("from Bangalore"))
+					.replace("just spoke to", "").trim();
+			String courseName = mailContent
+					.substring(mailContent.indexOf("looking for"), mailContent.indexOf(". We are sharing"))
+					.replace("looking for", "").trim();
+			String mobileNumber = mailContent
+					.substring(mailContent.indexOf("further contact:"), mailContent.indexOf("Please leave your"))
+					.replace("further contact:", "").replaceAll("\\W", "").replace("91", "").trim();
+			int courseId = 0;
+			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
+				if (courseName.equalsIgnoreCase(entry.getValue())) {
+					courseId = entry.getKey();
+					break;
+				}
+			}
+			int courseCategory = 0;
+			if (courseId != 0) {
+				courseCategory = userService.getCoursesCategeoryMapping().get(courseId);
+			}
+			leadsEntity.setCourseName(courseName);
+			leadsEntity.setName(name);
+			leadsEntity.setCourse(courseId);
+			leadsEntity.setCourseCategeory(courseCategory);
+			leadsEntity.setMobileNo(mobileNumber);
+			leadsEntity.setEmailId(null);
+			leadsEntity.setStatus(1);
+			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLastUpdatedDate(date);
+			leadsEntity.setLeadSource(getLeadSoureId("sulekha"));
+			leadService.saveLead(leadsEntity);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Processing sulekha+ mail" + e.getMessage());
 		}
 		return leadsEntity;
 	}

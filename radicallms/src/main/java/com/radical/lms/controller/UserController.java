@@ -101,6 +101,7 @@ public class UserController {
 		countMap.put(2, 0);
 		countMap.put(3, 0);
 		countMap.put(4, 0);
+		countMap.put(5, 0);
 		for (Iterator iter = countList.iterator(); iter.hasNext();) {
 			Object[] objects = (Object[]) iter.next();
 			int statusId = (Integer) objects[0];
@@ -111,11 +112,13 @@ public class UserController {
 		long openCount = countMap.get(2).intValue();
 		long closeCount = countMap.get(3).intValue();
 		long deletedCount = countMap.get(4).intValue();
-		int totalCount = (int) newCount + (int) openCount + (int) closeCount + (int) deletedCount;
+		long hotCount = countMap.get(5).intValue();
+		int totalCount = (int) newCount + (int) openCount + (int) closeCount + (int) deletedCount + (int) hotCount;
 
 		dashBoardForm.setNewCount((int) newCount);
 		dashBoardForm.setOpenCount((int) openCount);
 		dashBoardForm.setClosedCount((int) closeCount);
+		dashBoardForm.setHotCount((int) hotCount); 
 
 		dashBoardForm.setCurrentStatus(leadStatus);
 

@@ -64,6 +64,7 @@ public class UserDaoImpl implements UserDao {
 		if(dashBoardForm.getEmail() == null && dashBoardForm.getMobileNumber() == null){
 			currentStatusList.add(4);
 		}
+		currentStatusList.add(5);
 		query.setParameterList("status", currentStatusList);
 		List countList = query.list();
 		return countList;
@@ -112,6 +113,7 @@ public class UserDaoImpl implements UserDao {
 				
 				currentStatusList.add(4);
 			}
+			currentStatusList.add(5);
 		}
 		
 		queryStr += " order by createdDate desc";
