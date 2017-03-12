@@ -25,7 +25,50 @@ public class DashBoardForm {
 	String searchData;
 	String viewPage;
 	String emailTemplateCount;
+	String modeOfTraining;
+	String typeOfTraining;
+	String labels;
+	String location;
+	int assignedTo;
+	int leadSource;
 	
+	
+	public String getModeOfTraining() {
+		return modeOfTraining;
+	}
+	public void setModeOfTraining(String modeOfTraining) {
+		this.modeOfTraining = modeOfTraining;
+	}
+	public String getTypeOfTraining() {
+		return typeOfTraining;
+	}
+	public void setTypeOfTraining(String typeOfTraining) {
+		this.typeOfTraining = typeOfTraining;
+	}
+	public String getLabels() {
+		return labels;
+	}
+	public void setLabels(String labels) {
+		this.labels = labels;
+	}
+	public String getLocation() {
+		return location;
+	}
+	public void setLocation(String location) {
+		this.location = location;
+	}
+	public int getAssignedTo() {
+		return assignedTo;
+	}
+	public void setAssignedTo(int assignedTo) {
+		this.assignedTo = assignedTo;
+	}
+	public int getLeadSource() {
+		return leadSource;
+	}
+	public void setLeadSource(int leadSource) {
+		this.leadSource = leadSource;
+	}
 	String email;
 	String mobileNumber;
 	int totalPages;

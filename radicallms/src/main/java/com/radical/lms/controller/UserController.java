@@ -235,6 +235,14 @@ public class UserController {
 			leadsEntity.setEmailId(leadFormEntity.getEmailId());
 			leadsEntity.setLeadSource(leadFormEntity.getLeadSource());
 			leadsEntity.setComments(leadFormEntity.getComments());
+			leadsEntity.setAddress(leadFormEntity.getAddress());
+			leadsEntity.setArea(leadFormEntity.getArea());
+			leadsEntity.setCity(leadFormEntity.getCity());
+			leadsEntity.setLocation(leadFormEntity.getLocation());
+			leadsEntity.setAssignedTo(leadFormEntity.getAssignedTo());
+			leadsEntity.setModeofTraining(leadFormEntity.getModeofTraining());
+			leadsEntity.setTypeofTraining(leadFormEntity.getTypeofTraining());
+			leadsEntity.setLabels(leadFormEntity.getLabels());
 			/* int courseId = Integer.parseInt(course); */
 			int courseCategeory = this.userService.getCoursesCategeoryMapping().get(courseId);
 			// int courseCategeory =
@@ -284,10 +292,16 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/filterByDateAndCourse", method = RequestMethod.POST)
-	public String filterByDateAndCourse(@RequestParam("fromDate") String fromDate,
+	public String filterByDateAndCourse(HttpServletRequest request,HttpServletResponse response,@RequestParam("fromDate") String fromDate,
 			@RequestParam("toDate") String toDate, @RequestParam("courseCategeory") int category,
-			@RequestParam("course") int course, @RequestParam("filterType") int filterType, HttpServletRequest request,
-			HttpServletResponse response) {
+			@RequestParam("course") int course, @RequestParam("filterType") int filterType,
+			@RequestParam("modeofTraining") String modeofTraining,
+			@RequestParam("locationCenter") String locationCenter,
+			@RequestParam("assignedToByFilter") String assignedToByFilter,
+			@RequestParam("leadSource") String leadSource,
+			@RequestParam("labelByFilter") String labelByFilter,
+			@RequestParam("filterByTraining") String filterByTraining
+			){
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
@@ -295,9 +309,33 @@ public class UserController {
 		}
 		dashBoardForm.setFromDate(fromDate);
 		dashBoardForm.setToDate(toDate);
-		dashBoardForm.setCourse(course);
-		dashBoardForm.setCategory(category);
+		if(course!=0){
+			dashBoardForm.setCourse(course);
+		} 
+		if(category !=0){
+			dashBoardForm.setCategory(category);
+		}
 		dashBoardForm.setFilterType(filterType);
+		if(null != labelByFilter  && !(labelByFilter.equalsIgnoreCase(""))){
+			dashBoardForm.setLabels(labelByFilter);
+		}
+		if(null != filterByTraining  && !(filterByTraining.equalsIgnoreCase(""))){
+			dashBoardForm.setTypeOfTraining(filterByTraining);
+		}
+		if(null != leadSource  && !(leadSource.equalsIgnoreCase(""))){
+			int leadSourceType = Integer.parseInt(leadSource);
+			dashBoardForm.setLeadSource(leadSourceType);
+		}
+		if(null != modeofTraining  && !(modeofTraining.equalsIgnoreCase(""))){
+			dashBoardForm.setModeOfTraining(modeofTraining);
+		}
+		if(null != locationCenter  && !(locationCenter.equalsIgnoreCase(""))){
+			dashBoardForm.setLocation(locationCenter);
+		}
+		if(null != assignedToByFilter  && !(assignedToByFilter.equalsIgnoreCase(""))){
+			int assigned = Integer.parseInt(assignedToByFilter);
+			dashBoardForm.setAssignedTo(assigned);
+		}
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		if (filterType == 0) {
 			return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus() + "&isFromFilter=true";
@@ -441,6 +479,13 @@ public class UserController {
 		dashBoardForm.setSearchData("");
 		dashBoardForm.setMobileNumber(null);
 		dashBoardForm.setEmail(null);
+		dashBoardForm.setModeOfTraining(null);
+		dashBoardForm.setTypeOfTraining(null);
+		dashBoardForm.setLabels(null);
+		dashBoardForm.setLocation(null);
+		dashBoardForm.setAssignedTo(0);
+		dashBoardForm.setLeadSource(0);
+		
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=1";
 	}

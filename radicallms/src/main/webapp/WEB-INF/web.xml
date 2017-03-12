@@ -35,7 +35,7 @@
         
         <init-param>
             <param-name>allowed-allUrls</param-name>
-            <param-value>/,/favicon.ico,/resources/images/*,/resources/js/*.js,/resources/css/*.css,/resources/fonts/*,/login,/getModelsList,/getCountryList,/testCron,/getPaginationData,/getShowingData,/getPaginationData,/getShowingData,/getCoursesBasedOnCategoryId,/searchByCourse,/viewTemplatedMail,/editMailTemplate</param-value>
+            <param-value>/,/favicon.ico,/resources/images/*,/resources/js/*.js,/resources/css/*.css,/resources/fonts/*,/login,/getModelsList,/getCountryList,/testCron,/getPaginationData,/getShowingData,/getPaginationData,/getShowingData,/getCoursesBasedOnCategoryId,/searchByCourse,/viewTemplatedMail,/editMailTemplate,/filterByDateAndCourse</param-value>
         </init-param>
     </filter>
     

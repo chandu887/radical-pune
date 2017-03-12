@@ -44,6 +44,12 @@ ADD COLUMN `subject` VARCHAR(250) NULL DEFAULT NULL AFTER `categoryname`,
 ADD COLUMN `messagebody` TEXT NULL DEFAULT NULL AFTER `subject`,
 ADD COLUMN `createdtime` DATETIME NULL DEFAULT NULL AFTER `messagebody`;
 
+06/03/2017
+=======================
+ALTER TABLE `radicallms`.`leads` 
+ADD COLUMN `labels` VARCHAR(45) NULL AFTER `coursename`;
+
+INSERT INTO `radicallms`.`leadsouces` (`leadsourceid`, `leadsourcename`, `leadsourceemailid`) VALUES ('6', 'Web site', 'website@gmail.com');
 
 
 

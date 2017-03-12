@@ -22,8 +22,17 @@ public class LeadsEntityBean {
 	private String location;
 	private String modeOfTraining;
 	private String typeOfTraining;	
+	private String lables;
 	
 	
+
+	public String getLables() {
+		return lables;
+	}
+
+	public void setLables(String lables) {
+		this.lables = lables;
+	}
 
 	public LeadsEntityBean(int enqID, String name, String mobileNo, String emailId, String status, String course,
 			String categeory, String sourceLead, String assignedTo, String createdTime, String updatedTime, String city,

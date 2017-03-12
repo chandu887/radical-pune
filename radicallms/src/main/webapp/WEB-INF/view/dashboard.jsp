@@ -60,7 +60,12 @@ function validateAddLeadform() {
 	var courseId = $('#addCourseName').val();
 	 var courseCategeoryName = $('#courseCategeoryName').val();
 	 	 var leadSource = $('#leadSource').val(); 
-	  	
+	 	 var center = $('#center').val(); 
+	 	var mode = $('#mode').val(); 
+	 	var assigned = $('#assigned').val(); 
+	 	var type = $('#type').val(); 
+	 	var labelType = $('#labelType').val(); 
+	 	
 	 	 var mobileNumberChecking = /^[7-9][0-9]*$/;
 	 	 if(!isBlank(mobileNo) && !isInteger(mobileNo)) {
 	          alert('Please enter a valid mobile no.');
@@ -74,15 +79,29 @@ function validateAddLeadform() {
 	      		alert('Please Enter a valid Mobile No.');
 	                $('#mobileNo').val("");
 	        	return false;
-	     	}  else if(courseCategeoryName==0 || courseCategeoryName==null){
-	     		alert('Please select Category.');
-	     		return false;
-	     	}  else if (courseId == null){
-	     		alert('Please select Course.');
+	     	}  else if(assigned == 0){
+	     		alert('Please select Assigned to.');
 	     		return false;
 	     	} else if(leadSource == null || leadSource ==0){
 	     		alert('Please select Lead Source.');
 	     		return false;
+	     	} else if(courseCategeoryName==0 || courseCategeoryName==null){
+	     		alert('Please select Category.');
+	     		return false;
+	     	} else if (courseId == 0 || courseId == null) {
+	     		alert('Please select Course.');
+	     		return false;
+	     	}  else if(mode == 0){
+	     		alert('Please select Mode of training.');
+	     		return false;
+	     	} else if(type == 0){
+	     		alert('Please select Type of training.');
+	     		return false;
+	     	} else if(center == 0){
+	     		alert('Please select Location.');
+	     		return false;
+	     	}  else if(labelType == 0 || labelType == null ){
+	     		alert('Please select Label.');
 	     	}
 	  	return true;
 	  }
@@ -226,16 +245,16 @@ var basepath = "${pageContext.request.contextPath}";
 			var courseCategeory =  $('#courseCategeory').val();
 			var toDate = $('#toDate').val();
 			var fromDate = $('#fromDate').val();
-			if((null==fromDate || fromDate=="") && (null == toDate || toDate=="")&& (null==courseCategeory || courseCategeory == 0)){
-				alert("Please select date Or course Categeory");
+			if((null==fromDate || fromDate=="") && (null == toDate || toDate=="")/* && (null==courseCategeory || courseCategeory == 0) */){
+				alert("Please select dates ");/* Or course Categeory */
               	return false;
 			} else if((null==fromDate || fromDate=="") || (null == toDate || toDate=="")){
 				alert("Please select from date and to date");
 				return false;
-			} else if(null == courseCategeory || courseCategeory == 0){
+			} /* else if(null == courseCategeory || courseCategeory == 0){
 				alert("Please select courseCategeory");
               	return false;
-			} else {
+			}  */else {
 			$('#filterType').val("1");
 			$("#filterByDateAndCourseForm").submit();
 			}
@@ -244,16 +263,16 @@ var basepath = "${pageContext.request.contextPath}";
 			var courseCategeory =  $('#courseCategeory').val();
 						var toDate = $('#toDate').val();
 						var fromDate = $('#fromDate').val();
-						if((null==fromDate || fromDate=="") && (null == toDate || toDate=="")&& (null==courseCategeory || courseCategeory == 0)){
-							alert("Please select date Or course Categeory");
+						if((null==fromDate || fromDate=="") && (null == toDate || toDate=="")/* && (null==courseCategeory || courseCategeory == 0) */){
+							alert("Please select dates");/*  Or course Categeory */
 			              	return false;
 						} else if((null==fromDate || fromDate=="") || (null == toDate || toDate=="")){
 							alert("Please select from date and to date");
 							return false;
-						} else if(null == courseCategeory || courseCategeory == 0){
+						}/*  else if(null == courseCategeory || courseCategeory == 0){
 							alert("Please select courseCategeory");
 			              	return false;
-						} else {
+						}  */else {
 			$('#filterType').val("0");
 			$("#filterByDateAndCourseForm").submit();
 			}
@@ -332,6 +351,7 @@ var basepath = "${pageContext.request.contextPath}";
     		$('#editAssigned').selectpicker('val', data.assignedTo);
     		$('#editSource').selectpicker('val', data.leadSource);
     		$('#editCategory').selectpicker('val', data.courseCategeory);
+    		$('#editLabel').selectpicker('val', data.labels);
     		
     		//$('#editCourse').select2({  placeholder: {  id: data.course, text: 'ELECTONICS'}});
     		$('#editCourse').selectpicker('val', data.course);
@@ -483,7 +503,50 @@ var basepath = "${pageContext.request.contextPath}";
 				
 				<c:if test="${dashBoardForm.viewPage == 'viewLeads'}">
 				
-					<table class="table table-bordered">
+			 <table class="table table-bordered">
+						<thead>
+							<tr>
+								<th><input type="checkbox"  id="select_all" class="action_box"></th>
+								<th></th>
+								<th>Status</th>
+								<th>ENQ ID</th>
+								<th>Mobile</th>
+								<th>Email Id</th>
+								<th>Course</th>
+								<th>Source Lead</th>
+								<th>Branch</th>
+								<th>Label</th>
+								<th>Mode Of Training</th>
+								<th>Time Created</th>
+							</tr>
+						</thead>
+	
+						<tbody>
+							<c:if test="${leadsList != null}">
+								<c:forEach items="${leadsList}" var="lead">
+									<tr>
+										<td><input type="checkbox" value="${lead.enqID}"
+											name="leadId" class="action_box checkbox"></td>
+										<td><a data-toggle="modal" role="button"
+											data-target="#editlead" onclick="getLeadInfo(${lead.enqID})"><i
+												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+										<td>${lead.status}</td>
+										<td>ENQ ${lead.enqID}</td>
+										<td>${lead.mobileNo}</td>
+										<td>${lead.emailId}</td>
+										<td>${lead.course}</td>
+										<td>${lead.sourceLead}</td>
+										<td>${lead.location}</td>
+										<td>${lead.lables}</td>
+										<td>${lead.modeOfTraining}</td>
+										<td>${lead.createdTime}</td>
+									</tr>
+								</c:forEach>
+							</c:if>
+	
+						</tbody>
+					</table> 
+					<%-- <table class="table table-bordered">
 						<thead>
 							<tr>
 								<th><input type="checkbox"  id="select_all" class="action_box"></th>
@@ -523,7 +586,7 @@ var basepath = "${pageContext.request.contextPath}";
 							</c:if>
 	
 						</tbody>
-					</table>
+					</table> --%>
 				</c:if>
 				<c:if test="${dashBoardForm.viewPage == 'viewMailTemplate'}">
 				 <table class="table table-bordered">
@@ -775,7 +838,8 @@ var basepath = "${pageContext.request.contextPath}";
 						<h4 class="modal-title">Filter By</h4>
 					</div>
 					<div class="modal-body">
-						<div class="form-group">
+					<div class="col-sm-6">
+					<div class="form-group">
 							<label for="email">From date</label>
 							<div class="input-group date" data-provide="datepicker">
 								<input type="text" class="form-control" id="fromDate"
@@ -785,6 +849,55 @@ var basepath = "${pageContext.request.contextPath}";
 								</div>
 							</div>
 						</div>
+					<div class="form-group">
+							<label for="pwd">Category</label><br> <select
+								class="addlead-course form-control" id="courseCategeory"
+								name="courseCategeory"
+								onchange="getCourseList('courseName','courseCategeory');">
+								<option value="0">Select Category</option>
+								<c:forEach var="category" items="${courseCategories}">
+									<option value="${category.key}">${category.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+						 <div class="form-group">
+								<label for="pwd">Mode of Training</label><br> <select
+									class="selectpicker" title="Select Training" id="filterMode"
+									name="modeofTraining">
+									<option value="Classroom">Classroom</option>
+									<option value="Online">Online</option>
+									<option value="Corporate">Corporate</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Weekday/Weekend</label><br> <select
+									class="selectpicker" title="Select Training" id="filterTraining"
+									name="filterByTraining">
+									<option value="Weekend">Weekend</option>
+									<option value="Weekday">Weekday</option>
+								</select>
+							</div>
+							<!--  <div class="form-group">
+								<label for="pwd">Weekday/Weekend</label><br> <select
+									class="selectpicker" title="Select Type" id="filterType"
+									name="typeOfTrainingByFilter">
+									<option value="Weekend">Weekend</option>
+									<option value="Weekday">Weekday</option>
+								</select>
+							</div> -->
+							 
+							 <div class="form-group">
+								<label for="pwd">Labels</label><br> <select
+									class="selectpicker" title="Select Label" id="filterLabelType"
+									name="labelByFilter">
+									<option value="Urgent">Urgent</option>
+									<option value="FastTrack">FastTrack</option>
+									<option value="Group">Group</option>
+									<option value="Attended-Demo">Attended-Demo</option>
+								</select>
+							</div> 
+						</div>
+						<div class="col-sm-6">
 						<div class="form-group">
 							<label for="pwd">To Date</label>
 							<div class="input-group date" data-provide="datepicker">
@@ -796,22 +909,42 @@ var basepath = "${pageContext.request.contextPath}";
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="pwd">Category</label><br> <select
-								class="addlead-course form-control" id="courseCategeory"
-								name="courseCategeory"
-								onchange="getCourseList('courseName','courseCategeory');">
-								<option value="0">Select Category</option>
-								<c:forEach var="category" items="${courseCategories}">
-									<option value="${category.key}">${category.value}</option>
-								</c:forEach>
-							</select>
-						</div>
-						<div class="form-group">
 							<label for="pwd">Course</label><br> <select
 								class="addlead-course form-control" id="courseName"
 								name="course">
 								<option value="0">Select Course</option>
 							</select>
+						</div>
+						 <div class="form-group">
+								<label for="pwd">Center Location</label><br> <select
+									class="selectpicker" title="Select Location" id="filterCenter"
+									name="locationCenter">
+									<option value="Kharadi-Pune">Kharadi-Pune</option>
+									<option value="Aundh-Pune">Aundh-Pune</option>
+									<!-- <option value="Kharadi-Pune">Kharadi-Pune</option> -->
+								</select>
+							</div>
+							
+							<div class="form-group">
+								<label for="pwd">Assigned to</label><br> <select
+									class="selectpicker" title="Assigned to" id="filterAssigned"
+									name="assignedToByFilter">
+									<option value="2">Agent 1</option>
+									<option value="3">Agent 2</option>
+									<option value="4">Agent 3</option>
+									<option value="5">Agent 4</option>
+									<option value="6">Agent 5</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Source</label><br> <select
+									class="selectpicker" title="Select source" id="filterLeadSource"
+									name="leadSource">
+									<c:forEach var="leadSource" items="${leadSourceMapping}">
+										<option value="${leadSource.key}">${leadSource.value}</option>
+									</c:forEach>
+								</select>
+							</div>  
 						</div>
 						<input type="hidden" name="filterType" id="filterType" value="">
 						<div class="modal-footer">
@@ -829,7 +962,7 @@ var basepath = "${pageContext.request.contextPath}";
 
 	</div>
 
-
+<%-- 
 	<!--Filter-->
 	<div id="addlead" class="modal fade" role="dialog">
 		<div class="modal-dialog">
@@ -871,7 +1004,45 @@ var basepath = "${pageContext.request.contextPath}";
 								<!-- <option value="0">Select Course</option> -->
 							</select>
 						</div>
-						<%-- <div class="form-group wd50">
+						<div class="form-group">
+								<label for="pwd">Assigned to</label><br> <select
+									class="selectpicker" title="Assigned to" id="editAssigned"
+									name="assignedTo">
+									<option value="2">Agent 1</option>
+									<option value="3">Agent 2</option>
+									<option value="4">Agent 3</option>
+									<option value="5">Agent 4</option>
+									<option value="6">Agent 5</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Mode of Training</label><br> <select
+									class="selectpicker" title="Select Training" id="editMode"
+									name="modeofTraining">
+									<option value="Classroom">Classroom</option>
+									<option value="Online">Online</option>
+								</select>
+							</div>
+
+
+							<div class="form-group">
+								<label for="pwd">Weekday/Weekend</label><br> <select
+									class="selectpicker" title="Select Type" id="editType"
+									name="typeofTraining">
+									<option value="Weekend">Weekend</option>
+									<option value="Weekday">Weekday</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Center Location</label><br> <select
+									class="selectpicker" title="Select Location" id="editCenter"
+									name="location">
+									<option value="Bangalore-Hsr">Bangalore-Hsr</option>
+									<option value="Aundh-Pune">Aundh-Pune</option>
+									<option value="Kharadi-Pune">Kharadi-Pune</option>
+								</select>
+							</div>
+						<div class="form-group wd50">
 							<label for="pwd">Course</label><br> <select
 								class="selectpicker" multiple title="Select Course" id="course"
 								name="course">
@@ -888,7 +1059,7 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="${courses.key}">${courses.value}</option>
 								</c:forEach>
 							</select>
-						</div> --%>
+						</div>
 						<div class="form-group">
 							<label for="pwd">Source Lead</label> <select class="selectpicker"
 								title="Select Source" id="leadSource" name="leadSource">
@@ -901,7 +1072,6 @@ var basepath = "${pageContext.request.contextPath}";
 							<label for="pwd">Commentes</label><br>
 							<textarea class="form-control" id="comments" name="comments"></textarea>
 						</div>
-
 						<div class="modal-footer">
 							<button type="submit" class="btn btn-success">Add Lead</button>
 							<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
@@ -911,7 +1081,144 @@ var basepath = "${pageContext.request.contextPath}";
 			</div>
 		</div>
 	</div>
+	
+	
+ --%>
+ 
+ <div id="addlead" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Add Lead</h4>
+				</div>
+				<div class="modal-body">
+					<form:form method="post" action="addlead" name="addLeadForm"
+						onsubmit="return validateAddLeadform()">
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="email">Student Name</label> <input type="text"
+									class="form-control" id="name" value="" name="name">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Phone Number</label> <input type="text"
+									class="form-control" id="mobileNo" value="" name="mobileNo">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Email ID</label> <input type="email"
+									class="form-control" id="emailId" value="" name="emailId">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Address</label> <input type="text"
+									class="form-control" id="address" value="" name="address">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Area</label> <input type="text"
+									class="form-control" id="area" value="" name="area">
+							</div>
+							<div class="form-group">
+								<label for="pwd">City</label> <input type="text"
+									class="form-control" id="city" value="" name="city">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Center Location</label><br> <select
+									class="selectpicker" title="Select Location" id="center"
+									name="location">
+									<option value="Kharadi-Pune">Kharadi-Pune</option>
+									<option value="Aundh-Pune">Aundh-Pune</option>
+									<!-- <option value="Kharadi-Pune">Kharadi-Pune</option> -->
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-6">
+							<div class="form-group">
+								<label for="pwd">Assigned to</label><br> <select
+									class="selectpicker" title="Assigned to" id="assigned"
+									name="assignedTo">
+									<option value="2">Agent 1</option>
+									<option value="3">Agent 2</option>
+									<option value="4">Agent 3</option>
+									<option value="5">Agent 4</option>
+									<option value="6">Agent 5</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Source</label><br> <select
+									class="selectpicker" title="Select source" id="leadSource"
+									name="leadSource">
+									<c:forEach var="leadSource" items="${leadSourceMapping}">
+										<option value="${leadSource.key}">${leadSource.value}</option>
+									</c:forEach>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Category</label><br> <select
+									class="selectpicker" title="Select Category" id="courseCategeoryName"
+									name="courseCategeory"
+									onchange="getCourseList('addCourseName','courseCategeoryName');">
+									<option value="0">Select Category</option>
+									<c:forEach var="category" items="${courseCategories}">
+										<option value="${category.key}">${category.value}</option>
+									</c:forEach>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Course</label><br> <select	
+									class="selectpicker" title="Select Course" id="addCourseName"
+									name="courseList">
+									<c:forEach var="courses" items="${coursesMap}">
+										<option value="${courses.key}">${courses.value}</option>
+									</c:forEach>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Mode of Training</label><br> <select
+									class="selectpicker" title="Select Training" id="mode"
+									name="modeofTraining">
+									<option value="Classroom">Classroom</option>
+									<option value="Online">Online</option>
+									<option value="Corporate">Corporate</option>
+								</select>
+							</div>
 
+
+							<div class="form-group">
+								<label for="pwd">Weekday/Weekend</label><br> <select
+									class="selectpicker" title="Select Type" id="type"
+									name="typeofTraining">
+									<option value="Weekend">Weekend</option>
+									<option value="Weekday">Weekday</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Labels</label><br> <select
+									class="selectpicker" title="Select Label" id="labelType"
+									name="labels">
+									<option value="Urgent">Urgent</option>
+									<option value="FastTrack">FastTrack</option>
+									<option value="Group">Group</option>
+									<option value="Attended-Demo">Attended-Demo</option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-12">
+							<div class="form-group">
+								<label for="pwd">Commentes</label><br>
+								<textarea class="form-control" id="comments" name="comments"></textarea>
+							</div>
+							<div class="modal-footer">
+								<button type="submit" class="btn btn-success">Add
+									Lead</button>
+								<button type="button" class="btn btn-danger"
+									data-dismiss="modal">Cancel</button>
+							</div>
+						</div>
+					</form:form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<!--Filter-->
 	<div id="editlead" class="modal fade" role="dialog">
 		<div class="modal-dialog">
@@ -953,17 +1260,19 @@ var basepath = "${pageContext.request.contextPath}";
 									class="form-control" id="editCity" value="" name="city">
 							</div>
 							<div class="form-group">
-								<label for="pwd">Center Location</label><br> <select
-									class="selectpicker" title="Select Location" id="editCenter"
-									name="location">
-									<option value="Bangalore-Hsr">Bangalore-Hsr</option>
-									<option value="Aundh-Pune">Aundh-Pune</option>
-									<option value="Kharadi-Pune">Kharadi-Pune</option>
+								<label for="pwd">Labels</label><br> <select
+									class="selectpicker" title="Select Label" id="editLabel"
+									name="labels">
+									<option value="Urgent">Urgent</option>
+									<option value="FastTrack">FastTrack</option>
+									<option value="Group">Group</option>
+									<option value="Attended-Demo">Attended-Demo</option>
 								</select>
 							</div>
+						
 						</div>
 						<div class="col-sm-6">
-							<div class="form-group">
+							<!-- <div class="form-group">
 								<label for="pwd">Assigned to</label><br> <select
 									class="selectpicker" title="Assigned to" id="editAssigned"
 									name="assignedTo">
@@ -973,7 +1282,7 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="5">Agent 4</option>
 									<option value="6">Agent 5</option>
 								</select>
-							</div>
+							</div> -->
 							<div class="form-group">
 								<label for="pwd">Source</label><br> <select
 									class="selectpicker" title="Select source" id="editSource"
@@ -994,7 +1303,7 @@ var basepath = "${pageContext.request.contextPath}";
 								</select>
 							</div>
 							<div class="form-group">
-								<label for="pwd">Course</label><br> <select
+								<label for="pwd">Course</label><br> <select	
 									class="selectpicker" title="Select Course" id="editCourse"
 									name="course">
 									<c:forEach var="courses" items="${coursesMap}">
@@ -1008,6 +1317,7 @@ var basepath = "${pageContext.request.contextPath}";
 									name="modeofTraining">
 									<option value="Classroom">Classroom</option>
 									<option value="Online">Online</option>
+									<option value="Corporate">Corporate</option>
 								</select>
 							</div>
 
@@ -1018,6 +1328,15 @@ var basepath = "${pageContext.request.contextPath}";
 									name="typeofTraining">
 									<option value="Weekend">Weekend</option>
 									<option value="Weekday">Weekday</option>
+								</select>
+							</div>
+								<div class="form-group">
+								<label for="pwd">Center Location</label><br> <select
+									class="selectpicker" title="Select Location" id="editCenter"
+									name="location">
+									<!-- <option value="Bangalore-Hsr">Bangalore-Hsr</option> -->
+									<option value="Aundh-Pune">Aundh-Pune</option>
+									<option value="Kharadi-Pune">Kharadi-Pune</option>
 								</select>
 							</div>
 						</div>

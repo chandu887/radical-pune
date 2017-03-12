@@ -343,6 +343,7 @@ public class UserServiceImpl implements UserService {
 						updateDateString, leadsEntity.getCity(), leadsEntity.getComments(), leadsEntity.getReason(),
 						leadsEntity.getAddress(), leadsEntity.getArea(), leadsEntity.getLocation(),
 						leadsEntity.getModeofTraining(), leadsEntity.getTypeofTraining());
+				leadsEntityBean.setLables(leadsEntity.getLabels());
 				leadBeanList.add(leadsEntityBean);
 			}
 			return leadBeanList;

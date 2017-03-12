@@ -78,6 +78,29 @@ public class UserDaoImpl implements UserDao {
 			queryStr += " and courseCategeory = " + dashBoardForm.getCategory();
 		}
 		
+		if(null != dashBoardForm.getModeOfTraining()){
+			queryStr += " and modeofTraining = '"+dashBoardForm.getModeOfTraining()+"'";
+		}
+		
+		if(null != dashBoardForm.getTypeOfTraining()){
+			queryStr += " and typeofTraining = '"+dashBoardForm.getTypeOfTraining()+"'";
+		}
+		if(dashBoardForm.getLeadSource()!=0){
+			queryStr += " and leadSource = " + dashBoardForm.getLeadSource();
+		}
+		
+		if(null != dashBoardForm.getLocation()){
+			queryStr += " and location = '" + dashBoardForm.getLocation()+"'";
+		}
+		
+		if(dashBoardForm.getAssignedTo()!=0){
+			queryStr += " and assignedTo = " + dashBoardForm.getAssignedTo();
+		}
+		
+		if(null != dashBoardForm.getLabels()){
+			queryStr += " and labels = '"+dashBoardForm.getLabels()+"'";
+		}
+		
 		if(dashBoardForm.getEmail()!=null){
 			queryStr += " and emailId = '" + dashBoardForm.getEmail()+"'";
 		}

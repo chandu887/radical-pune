@@ -83,6 +83,19 @@ public class LeadsEntity {
 	@Column(name = "coursename")
 	private String courseName;
 	
+	@Column(name = "labels")
+	private String labels;
+	
+	
+	
+	public String getLabels() {
+		return labels;
+	}
+
+	public void setLabels(String labels) {
+		this.labels = labels;
+	}
+
 	public String getCourseName() {
 		return courseName;
 	}

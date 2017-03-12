@@ -137,7 +137,12 @@ public class EmailServiceImpl implements EmailService {
 					String mailContent = "";
 					String mailId = addressArray[0].toString();
 					Object content = message.getContent();
-					if (mailId.contains("blrfeedback@justdial.com") || mailId.contains("care@yet5.com")
+					if (mailsubject.contains("Radical Technologies Bangalore - Course Inquiry Details")) {
+						Multipart multiPart = (Multipart) content;
+						BodyPart bodyPart = multiPart.getBodyPart(0);
+						mailContent = (String) bodyPart.getContent();
+						leadsEntity = processWebsiteEnquiryContent(mailContent, emailReceivedDate);
+					} else if (mailId.contains("blrfeedback@justdial.com") || mailId.contains("care@yet5.com")
 							|| mailId.contains("ypleads@sulekhanotifications.com")) {
 						if (content instanceof String) {
 							mailContent = (String) content;
@@ -422,11 +427,15 @@ public class EmailServiceImpl implements EmailService {
 			String mobileNumber = spiltContent[0]
 					.substring(spiltContent[0].indexOf("Caller Phone :"), spiltContent[0].indexOf(mobileNextWord))
 					.replace("Caller Phone :", "").replace("+91", "").trim();
-			if(spiltContent[0].contains("Caller Email :")){
-				String email = spiltContent[0].substring(spiltContent[0].indexOf("Caller Email :"), spiltContent[0].indexOf("Call Date :")).replace("Caller Email :", "").trim();
+			if (spiltContent[0].contains("Caller Email :")) {
+				String email = spiltContent[0]
+						.substring(spiltContent[0].indexOf("Caller Email :"), spiltContent[0].indexOf("Call Date :"))
+						.replace("Caller Email :", "").trim();
 				leadsEntity.setEmailId(email);
 			}
-			String cityName = spiltContent[0].substring(spiltContent[0].indexOf("City Name :"), spiltContent[0].indexOf("Get more leads")).replace("City Name :", "").trim();
+			String cityName = spiltContent[0]
+					.substring(spiltContent[0].indexOf("City Name :"), spiltContent[0].indexOf("Get more leads"))
+					.replace("City Name :", "").trim();
 			leadsEntity.setMobileNo(mobileNumber);
 			leadsEntity.setStatus(1);
 			leadsEntity.setCity(cityName);
@@ -611,6 +620,44 @@ public class EmailServiceImpl implements EmailService {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
 
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error("Error while Processing sulekha mail" + e.getMessage());
+		}
+		return leadsEntity;
+	}
+	
+	private LeadsEntity processWebsiteEnquiryContent(String mailContent, Date date) {
+		LeadsEntity leadsEntity = new LeadsEntity();
+		try {
+			String name = mailContent.substring(mailContent.indexOf("Course Inquiry Details"),mailContent.indexOf("Email")).replace("Course Inquiry Details", "").trim().replace("Name", "").trim();
+			String email = mailContent.substring(mailContent.indexOf("Email"),mailContent.indexOf("Phone")).replace("Email", "").trim();
+			String phone = mailContent.substring(mailContent.indexOf("Phone"),mailContent.indexOf("Course Name")).replace("Phone", "").trim().replace("+", "").trim();
+			String courseName = mailContent.substring(mailContent.indexOf("Course Name"), mailContent.indexOf("Message")).replace("Course Name", "").trim();
+			String message = mailContent.substring(mailContent.indexOf("Message")).replace("Message", "").trim();
+			int courseId = 0;
+			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
+				if (courseName.equalsIgnoreCase(entry.getValue())) {
+					courseId = entry.getKey();
+					break;
+				}
+			}
+			int courseCategory = 0;
+			if (courseId != 0) {
+				courseCategory = userService.getCoursesCategeoryMapping().get(courseId);
+			}
+			leadsEntity.setCourseName(courseName);
+			leadsEntity.setName(name);
+			leadsEntity.setCourse(courseId);
+			leadsEntity.setCourseCategeory(courseCategory);
+			leadsEntity.setMobileNo(phone);
+			leadsEntity.setEmailId(email);
+			leadsEntity.setStatus(1);
+			leadsEntity.setCreatedDate(date);
+			leadsEntity.setLastUpdatedDate(date);
+			leadsEntity.setLeadSource(getLeadSoureId("Web site"));
+			leadsEntity.setComments(message);
+			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error("Error while Processing sulekha mail" + e.getMessage());
