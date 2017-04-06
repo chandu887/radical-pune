@@ -82,6 +82,10 @@ public class UserDaoImpl implements UserDao {
 			queryStr += " and modeofTraining = '"+dashBoardForm.getModeOfTraining()+"'";
 		}
 		
+		/*if(dashBoardForm.getCurrentStatus() != 0 ){
+			queryStr += " and status = '"+dashBoardForm.getCurrentStatus()+"'";
+		}*/
+		
 		if(null != dashBoardForm.getTypeOfTraining()){
 			queryStr += " and typeofTraining = '"+dashBoardForm.getTypeOfTraining()+"'";
 		}

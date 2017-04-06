@@ -7,7 +7,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
-
+<!-- <meta http-equiv="refresh" content="60" > -->
 <meta charset="utf-8">
 <title>LMS Dashboard</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
@@ -35,6 +35,44 @@
 <link rel="stylesheet"
 	href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
 <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+<script src='https://cloud.tinymce.com/stable/tinymce.min.js'></script>
+<script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=p031zjwoastgbi16tmvaq8m8ef3dthcs5kqhdftdbwmcv77q"></script>
+ <!--  <script>
+  tinymce.init({
+   
+    
+  });
+  </script> -->
+   <script>
+  /* tinymce.init({
+	  selector:''
+  }); */
+  tinymce.init({
+	  selector: '#emailContentTextArea',
+	  height: 200,
+	  menubar: false,
+	  plugins: [
+	    'advlist autolink lists link image charmap print preview anchor',
+	    'searchreplace visualblocks code fullscreen',
+	    'insertdatetime media table contextmenu paste code'
+	  ],
+	  toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+	  content_css: '//www.tinymce.com/css/codepen.min.css'
+	});
+  tinymce.init({
+	  selector:'#messageBody',
+	  height: 200,
+	  menubar: false,
+	  plugins: [
+	    'advlist autolink lists link image charmap print preview anchor',
+	    'searchreplace visualblocks code fullscreen',
+	    'insertdatetime media table contextmenu paste code'
+	  ],
+	  toolbar: 'undo redo | insert | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+	  content_css: '//www.tinymce.com/css/codepen.min.css'
+	});
+  </script>
+  
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 	<script >
@@ -52,7 +90,18 @@
             });
     });
 	</script>
-
+	<!-- <script>
+	$("#fromDate").on('changeDate', function(ev){
+	    $(this).datepicker('hide');
+	});
+		
+            $(function () {
+               $("#fromDate").datepicker({ autoclose: true });
+               $("#toDate").datepicker({ autoclose: true });
+				
+            });
+        </script>
+ -->
 <script>
 
 function validateAddLeadform() {
@@ -65,6 +114,7 @@ function validateAddLeadform() {
 	 	var assigned = $('#assigned').val(); 
 	 	var type = $('#type').val(); 
 	 	var labelType = $('#labelType').val(); 
+	 	var statusType = $('#statusTypeAdd').val();
 	 	
 	 	 var mobileNumberChecking = /^[7-9][0-9]*$/;
 	 	 if(!isBlank(mobileNo) && !isInteger(mobileNo)) {
@@ -102,6 +152,10 @@ function validateAddLeadform() {
 	     		return false;
 	     	}  else if(labelType == 0 || labelType == null ){
 	     		alert('Please select Label.');
+	     		return false;
+	     	} else if(statusType == 0 || statusType == null){
+	     		alert('Please select Lead Type.');
+	     		return false;
 	     	}
 	  	return true;
 	  }
@@ -141,10 +195,12 @@ $(function () {
 	            });
 	            $(document).ready(function () {
 	                $('.selectpicker').selectpicker();
-	                $('.datepicker').datepicker();
+	                $('.datepicker').datepicker({autoclose: true,});
 	                $(".addlead-course").select2({
 	                		                    placeholder: "Select a Course",
-	                		                    allowClear: true
+	                		                    allowClear: true,
+												autoclose: true
+												
 	    	                  });
 	            });
 	        </script>
@@ -352,6 +408,8 @@ var basepath = "${pageContext.request.contextPath}";
     		$('#editSource').selectpicker('val', data.leadSource);
     		$('#editCategory').selectpicker('val', data.courseCategeory);
     		$('#editLabel').selectpicker('val', data.labels);
+    		$('#editTypeOFLead').selectpicker('val', data.status);
+    		
     		
     		//$('#editCourse').select2({  placeholder: {  id: data.course, text: 'ELECTONICS'}});
     		$('#editCourse').selectpicker('val', data.course);
@@ -482,7 +540,7 @@ var basepath = "${pageContext.request.contextPath}";
 
 					</ul>
 				</div>
-
+				<h2 class="sucess-messages">${messageText}</h2>
 				<div class="count">
 				<c:if test="${dashBoardForm.viewPage == 'viewLeads'}">
 				<c:set var="showingUrl" value="getShowingData" />
@@ -508,7 +566,6 @@ var basepath = "${pageContext.request.contextPath}";
 							<tr>
 								<th><input type="checkbox"  id="select_all" class="action_box"></th>
 								<th></th>
-								<th>Status</th>
 								<th>ENQ ID</th>
 								<th>Mobile</th>
 								<th>Email Id</th>
@@ -516,6 +573,7 @@ var basepath = "${pageContext.request.contextPath}";
 								<th>Source Lead</th>
 								<th>Branch</th>
 								<th>Label</th>
+								<th>Status</th>
 								<th>Mode Of Training</th>
 								<th>Time Created</th>
 							</tr>
@@ -530,7 +588,6 @@ var basepath = "${pageContext.request.contextPath}";
 										<td><a data-toggle="modal" role="button"
 											data-target="#editlead" onclick="getLeadInfo(${lead.enqID})"><i
 												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
-										<td>${lead.status}</td>
 										<td>ENQ ${lead.enqID}</td>
 										<td>${lead.mobileNo}</td>
 										<td>${lead.emailId}</td>
@@ -538,6 +595,7 @@ var basepath = "${pageContext.request.contextPath}";
 										<td>${lead.sourceLead}</td>
 										<td>${lead.location}</td>
 										<td>${lead.lables}</td>
+										<td>${lead.status}</td>
 										<td>${lead.modeOfTraining}</td>
 										<td>${lead.createdTime}</td>
 									</tr>
@@ -842,7 +900,7 @@ var basepath = "${pageContext.request.contextPath}";
 					<div class="form-group">
 							<label for="email">From date</label>
 							<div class="input-group date" data-provide="datepicker">
-								<input type="text" class="form-control" id="fromDate"
+								<input type="text" class="form-control" id="fromDate" 
 									name="fromDate" placeholder="Select from date">
 								<div class="input-group-addon">
 									<span class="glyphicon glyphicon-calendar"></span>
@@ -896,6 +954,17 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="Attended-Demo">Attended-Demo</option>
 								</select>
 							</div> 
+							<div class="form-group">
+								<label for="pwd">Type of lead</label><br> <select
+									class="selectpicker" title="Select lead Type" id="filterLeadType"
+									 name="filterByStatus">
+								<option value="0" >Select Type</option>
+								<option value="1">New</option>
+								<option value="2">Open</option>
+								<option value="3">Closed</option>
+								<option value="5">Hot Lead</option>
+								</select>
+							</div>
 						</div>
 						<div class="col-sm-6">
 						<div class="form-group">
@@ -944,7 +1013,9 @@ var basepath = "${pageContext.request.contextPath}";
 										<option value="${leadSource.key}">${leadSource.value}</option>
 									</c:forEach>
 								</select>
-							</div>  
+							</div> 
+							 
+							
 						</div>
 						<input type="hidden" name="filterType" id="filterType" value="">
 						<div class="modal-footer">
@@ -1129,6 +1200,15 @@ var basepath = "${pageContext.request.contextPath}";
 									<!-- <option value="Kharadi-Pune">Kharadi-Pune</option> -->
 								</select>
 							</div>
+							<div class="form-group">
+								<label for="pwd">Type Of Lead</label><br> <select
+									class="selectpicker" title="Select lead type" id="statusTypeAdd" name="status"
+									>
+								<option value="1">New</option>
+								<option value="2">Open</option>
+								<option value="5">Hot Lead</option>
+							</select>
+							</div>
 						</div>
 						<div class="col-sm-6">
 							<div class="form-group">
@@ -1232,8 +1312,8 @@ var basepath = "${pageContext.request.contextPath}";
 						onsubmit="return validateEditLeadForm()" role="form">
 						<input type="hidden" class="form-control" id="editLeadId" value=""
 							name="leadiId">
-						<input type="hidden" class="form-control" id="editStatus" value=""
-							name="status">
+						<!-- <input type="hidden" class="form-control" id="editStatus" value=""
+							name="status"> -->
 						<div class="col-sm-6">
 							<div class="form-group">
 								<label for="email">Student Name</label> <input type="text"
@@ -1337,6 +1417,16 @@ var basepath = "${pageContext.request.contextPath}";
 									<!-- <option value="Bangalore-Hsr">Bangalore-Hsr</option> -->
 									<option value="Aundh-Pune">Aundh-Pune</option>
 									<option value="Kharadi-Pune">Kharadi-Pune</option>
+									</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Type of lead</label><br> <select
+									class="selectpicker" title="Select lead Type" id="editTypeOFLead" name="status"
+									>
+								<option value="1">New</option>
+								<option value="2">Open</option>
+								<option value="3">Closed</option>
+								<option value="5">Hot Lead</option>
 								</select>
 							</div>
 						</div>
@@ -1387,7 +1477,7 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Email</label><br> <input
 									class="form-control" placeholder="Email Subject" name = "nonTemplatedEmailSubject"/>
 								<label for="pwd">Email Content</label><br>
-								<textarea class="form-control"
+								<textarea class="form-control" id = "emailContentTextArea"
 									placeholder="Please enter Email Content" rows="10" name = "nonTemplatedEmailBody"></textarea>
 							</div>
 							

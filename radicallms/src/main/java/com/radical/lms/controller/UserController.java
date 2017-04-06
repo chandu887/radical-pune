@@ -79,7 +79,8 @@ public class UserController {
 	public String dashBoard(HttpServletRequest request, @RequestParam("leadStatus") int leadStatus, ModelMap map,
 			@RequestParam(value = "isFromFilter", defaultValue = "false", required = false) Boolean isFromFilter,
 			@RequestParam(value = "isFromPagination", defaultValue = "false", required = false) Boolean isFromPagination,
-			@RequestParam(value = "isFromViewMailTemplate", defaultValue = "false", required = false) Boolean isFromViewMailTemplate) {
+			@RequestParam(value = "isFromViewMailTemplate", defaultValue = "false", required = false) Boolean isFromViewMailTemplate,
+			@RequestParam(value = "messageText", defaultValue = "", required = false) String messageText) {
 		HttpSession session = request.getSession();
 
 		DashBoardForm dashBoardForm = null;
@@ -181,8 +182,9 @@ public class UserController {
 		map.addAttribute("coursesMap", coursesMap);
 		map.addAttribute("leadSourceMapping", leadSourceMapping);
 		map.addAttribute("courseCategories", courseCategories);
+		map.addAttribute("messageText", messageText);
 		session.setAttribute("dashBoardForm", dashBoardForm);
-
+		
 		return "dashboard";
 	}
 
@@ -248,7 +250,7 @@ public class UserController {
 			// int courseCategeory =
 			// this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
 			leadsEntity.setCourse(courseId);
-			leadsEntity.setStatus(1);
+			leadsEntity.setStatus(leadFormEntity.getStatus());
 			leadsEntity.setCourseCategeory(courseCategeory);
 			leadsEntity.setCreatedDate(new Date());
 			leadsEntity.setLastUpdatedDate(new Date());
@@ -269,7 +271,7 @@ public class UserController {
 						leadsEntity.getMobileNo());
 			}
 		}
-		return "redirect:/dashboard?leadStatus=1";
+		return "redirect:/dashboard?leadStatus="+leadFormEntity.getStatus()+"&messageText=Lead Added successfully";
 	}
 
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
@@ -288,7 +290,7 @@ public class UserController {
 		}
 		String leadsChangeStatus = this.userService.leadsChangeStatus(changeStatusLeadIdsList,
 				Integer.parseInt(statusType), reason);
-		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus()+"&messageText=Status Changed Successfully";
 	}
 
 	@RequestMapping(value = "/filterByDateAndCourse", method = RequestMethod.POST)
@@ -300,7 +302,8 @@ public class UserController {
 			@RequestParam("assignedToByFilter") String assignedToByFilter,
 			@RequestParam("leadSource") String leadSource,
 			@RequestParam("labelByFilter") String labelByFilter,
-			@RequestParam("filterByTraining") String filterByTraining
+			@RequestParam("filterByTraining") String filterByTraining,
+			@RequestParam("filterByStatus") int filterByStatus
 			){
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
@@ -315,6 +318,16 @@ public class UserController {
 		if(category !=0){
 			dashBoardForm.setCategory(category);
 		}
+		if(filterByStatus == 0) {
+			filterByStatus = dashBoardForm.getCurrentStatus();
+		}
+		/*int filterTypeByLead= 0;
+		if(Integer.parseInt(filterLeadType) == 0){
+			filterTypeByLead = dashBoardForm.getCurrentStatus();
+		} else {
+			filterTypeByLead = Integer.parseInt(filterLeadType);
+		}*/
+		
 		dashBoardForm.setFilterType(filterType);
 		if(null != labelByFilter  && !(labelByFilter.equalsIgnoreCase(""))){
 			dashBoardForm.setLabels(labelByFilter);
@@ -338,7 +351,7 @@ public class UserController {
 		}
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		if (filterType == 0) {
-			return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus() + "&isFromFilter=true";
+			return "redirect:/dashboard?leadStatus=" + filterByStatus + "&isFromFilter=true";
 		} else if (filterType == 1) {
 			List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
 			XSSFWorkbook workbook = this.userService.downloadLeadsSheet(leadsList);
@@ -424,7 +437,7 @@ public class UserController {
 		leadsEntity.setLastUpdatedDate(new Date());
 		leadsEntity.setReason(lead.getReason());
 		leadService.saveLead(leadsEntity);
-		return "redirect:/dashboard?leadStatus=" + leadsEntity.getStatus();
+		return "redirect:/dashboard?leadStatus=" + leadsEntity.getStatus()+"&messageText=Lead Updated Successfully";
 	}
 
 	@RequestMapping(value = "/downloadLeadsToSheet", method = RequestMethod.POST)
@@ -485,9 +498,8 @@ public class UserController {
 		dashBoardForm.setLocation(null);
 		dashBoardForm.setAssignedTo(0);
 		dashBoardForm.setLeadSource(0);
-		
 		session.setAttribute("dashBoardForm", dashBoardForm);
-		return "redirect:/dashboard?leadStatus=1";
+		return "redirect:/dashboard?leadStatus=1"/*+dashBoardForm.getCurrentStatus()*/;
 	}
 
 	@RequestMapping(value = "/createMailTemplate", method = RequestMethod.POST)
@@ -503,7 +515,7 @@ public class UserController {
 		course.setMessagebody(courseEntity.getMessagebody());
 		course.setCreatedTime(new Date());*/
 		userService.saveTemplate(category);
-		return "redirect:/dashboard?leadStatus=1";
+		return "redirect:/dashboard?leadStatus=1&messageText=Mail Template Created Successfully";
 	}
 
 	@RequestMapping(value = "/sendTemplatedMail", method = RequestMethod.POST)
@@ -541,7 +553,7 @@ public class UserController {
 		}
 		
 		
-		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus()+"&messageText=Mail Sent Successfully";
 	}
 
 	@RequestMapping(value = "/nonTemplatedEmailOrSms", method = RequestMethod.POST)
@@ -554,20 +566,23 @@ public class UserController {
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
+		String message = "";
 		String[] sendNonTemplateLeadIdsSplitArray = sendNonTemplateLeadIds.split(",");
 		for (String leadId : sendNonTemplateLeadIdsSplitArray) {
 			LeadsEntity lead = leadService.getLeadByLeadId(Integer.parseInt(leadId));
 			if (type == 1) {
 				if (lead.getEmailId() != null) {
 					emailService.sendMail(lead.getEmailId(), subject, mailbody);
+					message = "&messageText=Mail Sent Successfully";
 				}
 			} else if (type == 0) {
 				if (lead.getMobileNo() != null) {
 					userService.sendSms(sms, lead.getMobileNo());
+					message = "&messageText=Message Sent Successfully";
 				}
 			}
 		}
-		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus();
+		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus()+message;
 	}
 
 	@RequestMapping(value = "/viewTemplatedMail", method = RequestMethod.GET)
@@ -588,7 +603,7 @@ public class UserController {
 		course.setMessagebody(courseEntity.getMessagebody());
 		course.setCreatedTime(new Date());
 		userService.saveTemplate(course);*/
-		return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true";
+		return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true&messageText=Mail Template Updated Successfully";
 	}
 
 }

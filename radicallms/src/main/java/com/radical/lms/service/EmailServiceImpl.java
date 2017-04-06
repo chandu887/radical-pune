@@ -536,6 +536,8 @@ public class EmailServiceImpl implements EmailService {
 		try {
 			if (mailBody == null) {
 				mailBody = properties.getProperty(Constants.MAIL_BODY);
+			} else {
+				mailBody = properties.getProperty(Constants.MAIL_HEAD) + mailBody + properties.getProperty(Constants.MAIL_TAIL);
 			}
 			if (subject == null) {
 				subject = Constants.MAIL_SUBJECT;
@@ -557,6 +559,7 @@ public class EmailServiceImpl implements EmailService {
 			message.setRecipient(RecipientType.TO, toAddress);
 			message.setSubject(subject);
 			BodyPart messageBodyPartBody = new MimeBodyPart();
+			
 			messageBodyPartBody.setContent(mailBody, "text/html");
 			MimeMultipart multipart = new MimeMultipart("related");
 			multipart.addBodyPart(messageBodyPartBody);

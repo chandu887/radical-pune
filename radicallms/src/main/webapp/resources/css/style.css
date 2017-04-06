@@ -36,10 +36,12 @@ section { position: relative;}
 .pagination{margin: 0 0 20px;}
 .wd50{ width: 50%; float: left}
 .btn-group, .btn-group-vertical {width: 98% !important;}
-#createTemple .modal-body, #freeemail .modal-body, #editlead .modal-body{ overflow: hidden;},
-#templatedemail .modal-body{min-height: 175px;}
+#createTemple .modal-body, #freeemail .modal-body, #editlead .modal-body{ overflow: hidden;}
 #createTemple .modal-body, #freeemail .modal-body, #addlead .modal-body{ overflow: hidden;}
-
+.sucess-messages{color:green; font-size:16px;}
+#templatedemail .modal-body{ display: inline-block;
+    width: 100%;}
+.modal-footer{clear:both;}
 /*------- Login Page --------*/
 .form-container {bottom: 0; height: 168px; left: 0; margin: auto; position: fixed;right: 0;top: -150px;width: 450px;}
 .form-container-inner {background: #fff; padding: 35px; -webkit-box-shadow: 0px 3px 2px 0px rgba(0,0,0,0.55);
