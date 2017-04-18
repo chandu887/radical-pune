@@ -89,7 +89,7 @@ public class UserController {
 		} else {
 			dashBoardForm = new DashBoardForm();
 			dashBoardForm.setPageNumber(1);
-			dashBoardForm.setPageLimit(20);
+			dashBoardForm.setPageLimit(100);
 		}
 
 		if (!isFromPagination) {
