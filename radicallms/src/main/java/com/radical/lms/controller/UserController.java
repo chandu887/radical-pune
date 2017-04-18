@@ -155,11 +155,10 @@ public class UserController {
 		}
 
 		List<Integer> limitList = new ArrayList<Integer>();
-		limitList.add(20);
-		limitList.add(40);
-		limitList.add(60);
-		limitList.add(80);
 		limitList.add(100);
+		limitList.add(200);
+		limitList.add(500);
+		limitList.add(1000);
 		dashBoardForm.setLimitList(limitList);
 
 		if (isFromViewMailTemplate) {
@@ -303,7 +302,7 @@ public class UserController {
 			@RequestParam("leadSource") String leadSource,
 			@RequestParam("labelByFilter") String labelByFilter,
 			@RequestParam("filterByTraining") String filterByTraining,
-			@RequestParam("filterByStatus") int filterByStatus
+			@RequestParam("filterByStatus") String filterByStatus
 			){
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
@@ -318,8 +317,11 @@ public class UserController {
 		if(category !=0){
 			dashBoardForm.setCategory(category);
 		}
-		if(filterByStatus == 0) {
-			filterByStatus = dashBoardForm.getCurrentStatus();
+		int statusFilter = 0;
+		if(null != filterByStatus && !(filterByStatus.equalsIgnoreCase(""))) {
+			statusFilter = Integer.parseInt(filterByStatus);
+		} else {
+			statusFilter = dashBoardForm.getCurrentStatus();
 		}
 		/*int filterTypeByLead= 0;
 		if(Integer.parseInt(filterLeadType) == 0){
@@ -351,7 +353,7 @@ public class UserController {
 		}
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		if (filterType == 0) {
-			return "redirect:/dashboard?leadStatus=" + filterByStatus + "&isFromFilter=true";
+			return "redirect:/dashboard?leadStatus=" + statusFilter + "&isFromFilter=true";
 		} else if (filterType == 1) {
 			List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
 			XSSFWorkbook workbook = this.userService.downloadLeadsSheet(leadsList);
