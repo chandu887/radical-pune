@@ -193,18 +193,6 @@ public class EmailServiceImpl implements EmailService {
 			firstEmailTimeInMillis = lastEmailTimeInMillis;
 		}
 
-		/*
-		 * if (leadsEntity != null) { if (leadsEntity.getEmailId() != null) {
-		 * if(leadsEntity.getCourseCategeory()!=0){ CourseCategeoryEntity
-		 * category = userService.getCategoryListBasedOnCourseId(leadsEntity.
-		 * getCourseCategeory());
-		 * sendMail(leadsEntity.getEmailId(),category.getSubject(),category.
-		 * getMessagebody()); } else { sendMail(leadsEntity.getEmailId(),
-		 * Constants.MAIL_SUBJECT,null); } } if (leadsEntity.getMobileNo() !=
-		 * null) { userService.sendSms(Constants.SMS_TEMPLATE,
-		 * leadsEntity.getMobileNo()); } }
-		 */
-
 		EmailTimeEntity emailTimeEntity = new EmailTimeEntity();
 		emailTimeEntity.setId(1);
 		emailTimeEntity.setLastEmailTime(firstEmailTimeInMillis);
@@ -411,34 +399,23 @@ public class EmailServiceImpl implements EmailService {
 	private LeadsEntity processJustDailMailContentTypeThree(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
-			String[] spiltContent = mailContent.split("\\n");
-			if (spiltContent[0].contains("Caller Name :")) {
-				String name = spiltContent[0]
-						.substring(spiltContent[0].indexOf("Caller Name :"), spiltContent[0].indexOf("Caller Phone :"))
-						.replace("Caller Name :", "").trim();
-				leadsEntity.setName(name);
+			String city = "";
+			String mobileNumber = "";
+			String userName = "";
+			
+			if(mailContent.contains("City Name:")){
+				city = mailContent.substring(mailContent.indexOf("City Name:"),mailContent.indexOf("Caller Phone:")).replace("City Name:", "").trim();
+			} 
+			if(mailContent.contains("Caller Phone:")){
+				mobileNumber = mailContent.substring(mailContent.indexOf("Caller Phone:"),mailContent.indexOf("Get More searches")).replace("Caller Phone:", "").trim().replace("+91", "");
 			}
-			String mobileNextWord = "";
-			if (mailContent.split("\\n")[0].contains("Caller Email :")) {
-				mobileNextWord = "Caller Email :";
-			} else {
-				mobileNextWord = "Call Date :";
+			if(mailContent.contains("Caller Name:")){
+				userName = mailContent.substring(mailContent.indexOf("Caller Name:"),mailContent.indexOf("Call Date:")).replace("Caller Name:", "").trim();
 			}
-			String mobileNumber = spiltContent[0]
-					.substring(spiltContent[0].indexOf("Caller Phone :"), spiltContent[0].indexOf(mobileNextWord))
-					.replace("Caller Phone :", "").replace("+91", "").trim();
-			if (spiltContent[0].contains("Caller Email :")) {
-				String email = spiltContent[0]
-						.substring(spiltContent[0].indexOf("Caller Email :"), spiltContent[0].indexOf("Call Date :"))
-						.replace("Caller Email :", "").trim();
-				leadsEntity.setEmailId(email);
-			}
-			String cityName = spiltContent[0]
-					.substring(spiltContent[0].indexOf("City Name :"), spiltContent[0].indexOf("Get more leads"))
-					.replace("City Name :", "").trim();
+			leadsEntity.setName(userName);
 			leadsEntity.setMobileNo(mobileNumber);
 			leadsEntity.setStatus(1);
-			leadsEntity.setCity(cityName);
+			leadsEntity.setCity(city);
 			leadsEntity.setCreatedDate(date);
 			leadsEntity.setLastUpdatedDate(date);
 			int courseId = 0;
@@ -459,16 +436,23 @@ public class EmailServiceImpl implements EmailService {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
 			String[] spiltContent = mailContent.split("\\n");
+			
 			String name = spiltContent[1].substring((spiltContent[1].indexOf("Caller Name:")))
 					.replace("Caller Name:", "").replace("Caller", "").trim();
 			String course = spiltContent[2].substring(spiltContent[2].indexOf("Requirement:"))
 					.replace("Call Date &", "").replace("Requirement:", "").trim();
 			String city = spiltContent[3].substring(spiltContent[3].indexOf("LayoutCity:")).replace("Caller", "")
 					.replace("LayoutCity:", "").trim();
-			String mobileNumber = spiltContent[4].substring(spiltContent[4].indexOf("Phone:")).replace("Caller", "")
-					.replace("+91", "").replace("Phone:", "").trim();
-			String emailId = spiltContent[5].substring(spiltContent[5].indexOf("Email:")).replace("Get", "")
+			
+			String mobileNumber = "";
+			
+			mobileNumber = spiltContent[4].substring(spiltContent[4].indexOf("Phone:")).replace("Caller", "")
+					.replace("+91", "").replace("Phone:", "").replace("Get","").trim();
+			String emailId = "";
+			if(mailContent.contains("Email:")){
+			emailId = spiltContent[5].substring(spiltContent[5].indexOf("Email:")).replace("Get", "")
 					.replace("Email:", "").trim();
+			}
 			leadsEntity.setName(name);
 			leadsEntity.setMobileNo(mobileNumber);
 			leadsEntity.setEmailId(emailId);
@@ -578,19 +562,43 @@ public class EmailServiceImpl implements EmailService {
 	private LeadsEntity processJustDailMailContentTypeOne(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
-			String[] spiltContent = mailContent.split("\\n");
-			String name = spiltContent[2].trim();
-			String course = spiltContent[5].trim();
-			String city = spiltContent[14].trim();
-			String mobilenumber = spiltContent[17].replace("+91", "").trim();
-			String emailId = null;
-			if (spiltContent[19].contains("Caller Email :")) {
-				emailId = spiltContent[20].trim();
+			String name = "";
+			String reason = "";
+			String course = "";
+			String city = "";
+			String mobileNumber = "";
+			String emailId = "";
+			if(mailContent.contains("User Name")){
+				name = mailContent.substring(mailContent.indexOf("User Name:"),mailContent.indexOf("User Requirement:")).replace("User Name:", "").trim();
 			}
+			if(mailContent.contains("User Requirement")){
+				reason  = mailContent.substring(mailContent.indexOf("User Requirement:"),mailContent.indexOf("Search Date & Time:")).replace("User Requirement:", "").trim();
+			} 
+			if(mailContent.contains("City:")){
+				if(mailContent.contains("User Phone:")){
+				city = mailContent.substring(mailContent.indexOf("City:"),mailContent.indexOf("User Phone:")).replace("City:", "").trim();
+				} else {
+				city = 	mailContent.substring(mailContent.indexOf("City:"),mailContent.indexOf("Send SMS to user")).replace("City:", "").trim();
+				}
+			}
+			
+			if(mailContent.contains("User Phone:")) {
+				if(mailContent.contains("User Email:")){
+					mobileNumber = city = mailContent.substring(mailContent.indexOf("User Phone:"),mailContent.indexOf("User Email:")).replace("User Phone:", "").trim();
+				} else {
+					mobileNumber = mailContent.substring(mailContent.indexOf("User Phone:"),mailContent.indexOf("Send SMS to user")).replace("User Phone:", "").trim();
+				}
+			}
+			
+			if(mailContent.contains("User Email:")){
+				emailId = mailContent.substring(mailContent.indexOf("User Email:"),mailContent.indexOf("Send Email to user")).replace("User Email:", "").trim();
+			}
+			
 			System.out.println(emailId);
+			leadsEntity.setComments(reason);
 			leadsEntity.setName(name);
 			leadsEntity.setCity(city);
-			leadsEntity.setMobileNo(mobilenumber);
+			leadsEntity.setMobileNo(mobileNumber);
 			leadsEntity.setEmailId(emailId);
 			leadsEntity.setStatus(1);
 			leadsEntity.setCreatedDate(date);
