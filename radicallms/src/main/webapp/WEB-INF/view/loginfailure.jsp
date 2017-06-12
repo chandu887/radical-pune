@@ -8,7 +8,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>HTC Login Page</title>
+        <title>LMS Login Page</title>
         <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
         <link href="<c:url value="/resources/css/font-awesome.css"/>" rel="stylesheet" />      
     </head>

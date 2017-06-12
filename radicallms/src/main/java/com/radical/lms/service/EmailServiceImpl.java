@@ -71,6 +71,7 @@ public class EmailServiceImpl implements EmailService {
 			String host = properties.getProperty("host");
 			String port = properties.getProperty("port");
 			Properties props = System.getProperties();
+			props.put("mail.smtp.ssl.trust", "*");
 			props.put("mail.smtp.starttls.enable", "true");
 			props.put("mail.smtp.host", host);
 			props.setProperty("mail.transport.protocol", "smtps");
@@ -88,9 +89,9 @@ public class EmailServiceImpl implements EmailService {
 	private void setMailStore() {
 		String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
 		String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
-
 		Properties props = new Properties();
 		props.setProperty("mail.store.protocol", "imaps");
+		props.put("mail.imaps.ssl.trust", "*");
 		Session session = Session.getInstance(props, null);
 		try {
 			Store store = session.getStore();

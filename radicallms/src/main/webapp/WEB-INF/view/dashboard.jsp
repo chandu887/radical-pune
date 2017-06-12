@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+	<%@page import="com.radical.lms.entity.UsersEntity" %>
 
 <%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
@@ -519,12 +520,16 @@ var basepath = "${pageContext.request.contextPath}";
 						<li><a rel="tooltip" data-original-title='Lead Failed'
 							role="button" data-toggle="modal" data-target="#closelead"><i
 								class="fa fa-thumbs-down" aria-hidden="true"></i></a></li>
-						<li><a rel="tooltip" data-original-title='Delete Lead'
+						<c:if test="${userName == 'admin'}">
+				<li><a rel="tooltip" data-original-title='Delete Lead'
 							role="button" data-toggle="modal" data-target="#deletlead"><i
 								class="fa fa-trash" aria-hidden="true"></i></a></li>
+				
+						
 						<li><a rel="tooltip" data-original-title='Download Excel'
 							role="button" data-toggle="modal" data-target="#dwnexcel"><i
 								class="fa fa-download" aria-hidden="true"></i></a></li>
+								</c:if>
 						<li><a rel="tooltip" data-original-title='SMA & Email'
 							role="button"><i class="fa fa-envelope" aria-hidden="true"></i></a>
 							<ul class="childemail">
@@ -1019,9 +1024,11 @@ var basepath = "${pageContext.request.contextPath}";
 						</div>
 						<input type="hidden" name="filterType" id="filterType" value="">
 						<div class="modal-footer">
+						<c:if test="${userName == 'admin'}">
 							<button type="button" class="btn btn-success"
 								id="downloadLeadsFilter" data-dismiss="modal">Download
 								Report</button>
+								</c:if>
 							<button type="button" class="btn btn-success"
 								id="showLeadsFilter">Apply Filter</button>
 							<button type="submit" class="btn btn-danger" data-dismiss="modal">Cancel</button>

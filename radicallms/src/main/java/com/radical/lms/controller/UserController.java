@@ -82,6 +82,8 @@ public class UserController {
 			@RequestParam(value = "isFromViewMailTemplate", defaultValue = "false", required = false) Boolean isFromViewMailTemplate,
 			@RequestParam(value = "messageText", defaultValue = "", required = false) String messageText) {
 		HttpSession session = request.getSession();
+		UsersEntity user = (UsersEntity) session.getAttribute("userInfo");
+		
 
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
@@ -182,6 +184,7 @@ public class UserController {
 		map.addAttribute("leadSourceMapping", leadSourceMapping);
 		map.addAttribute("courseCategories", courseCategories);
 		map.addAttribute("messageText", messageText);
+		map.addAttribute("userName", user.getUserName());
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		
 		return "dashboard";
