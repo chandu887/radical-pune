@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
-	<%@page import="com.radical.lms.entity.UsersEntity" %>
 
 <%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
@@ -8,7 +7,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
-<!-- <meta http-equiv="refresh" content="60" > -->
+ <meta http-equiv="refresh" content="120" >
 <meta charset="utf-8">
 <title>LMS Dashboard</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
@@ -151,13 +150,20 @@ function validateAddLeadform() {
 	     	} else if(center == 0){
 	     		alert('Please select Location.');
 	     		return false;
-	     	}  else if(labelType == 0 || labelType == null ){
+	     	} 
+	 	     if(labelType ==0 || labelType == null){
+	 	    	$('#statusTypeAdd').val("1"); 
+	 	     }
+	 	     if(labelType == 0 || labelType == null){
+	 	    	$('#labelType').val("0"); 
+	 	     }
+	 	 /*  else if(labelType == 0 || labelType == null ){
 	     		alert('Please select Label.');
 	     		return false;
 	     	} else if(statusType == 0 || statusType == null){
 	     		alert('Please select Lead Type.');
 	     		return false;
-	     	}
+	     	} */
 	  	return true;
 	  }
 	 function isInteger(s) {
@@ -303,36 +309,36 @@ var basepath = "${pageContext.request.contextPath}";
 			var toDate = $('#toDate').val();
 			var fromDate = $('#fromDate').val();
 			if((null==fromDate || fromDate=="") && (null == toDate || toDate=="")/* && (null==courseCategeory || courseCategeory == 0) */){
-				alert("Please select dates ");/* Or course Categeory */
-              	return false;
+				/*  alert("Please select dates ");/* Or course Categeory */
+              	/*return false; */
+              	$('#toDate').val("");
+              	$('#fromDate').val("");
+              	
 			} else if((null==fromDate || fromDate=="") || (null == toDate || toDate=="")){
-				alert("Please select from date and to date");
-				return false;
-			} /* else if(null == courseCategeory || courseCategeory == 0){
-				alert("Please select courseCategeory");
-              	return false;
-			}  */else {
+				$('#toDate').val("");
+              	$('#fromDate').val("");
+			} 
 			$('#filterType').val("1");
 			$("#filterByDateAndCourseForm").submit();
-			}
+			
 		});
 		$("#showLeadsFilter").click(function() {
 			var courseCategeory =  $('#courseCategeory').val();
 						var toDate = $('#toDate').val();
 						var fromDate = $('#fromDate').val();
 						if((null==fromDate || fromDate=="") && (null == toDate || toDate=="")/* && (null==courseCategeory || courseCategeory == 0) */){
-							alert("Please select dates");/*  Or course Categeory */
-			              	return false;
+							/*  alert("Please select dates ");/* Or course Categeory */
+			              	/*return false; */
+			              	$('#toDate').val("");
+			              	$('#fromDate').val("");
+			              	
 						} else if((null==fromDate || fromDate=="") || (null == toDate || toDate=="")){
-							alert("Please select from date and to date");
-							return false;
-						}/*  else if(null == courseCategeory || courseCategeory == 0){
-							alert("Please select courseCategeory");
-			              	return false;
-						}  */else {
-			$('#filterType').val("0");
-			$("#filterByDateAndCourseForm").submit();
-			}
+							$('#toDate').val("");
+			              	$('#fromDate').val("");
+						} 
+						$('#filterType').val("0");
+						$("#filterByDateAndCourseForm").submit();
+						
 		});
 		
 		$("#download").click(function() {
@@ -340,11 +346,17 @@ var basepath = "${pageContext.request.contextPath}";
 			$.each($("input[name='leadId']:checked"), function() {
 				leadIds.push($(this).val());
 			});
+			var password = $('#downloadPassword').val();
+			var dbPassword =  $('#dbPassword').val();
 			if (leadIds.length == 0) {
 				alert("please select any enquiry");
+			} else if((null==password || password=="")){
+				alert("Please enter password ..!")
+			} else if(password  != dbPassword){
+				alert("Incorrect password ..! Please enter correct Password")
 			} else {
-			$('#downloadLeadIds').val(leadIds.join(","));
-			$("#downloadLeadsToSheetForm").submit();
+				$('#downloadLeadIds').val(leadIds.join(","));
+				$("#downloadLeadsToSheetForm").submit();
 			}
 		});
 		
@@ -459,7 +471,7 @@ var basepath = "${pageContext.request.contextPath}";
 					</span>
 				</div>
 				<div class="col-md-4">
-					<span class="pull-right account"><a href="logout">Logout</a></span>
+					<span class="pull-right account" style="color:blue;"> Welcome ! ${userInfo.userName}</br> <a href="logout" style="color:red;"> Logout</a></span>
 				</div>
 			</section>
 			<c:if test="${dashBoardForm.currentStatus == 1}">
@@ -480,6 +492,8 @@ var basepath = "${pageContext.request.contextPath}";
 			</c:if>
 			<section id="action">
 			<ul class="default-filters">
+				<li><a href="clearFilter"><i
+				class="fa fa-home" aria-hidden="true"></i></a></li>
 				<li><a href="dashboard?leadStatus=1" class="${newActive}"><i
 						class="fa fa-external-link" aria-hidden="true"></i> New <span>${dashBoardForm.newCount}</span></a></li>
 				<li><a href="dashboard?leadStatus=2" class="${openActive}"><i
@@ -494,8 +508,8 @@ var basepath = "${pageContext.request.contextPath}";
 				<li><a href="dashboard?leadStatus=0" class="${allActive}"><i
 						class="fa fa-bars" aria-hidden="true"></i> All
 						${dashBoardForm.totalLeadsCount}</a></li>
-				<li class="right"><a href="clearFilter" role="button"><i
-						class="fa fa-filter" aria-hidden="true"></i> Clear Filter</a></li>
+				<!-- <li class="right"><a href="clearFilter" role="button"><i
+						class="fa fa-filter" aria-hidden="true"></i> Clear Filter</a></li> -->
 				<li class="right"><a data-toggle="modal" role="button"
 					data-target="#filter"><i class="fa fa-filter"
 						aria-hidden="true"></i> Filter</a></li>
@@ -521,11 +535,9 @@ var basepath = "${pageContext.request.contextPath}";
 							role="button" data-toggle="modal" data-target="#closelead"><i
 								class="fa fa-thumbs-down" aria-hidden="true"></i></a></li>
 						<c:if test="${userName == 'admin'}">
-				<li><a rel="tooltip" data-original-title='Delete Lead'
+						<li><a rel="tooltip" data-original-title='Delete Lead'
 							role="button" data-toggle="modal" data-target="#deletlead"><i
 								class="fa fa-trash" aria-hidden="true"></i></a></li>
-				
-						
 						<li><a rel="tooltip" data-original-title='Download Excel'
 							role="button" data-toggle="modal" data-target="#dwnexcel"><i
 								class="fa fa-download" aria-hidden="true"></i></a></li>
@@ -537,10 +549,12 @@ var basepath = "${pageContext.request.contextPath}";
 										Email</a></li>
 								<li><a data-toggle="modal" data-target="#freeemail">Free
 										Text Email/SMS</a></li>
+										<c:if test="${userName == 'admin'}">
 								<li><a data-toggle="modal" data-target="#createTemple">Create
 										Templated Email</a></li>
 								<li><a href="viewTemplatedMail">View All Templated
 										Email</a></li>
+										</c:if>
 							</ul></li>
 
 					</ul>
@@ -878,7 +892,11 @@ var basepath = "${pageContext.request.contextPath}";
 					</div>
 					<input type="hidden" id="downloadLeadIds" name="leadIds" value="">
 					<div class="modal-body">
-						<p>Are you sure you want to Download leads?</p>
+						<p>Are you sure you want to Download leads? Please Provide Password ..</p>
+						</br>
+						<input type="password" style="padding-left: 20px;" id = "downloadPassword" placeholder="Profile Password"/>
+						<input type = "hidden" id = "dbPassword" value= "${userInfo.password}"/>
+						</br>
 						<div class="modal-footer">
 							<button type="button" id="download" class="btn btn-success"
 								data-dismiss="modal">Download</button>
@@ -1008,6 +1026,17 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="4">Agent 3</option>
 									<option value="5">Agent 4</option>
 									<option value="6">Agent 5</option>
+									<option value="7">Agent 6</option>
+									<option value="8">Agent 7</option>
+									<option value="9">Agent 8</option>
+									<option value="10">Agent 9</option>
+									<option value="11">Agent 10</option>
+									<option value="12">Agent 11</option>
+									<option value="13">Agent 12</option>
+									<option value="14">Agent 13</option>
+									<option value="15">Agent 14</option>
+									<option value="16">Agent 15</option>
+									
 								</select>
 							</div>
 							<div class="form-group">
@@ -1227,6 +1256,16 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="4">Agent 3</option>
 									<option value="5">Agent 4</option>
 									<option value="6">Agent 5</option>
+									<option value="7">Agent 6</option>
+									<option value="8">Agent 7</option>
+									<option value="9">Agent 8</option>
+									<option value="10">Agent 9</option>
+									<option value="11">Agent 10</option>
+									<option value="12">Agent 11</option>
+									<option value="13">Agent 12</option>
+									<option value="14">Agent 13</option>
+									<option value="15">Agent 14</option>
+									<option value="16">Agent 15</option>
 								</select>
 							</div>
 							<div class="form-group">
@@ -1359,7 +1398,7 @@ var basepath = "${pageContext.request.contextPath}";
 						
 						</div>
 						<div class="col-sm-6">
-							<!-- <div class="form-group">
+							 <div class="form-group">
 								<label for="pwd">Assigned to</label><br> <select
 									class="selectpicker" title="Assigned to" id="editAssigned"
 									name="assignedTo">
@@ -1368,8 +1407,19 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="4">Agent 3</option>
 									<option value="5">Agent 4</option>
 									<option value="6">Agent 5</option>
+									<option value="7">Agent 6</option>
+									<option value="8">Agent 7</option>
+									<option value="9">Agent 8</option>
+									<option value="10">Agent 9</option>
+									<option value="11">Agent 10</option>
+									<option value="12">Agent 11</option>
+									<option value="13">Agent 12</option>
+									<option value="14">Agent 13</option>
+									<option value="15">Agent 14</option>
+									<option value="16">Agent 15</option>
 								</select>
-							</div> -->
+							</div>
+							
 							<div class="form-group">
 								<label for="pwd">Source</label><br> <select
 									class="selectpicker" title="Select source" id="editSource"

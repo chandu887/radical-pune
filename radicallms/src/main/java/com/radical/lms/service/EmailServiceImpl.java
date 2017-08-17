@@ -32,7 +32,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.radical.lms.constants.Constants;
 import com.radical.lms.dao.EmailDao;
-import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.EmailTimeEntity;
 import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.SendEmailEntity;
@@ -89,6 +88,7 @@ public class EmailServiceImpl implements EmailService {
 	private void setMailStore() {
 		String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
 		String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
+
 		Properties props = new Properties();
 		props.setProperty("mail.store.protocol", "imaps");
 		props.put("mail.imaps.ssl.trust", "*");
@@ -138,12 +138,19 @@ public class EmailServiceImpl implements EmailService {
 					String mailContent = "";
 					String mailId = addressArray[0].toString();
 					Object content = message.getContent();
-					if (mailsubject.contains("Radical Technologies Bangalore - Course Inquiry Details")) {
+					if (mailsubject.contains("Radical Technologies - Cource Inquiry Details")) {
+						if(content instanceof String){
+							mailContent = (String) content;
+							Document doc = Jsoup.parse(mailContent);
+							mailContent = doc.text();
+							
+						} else if (content instanceof Multipart) {
 						Multipart multiPart = (Multipart) content;
 						BodyPart bodyPart = multiPart.getBodyPart(0);
 						mailContent = (String) bodyPart.getContent();
+						}
 						leadsEntity = processWebsiteEnquiryContent(mailContent, emailReceivedDate);
-					} else if (mailId.contains("blrfeedback@justdial.com") || mailId.contains("care@yet5.com")
+					} else if (mailId.contains("punefeedback@justdial.com") || mailId.contains("care@yet5.com")
 							|| mailId.contains("ypleads@sulekhanotifications.com")) {
 						if (content instanceof String) {
 							mailContent = (String) content;
@@ -162,7 +169,7 @@ public class EmailServiceImpl implements EmailService {
 							mailContent = (String) bodyPart.getContent();
 							if (mailId.contains("care@yet5.com")) {
 								leadsEntity = processYet5MailContent(mailContent, emailReceivedDate);
-							} else if (mailId.contains("blrfeedback@justdial.com")) {
+							} else if (mailId.contains("punefeedback@justdial.com")) {
 								if (mailsubject.contains("www.justdial.com")) {
 									leadsEntity = processJustDailMailContentTypeOne(mailContent, emailReceivedDate);
 								} else if (mailsubject.contains("enquiry for you at")) {
@@ -578,7 +585,10 @@ public class EmailServiceImpl implements EmailService {
 			if(mailContent.contains("City:")){
 				if(mailContent.contains("User Phone:")){
 				city = mailContent.substring(mailContent.indexOf("City:"),mailContent.indexOf("User Phone:")).replace("City:", "").trim();
-				} else {
+				}else if(mailContent.contains("User Email:"))  {
+				city = 	mailContent.substring(mailContent.indexOf("City:"),mailContent.indexOf("User Email:")).replace("City:", "").trim();
+				}
+				else  {
 				city = 	mailContent.substring(mailContent.indexOf("City:"),mailContent.indexOf("Send SMS to user")).replace("City:", "").trim();
 				}
 			}
@@ -592,7 +602,7 @@ public class EmailServiceImpl implements EmailService {
 			}
 			
 			if(mailContent.contains("User Email:")){
-				emailId = mailContent.substring(mailContent.indexOf("User Email:"),mailContent.indexOf("Send Email to user")).replace("User Email:", "").trim();
+				emailId = mailContent.substring(mailContent.indexOf("User Email:"),mailContent.indexOf("Send Email to user")).replace("User Email:", "").replace("Send SMS to user", "").replace("Send Email to user", "").trim();
 			}
 			
 			System.out.println(emailId);
@@ -642,10 +652,11 @@ public class EmailServiceImpl implements EmailService {
 	private LeadsEntity processWebsiteEnquiryContent(String mailContent, Date date) {
 		LeadsEntity leadsEntity = new LeadsEntity();
 		try {
-			String name = mailContent.substring(mailContent.indexOf("Course Inquiry Details"),mailContent.indexOf("Email")).replace("Course Inquiry Details", "").trim().replace("Name", "").trim();
+			String name = mailContent.substring(mailContent.indexOf("Name"),mailContent.indexOf("Email")).replace("Name", "").trim();
 			String email = mailContent.substring(mailContent.indexOf("Email"),mailContent.indexOf("Phone")).replace("Email", "").trim();
 			String phone = mailContent.substring(mailContent.indexOf("Phone"),mailContent.indexOf("Course Name")).replace("Phone", "").trim().replace("+", "").trim();
-			String courseName = mailContent.substring(mailContent.indexOf("Course Name"), mailContent.indexOf("Message")).replace("Course Name", "").trim();
+			String courseName = mailContent.substring(mailContent.indexOf("Course Name"), mailContent.indexOf("Select Location")).replace("Course Name", "").trim();
+			String location = mailContent.substring(mailContent.indexOf("Select Location"), mailContent.indexOf("Message")).replace("Select Location", "").trim();
 			String message = mailContent.substring(mailContent.indexOf("Message")).replace("Message", "").trim();
 			int courseId = 0;
 			for (Map.Entry<Integer, String> entry : userService.getCourses().entrySet()) {
@@ -660,6 +671,7 @@ public class EmailServiceImpl implements EmailService {
 			}
 			leadsEntity.setCourseName(courseName);
 			leadsEntity.setName(name);
+			leadsEntity.setLocation(location);
 			leadsEntity.setCourse(courseId);
 			leadsEntity.setCourseCategeory(courseCategory);
 			leadsEntity.setMobileNo(phone);

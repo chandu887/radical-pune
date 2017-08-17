@@ -15,7 +15,7 @@ public final class Constants {
 	
 	public static final String LMS_PROP = "lms.properties";
 	
-	public static final String SMS_TEMPLATE = "Hi Thank You for your enq. We build Professionals By Highly Qualified Professionals.Visit us www.radicaltechnologiesbangalore.com Radical Technologies- Bangalore";
+	public static final String SMS_TEMPLATE = "Welcome To Radical Technologies - India's Leading Project Based IT Training & Certification Center . We deliver all Training by Realtime Working professionals from the Industry. Visit us : www.radicaltechnologies.co.in , Email :- training@radicaltechnologies.co.in,Contact:8055361861, Radical Technologies- Pune";
 	
 	public static final String MAIL_SUBJECT = "Radical Technologies - Building Professionals By Highly Qualified Professionals";
 }

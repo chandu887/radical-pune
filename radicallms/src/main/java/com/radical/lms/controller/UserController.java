@@ -83,7 +83,6 @@ public class UserController {
 			@RequestParam(value = "messageText", defaultValue = "", required = false) String messageText) {
 		HttpSession session = request.getSession();
 		UsersEntity user = (UsersEntity) session.getAttribute("userInfo");
-		
 
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
@@ -93,7 +92,6 @@ public class UserController {
 			dashBoardForm.setPageNumber(1);
 			dashBoardForm.setPageLimit(100);
 		}
-
 		if (!isFromPagination) {
 			dashBoardForm.setPageNumber(1);
 		}
@@ -158,9 +156,9 @@ public class UserController {
 
 		List<Integer> limitList = new ArrayList<Integer>();
 		limitList.add(100);
-		limitList.add(200);
 		limitList.add(500);
 		limitList.add(1000);
+		limitList.add(2000);
 		dashBoardForm.setLimitList(limitList);
 
 		if (isFromViewMailTemplate) {
@@ -285,6 +283,7 @@ public class UserController {
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
+		clearDashBoardFilter(dashBoardForm);
 		String[] changeStatusLeadIdsSplitArray = changeStatusLeadIds.split(",");
 		List<Integer> changeStatusLeadIdsList = new ArrayList<Integer>();
 		for (String leadId : changeStatusLeadIdsSplitArray) {
@@ -312,8 +311,13 @@ public class UserController {
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
-		dashBoardForm.setFromDate(fromDate);
-		dashBoardForm.setToDate(toDate);
+		clearDashBoardFilter(dashBoardForm);
+		if(null != fromDate && !(fromDate.equalsIgnoreCase(""))){
+			dashBoardForm.setFromDate(fromDate);
+		}
+		if(null != toDate && !(toDate.equalsIgnoreCase(""))){
+			dashBoardForm.setToDate(toDate);
+		}
 		if(course!=0){
 			dashBoardForm.setCourse(course);
 		} 
@@ -381,6 +385,7 @@ public class UserController {
 			@RequestParam(value = "isFromViewMailTemplate", defaultValue = "false", required = false) Boolean isFromViewMailTemplate) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		clearDashBoardFilter(dashBoardForm);
 		dashBoardForm.setPageNumber(currentPage);
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		if (isFromViewMailTemplate) {
@@ -395,6 +400,7 @@ public class UserController {
 			@RequestParam(value = "isFromViewMailTemplate", defaultValue = "false", required = false) Boolean isFromViewMailTemplate) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		clearDashBoardFilter(dashBoardForm);
 		dashBoardForm.setPageNumber(1);
 		dashBoardForm.setPageLimit(pageLimit);
 		session.setAttribute("dashBoardForm", dashBoardForm);
@@ -409,6 +415,7 @@ public class UserController {
 	public String searchByCourse(HttpServletRequest request, @RequestParam("course") String courseName) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		clearDashBoardFilter(dashBoardForm);
 		dashBoardForm.setSearchData(courseName);
 		dashBoardForm.setCourse(0);
 		dashBoardForm.setCategory(0);
@@ -453,7 +460,7 @@ public class UserController {
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
-
+		clearDashBoardFilter(dashBoardForm);
 		String[] downloadLeadIdsSplitArray = downloadLeadIds.split(",");
 		List<Integer> downloadLeadIdsList = new ArrayList<Integer>();
 		for (String leadId : downloadLeadIdsSplitArray) {
@@ -482,14 +489,8 @@ public class UserController {
 		List<CourseEntity> courseList = this.userService.getCourseList(intCategoryId);
 		return courseList;
 	}
-
-	@RequestMapping(value = "/clearFilter", method = RequestMethod.GET)
-	public String clearFilter(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		DashBoardForm dashBoardForm = null;
-		if (session.getAttribute("dashBoardForm") != null) {
-			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
-		}
+	
+	public void clearDashBoardFilter(DashBoardForm dashBoardForm){
 		dashBoardForm.setFromDate("");
 		dashBoardForm.setToDate("");
 		dashBoardForm.setCourse(0);
@@ -503,8 +504,18 @@ public class UserController {
 		dashBoardForm.setLocation(null);
 		dashBoardForm.setAssignedTo(0);
 		dashBoardForm.setLeadSource(0);
+	}
+
+	@RequestMapping(value = "/clearFilter", method = RequestMethod.GET)
+	public String clearFilter(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		DashBoardForm dashBoardForm = null;
+		if (session.getAttribute("dashBoardForm") != null) {
+			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
+		}
+		clearDashBoardFilter(dashBoardForm);
 		session.setAttribute("dashBoardForm", dashBoardForm);
-		return "redirect:/dashboard?leadStatus=1"/*+dashBoardForm.getCurrentStatus()*/;
+		return "redirect:/dashboard?leadStatus=1";
 	}
 
 	@RequestMapping(value = "/createMailTemplate", method = RequestMethod.POST)
@@ -531,6 +542,7 @@ public class UserController {
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
+		clearDashBoardFilter(dashBoardForm);
 		/*SendEmailEntity sendEmailEntity = new SendEmailEntity();
 		String[] sendTemplateLeadIdsSplitArray = sendTemplateLeadIds.split(",");
 		for (String leadId : sendTemplateLeadIdsSplitArray) {
@@ -571,6 +583,7 @@ public class UserController {
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
+		clearDashBoardFilter(dashBoardForm);
 		String message = "";
 		String[] sendNonTemplateLeadIdsSplitArray = sendNonTemplateLeadIds.split(",");
 		for (String leadId : sendNonTemplateLeadIdsSplitArray) {
