@@ -35,18 +35,25 @@ public class UsersEntity {
 
 	@Column(name = "roleid")
 	private int roleId;
+	
+	@Column(name = "isactive")
+	private int isActive;
+	
+	@Column(name = "lastupdatedtime")
+	private Date lastUpdatedtime;
 
 	public UsersEntity() {
 	}
 
 	public UsersEntity(String userName, String password, String email, Date createdTime, Date lastLoginTime,
-			int roleId) {
+			int roleId, int isActive) {
 		this.userName = userName;
 		this.password = password;
 		this.email = email;
 		this.createdTime = createdTime;
 		this.lastLoginTime = lastLoginTime;
 		this.roleId = roleId;
+		this.isActive = isActive;
 	}
 	
 	public int getUserId() {
@@ -105,4 +112,20 @@ public class UsersEntity {
 		this.roleId = roleId;
 	}
 
+	public int getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(int isActive) {
+		this.isActive = isActive;
+	}
+
+	public Date getLastUpdatedtime() {
+		return lastUpdatedtime;
+	}
+
+	public void setLastUpdatedtime(Date lastUpdatedtime) {
+		this.lastUpdatedtime = lastUpdatedtime;
+	}
+	
 }

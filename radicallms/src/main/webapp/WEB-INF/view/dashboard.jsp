@@ -554,6 +554,7 @@ var basepath = "${pageContext.request.contextPath}";
 										Templated Email</a></li>
 								<li><a href="viewTemplatedMail">View All Templated
 										Email</a></li>
+										<li><a href="viewAgents">Admin Activities</a></li>
 										</c:if>
 							</ul></li>
 
@@ -595,6 +596,7 @@ var basepath = "${pageContext.request.contextPath}";
 								<th>Status</th>
 								<th>Mode Of Training</th>
 								<th>Time Created</th>
+								<th>Time Updated</th>
 							</tr>
 						</thead>
 	
@@ -617,6 +619,7 @@ var basepath = "${pageContext.request.contextPath}";
 										<td>${lead.status}</td>
 										<td>${lead.modeOfTraining}</td>
 										<td>${lead.createdTime}</td>
+										<td>${lead.updatedTime}</td>
 									</tr>
 								</c:forEach>
 							</c:if>
@@ -1069,129 +1072,7 @@ var basepath = "${pageContext.request.contextPath}";
 
 	</div>
 
-<%-- 
-	<!--Filter-->
-	<div id="addlead" class="modal fade" role="dialog">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Add Lead</h4>
-				</div>
-				<div class="modal-body">
-					<form:form method="post" action="addlead" name="addLeadForm"
-						onsubmit="return validateAddLeadform()">
-						<div class="form-group">
-							<label for="email">Student Name</label> <input type="text"
-								class="form-control" id="name" name="name">
-						</div>
-						<div class="form-group">
-							<label for="pwd">Phone Number</label> <input type="text"
-								class="form-control" id="mobileNo" name="mobileNo">
-						</div>
-						<div class="form-group">
-							<label for="pwd">Email ID</label> <input type="email"
-								class="form-control" id="emailId" name="emailId">
-						</div>
-						<div class="form-group wd50">
-							<label for="pwd">Category</label><br> <select
-								class="addlead-course form-control" id="courseCategeoryName"
-								name="courseCategeory"
-								onchange="getCourseList('addCourseName','courseCategeoryName');">
-								<option value="0">Select Category</option>
-								<c:forEach var="category" items="${courseCategories}">
-									<option value="${category.key}">${category.value}</option>
-								</c:forEach>
-							</select>
-						</div>
-						<div class="form-group wd50">
-							<label for="pwd">Course</label><br> <select
-								class="addlead-course form-control" multiple
-								title="Select Course" id="addCourseName" name="courseList">
-								<!-- <option value="0">Select Course</option> -->
-							</select>
-						</div>
-						<div class="form-group">
-								<label for="pwd">Assigned to</label><br> <select
-									class="selectpicker" title="Assigned to" id="editAssigned"
-									name="assignedTo">
-									<option value="2">Agent 1</option>
-									<option value="3">Agent 2</option>
-									<option value="4">Agent 3</option>
-									<option value="5">Agent 4</option>
-									<option value="6">Agent 5</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="pwd">Mode of Training</label><br> <select
-									class="selectpicker" title="Select Training" id="editMode"
-									name="modeofTraining">
-									<option value="Classroom">Classroom</option>
-									<option value="Online">Online</option>
-								</select>
-							</div>
 
-
-							<div class="form-group">
-								<label for="pwd">Weekday/Weekend</label><br> <select
-									class="selectpicker" title="Select Type" id="editType"
-									name="typeofTraining">
-									<option value="Weekend">Weekend</option>
-									<option value="Weekday">Weekday</option>
-								</select>
-							</div>
-							<div class="form-group">
-								<label for="pwd">Center Location</label><br> <select
-									class="selectpicker" title="Select Location" id="editCenter"
-									name="location">
-									<option value="Bangalore-Hsr">Bangalore-Hsr</option>
-									<option value="Aundh-Pune">Aundh-Pune</option>
-									<option value="Kharadi-Pune">Kharadi-Pune</option>
-								</select>
-							</div>
-						<div class="form-group wd50">
-							<label for="pwd">Course</label><br> <select
-								class="selectpicker" multiple title="Select Course" id="course"
-								name="course">
-								<c:forEach var="courses" items="${coursesMap}">
-									<option value="${courses.key}">${courses.value}</option>
-								</c:forEach>
-							</select>
-						</div>
-						<div class="form-group wd50">
-							<label for="pwd">Course</label><br> <select
-								class="selectpicker" multiple title="Select Course" id="course"
-								name="course">
-								<c:forEach var="courses" items="${coursesMap}">
-									<option value="${courses.key}">${courses.value}</option>
-								</c:forEach>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="pwd">Source Lead</label> <select class="selectpicker"
-								title="Select Source" id="leadSource" name="leadSource">
-								<c:forEach var="leadSource" items="${leadSourceMapping}">
-									<option value="${leadSource.key}">${leadSource.value}</option>
-								</c:forEach>
-							</select>
-						</div>
-						<div class="form-group">
-							<label for="pwd">Commentes</label><br>
-							<textarea class="form-control" id="comments" name="comments"></textarea>
-						</div>
-						<div class="modal-footer">
-							<button type="submit" class="btn btn-success">Add Lead</button>
-							<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-						</div>
-					</form:form>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	
- --%>
- 
  <div id="addlead" class="modal fade" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">

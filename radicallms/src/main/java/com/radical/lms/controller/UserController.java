@@ -428,8 +428,12 @@ public class UserController {
 			dashBoardForm.setCourse(userService.getCourseNameIdMapping().get(courseName));
 		} else if (courseName.contains("@")) {
 			dashBoardForm.setEmail(courseName);
-		} else if (NumberUtils.isNumber(courseName)) {
+		} else if (NumberUtils.isNumber(courseName) && courseName.length() == 10) {
 			dashBoardForm.setMobileNumber(courseName);
+		} else if (NumberUtils.isNumber(courseName)) {
+			dashBoardForm.setLeadId(Integer.parseInt(courseName));
+		} else {
+			dashBoardForm.setName(courseName);
 		}
 
 		session.setAttribute("dashBoardForm", dashBoardForm);
@@ -445,10 +449,18 @@ public class UserController {
 	@RequestMapping(value = "/editlead", method = RequestMethod.POST)
 	public String editLead(@ModelAttribute(value = "editLeadForm") LeadsEntity leadsEntity, Model model) {
 		LeadsEntity lead = leadService.getLeadByLeadId(leadsEntity.getLeadiId());
-		leadsEntity.setCreatedDate(lead.getCreatedDate());
+		
 		leadsEntity.setLastUpdatedDate(new Date());
 		leadsEntity.setReason(lead.getReason());
+		if (leadsEntity.getCourse() != lead.getCourse() && leadsEntity.getCourse() != 0) {
+			leadsEntity.setLeadiId(0);
+			leadsEntity.setCreatedDate(new Date());
+		} else {
+			leadsEntity.setCreatedDate(lead.getCreatedDate());
+		}
+		
 		leadService.saveLead(leadsEntity);
+		
 		return "redirect:/dashboard?leadStatus=" + leadsEntity.getStatus()+"&messageText=Lead Updated Successfully";
 	}
 
@@ -504,6 +516,8 @@ public class UserController {
 		dashBoardForm.setLocation(null);
 		dashBoardForm.setAssignedTo(0);
 		dashBoardForm.setLeadSource(0);
+		dashBoardForm.setName(null);
+		dashBoardForm.setLeadId(0);
 	}
 
 	@RequestMapping(value = "/clearFilter", method = RequestMethod.GET)
@@ -623,5 +637,57 @@ public class UserController {
 		userService.saveTemplate(course);*/
 		return "redirect:/dashboard?leadStatus=1&isFromViewMailTemplate=true&messageText=Mail Template Updated Successfully";
 	}
+	
+	@RequestMapping(value = "/viewAgents", method = RequestMethod.GET)
+	public String viewAgents(ModelMap map, @RequestParam(value = "messageText", defaultValue = "", required = false) String messageText) {
+		List<UsersEntity> agentsList = userService.getUsersList();
+		map.addAttribute("agentsList", agentsList);
+		map.addAttribute("message", messageText);
+		return "adminactivities";
+	}
+	
+	@RequestMapping(value = "/getAgentInfo", method = RequestMethod.POST)
+	@ResponseBody
+	public UsersEntity getAgentInfoByUserId(@RequestParam("userId") int userId) {
+		return userService.getUsers(userId);
+	}
+	
+	@RequestMapping(value = "/addAgent", method = RequestMethod.POST)
+	public String addAgent(@ModelAttribute(value = "addAgentForm") UsersEntity userEntity, Model model) {
+		UsersEntity user = new UsersEntity();
+		user.setUserName(userEntity.getUserName());
+		user.setPassword(userEntity.getPassword());
+		user.setEmail(userEntity.getEmail());
+		user.setCreatedTime(new Date());
+		user.setIsActive(1);
+		user.setRoleId(2);
+		userService.saveOrUpdateUser(user);
+		return "redirect:/viewAgents?messageText=Agent added successfully";
+	}
+	
+	@RequestMapping(value = "/editAgent", method = RequestMethod.POST)
+	public String editAgentInfo(@ModelAttribute(value = "editAgentForm") UsersEntity userEntity, Model model) {
+		UsersEntity user = userService.getUsers(userEntity.getUserId());
+		user.setUserName(userEntity.getUserName());
+		user.setPassword(userEntity.getPassword());
+		user.setEmail(userEntity.getEmail());
+		user.setLastUpdatedtime(new Date());
+		userService.saveOrUpdateUser(user);
+		return "redirect:/viewAgents?messageText=Agent updated successfully";
+	}
+	
+	
+	@RequestMapping(value = "/isUserExits", method = RequestMethod.POST)
+	@ResponseBody
+	public String isUserExits(@RequestParam("userName") String name) {
+		UsersEntity user = userService.getUserByUserName(name);
+		if (user == null) {
+			return "no";
+		} else {
+			return "yes";
+		}
+		
+	}
+	
 
 }

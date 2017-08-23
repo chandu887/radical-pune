@@ -118,15 +118,30 @@ public class UserServiceImpl implements UserService {
 		setCourseCategories(courseCategories);
 		setCategoryNameIdMapping(courseNameIdMapping);
 	}
+	
+	@Transactional
+	public void saveOrUpdateUser(UsersEntity usersEntity) {
+		userDao.saveOrUpdateUser(usersEntity);
+	}
 
 	@Transactional
-	public UsersEntity getUsers(String userId) {
+	public UsersEntity getUsers(int userId) {
 		return userDao.getUsers(userId);
+	}
+	
+	@Transactional
+	public UsersEntity getUserByUserName(String name) {
+		return userDao.getUserByUserName(name);
 	}
 
 	@Transactional
 	public UsersEntity checkLoginDetails(String userName, String passWord) {
 		return userDao.checkLoginDetails(userName, passWord);
+	}
+	
+	@Transactional
+	public List<UsersEntity> getUsersList() {
+		return userDao.getUsersList();
 	}
 
 	@Transactional

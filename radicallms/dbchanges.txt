@@ -53,3 +53,8 @@ INSERT INTO `radicallms`.`leadsouces` (`leadsourceid`, `leadsourcename`, `leadso
 
 
 
+ALTER TABLE `radicallmspune`.`users` 
+ADD COLUMN `isactive` INT(3) NULL DEFAULT 0 AFTER `roleid`;
+
+ALTER TABLE `radicallmspune`.`users` 
+ADD COLUMN `lastupdatedtime` DATETIME NULL AFTER `isactive`;

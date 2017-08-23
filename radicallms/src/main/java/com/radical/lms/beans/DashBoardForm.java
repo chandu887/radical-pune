@@ -31,7 +31,8 @@ public class DashBoardForm {
 	String location;
 	int assignedTo;
 	int leadSource;
-	
+	int leadId;
+	String name;
 	
 	public String getModeOfTraining() {
 		return modeOfTraining;
@@ -221,6 +222,16 @@ public class DashBoardForm {
 	public void setTotalPages(int totalPages) {
 		this.totalPages = totalPages;
 	}
-	
-	
+	public int getLeadId() {
+		return leadId;
+	}
+	public void setLeadId(int leadId) {
+		this.leadId = leadId;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 }

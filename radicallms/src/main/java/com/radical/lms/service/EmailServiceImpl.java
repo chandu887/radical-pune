@@ -57,9 +57,9 @@ public class EmailServiceImpl implements EmailService {
 
 	@PostConstruct
 	public void init() {
-		setEmailSession();
+	/*	setEmailSession();
 		setMailStore();
-		new Thread(new EmailThread()).start();
+		new Thread(new EmailThread()).start();*/
 	}
 
 	private void setEmailSession() {

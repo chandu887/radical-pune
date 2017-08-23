@@ -17,10 +17,16 @@ import com.radical.lms.entity.UsersEntity;
 public interface UserService {
 	
 	void loadCache();
+	
+	void saveOrUpdateUser(UsersEntity usersEntity);
 
-	UsersEntity getUsers(String userId);
+	UsersEntity getUsers(int userId);
+	
+	UsersEntity getUserByUserName(String name);
 
 	UsersEntity checkLoginDetails(String userName, String passWord);
+	
+	List<UsersEntity> getUsersList();
 
 	List getCountByStatusType(DashBoardForm dashBoardForm);
 

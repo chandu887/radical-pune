@@ -28,9 +28,27 @@ public class UserDaoImpl implements UserDao {
 	@Autowired
 	private SessionFactory sessionFactory;
 
-	public UsersEntity getUsers(String userId) {
+	@Transactional
+	public void saveOrUpdateUser(UsersEntity usersEntity) {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.saveOrUpdate(usersEntity);
+	}
+	
+	@Transactional
+	public UsersEntity getUsers(int userId) {
 		Query query = this.sessionFactory.getCurrentSession().createQuery("from UsersEntity where userId= :userId");
-		query.setString("userId", userId);
+		query.setInteger("userId", userId);
+		List<UsersEntity> userList = query.list();
+		if (null != userList && !userList.isEmpty()) {
+			return userList.get(0);
+		}
+		return null;
+	}
+	
+	@Transactional
+	public UsersEntity getUserByUserName(String name) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from UsersEntity where userName= :userName");
+		query.setString("userName", name);
 		List<UsersEntity> userList = query.list();
 		if (null != userList && !userList.isEmpty()) {
 			return userList.get(0);
@@ -49,6 +67,12 @@ public class UserDaoImpl implements UserDao {
 			return user;
 		}
 		return null;
+	}
+	
+	@Transactional
+	public List<UsersEntity> getUsersList() {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from UsersEntity where roleId = 2");
+		return query.list();
 	}
 
 	public List getCountByStatusType(DashBoardForm dashBoardForm) {
@@ -110,6 +134,12 @@ public class UserDaoImpl implements UserDao {
 		}
 		if(dashBoardForm.getMobileNumber()!=null){
 			queryStr += " and mobileNo = " + dashBoardForm.getMobileNumber();
+		}
+		if(dashBoardForm.getLeadId()!=0){
+			queryStr += " and leadid = " + dashBoardForm.getLeadId();
+		}
+		if(dashBoardForm.getName() != null){
+			queryStr += " and name = '"+dashBoardForm.getName()+"'";
 		}
 		if (dashBoardForm.getFromDate() != null && !dashBoardForm.getFromDate().equalsIgnoreCase("")
 				&& dashBoardForm.getToDate() != null && !dashBoardForm.getToDate().equalsIgnoreCase("")) {
