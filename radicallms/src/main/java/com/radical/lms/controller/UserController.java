@@ -643,6 +643,7 @@ public class UserController {
 		List<UsersEntity> agentsList = userService.getUsersList();
 		map.addAttribute("agentsList", agentsList);
 		map.addAttribute("message", messageText);
+		map.addAttribute("viewPage", "viewagents");
 		return "adminactivities";
 	}
 	
@@ -668,7 +669,6 @@ public class UserController {
 	@RequestMapping(value = "/editAgent", method = RequestMethod.POST)
 	public String editAgentInfo(@ModelAttribute(value = "editAgentForm") UsersEntity userEntity, Model model) {
 		UsersEntity user = userService.getUsers(userEntity.getUserId());
-		user.setUserName(userEntity.getUserName());
 		user.setPassword(userEntity.getPassword());
 		user.setEmail(userEntity.getEmail());
 		user.setLastUpdatedtime(new Date());
@@ -686,8 +686,50 @@ public class UserController {
 		} else {
 			return "yes";
 		}
-		
 	}
 	
+	@RequestMapping(value = "/updateAgent", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateAgent(@RequestParam("userId") int userId, @RequestParam("value") int value) {
+		UsersEntity user = userService.getUsers(userId);
+		user.setIsActive(value);
+		user.setLastUpdatedtime(new Date());
+		userService.saveOrUpdateUser(user);
+		return "success";
+	}
+	
+	@RequestMapping(value = "/viewCategories", method = RequestMethod.GET)
+	public String viewCategories(ModelMap map, @RequestParam(value = "messageText", defaultValue = "", required = false) String messageText) {
+		List<CourseCategeoryEntity> categoriesList = userService.getCourseCategoriesList();
+		map.addAttribute("categoriesList", categoriesList);
+		map.addAttribute("viewPage", "viewcategories");
+		map.addAttribute("message", messageText);
+		return "adminactivities";
+	}
+	
+	@RequestMapping(value = "/updateCategory", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateCategory(@RequestParam("categoryId") int categoryId, @RequestParam("value") int value) {
+		CourseCategeoryEntity category = userService.getCategoryByCategoryId(categoryId);
+		category.setIsActive(value);
+		category.setUpdatedTime(new Date());
+		userService.saveCategory(category);
+		return "success";
+	}
+	
+	@RequestMapping(value = "/addCategory", method = RequestMethod.POST)
+	public String addCategory(@RequestParam("categoryName") String categoryName) {
+		CourseCategeoryEntity category = userService.getCategoryByCategoryName(categoryName);
+		
+		if (category == null) {			
+			CourseCategeoryEntity categoryEntity = new CourseCategeoryEntity();
+			categoryEntity.setCategeoryName(categoryName);
+			categoryEntity.setCreatedTime(new Date());
+			userService.saveCategory(categoryEntity);
+			return "redirect:/viewCategories?messageText=Category added successfully";
+		} else {
+			return "redirect:/viewCategories?messageText=Category already exists";
+		}
+	}
 
 }

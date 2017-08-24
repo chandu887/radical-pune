@@ -162,6 +162,15 @@ var basepath = "${pageContext.request.contextPath}";
 	  	}	 	
 	}
 	
+	function validateaddCategoryForm() {
+		var categoryName = $('#categoryName').val();
+		 if(isBlank(categoryName)) {
+	          alert('Please enter category name');
+	              $('#categoryName').val("");
+	              return false;
+	     }
+	}
+	
 	function checkUserName() {
 		var name = $('#addName').val();
 		 $.ajax({
@@ -188,6 +197,51 @@ var basepath = "${pageContext.request.contextPath}";
     		$('#editEmail').val(data.email);
     	});
     }
+	function updateAgent(userId, value) {
+		$.ajax({
+  	        type : "post", 
+  	        url : basepath + "/updateAgent", 
+  	        data : "userId=" + userId+"&value=" + value,
+  	        success : function(data) {
+  	             if (data == 'success') {
+  	            	 if (value ==1) {
+  	            		alert('Agent Activated successfully'); 
+  	            	 }
+  	            	 if (value == 0) {
+  	            		alert('Agent Deactivated successfully'); 
+  	            	 }
+  	            	 window.location.href = basepath+"/viewAgents";
+  	              	 return false;
+  	             }
+  	        },
+  		    error : function(e) {
+  	         alert('Error: ' + e); 
+  	        }
+  	       });
+	}
+	
+	function updateCategory(categoryId, value) {
+		$.ajax({
+  	        type : "post", 
+  	        url : basepath + "/updateCategory", 
+  	        data : "categoryId=" + categoryId+"&value=" + value,
+  	        success : function(data) {
+  	             if (data == 'success') {
+  	            	 if (value ==1) {
+  	            		alert('Category Activated successfully'); 
+  	            	 }
+  	            	 if (value == 0) {
+  	            		alert('Category Deactivated successfully'); 
+  	            	 }
+  	            	 window.location.href = basepath+"/viewCategories";
+  	              	 return false;
+  	             }
+  	        },
+  		    error : function(e) {
+  	         alert('Error: ' + e); 
+  	        }
+  	       });
+	}
 </script>
 <body>
 	<div class="container-fluid">
@@ -202,50 +256,96 @@ var basepath = "${pageContext.request.contextPath}";
 					<span class="pull-right account" style="color:blue;"> Welcome ! ${userInfo.userName}</br> <a href="logout" style="color:red;"> Logout</a></span>
 				</div>
 			</section>
+			
+			<c:if test="${viewPage == 'viewagents'}">
+				<c:set var="viewagents" value="active" />
+			</c:if>
+			
+			<c:if test="${viewPage == 'viewcategories'}">
+				<c:set var="viewcategories" value="active" />
+			</c:if>
+			
+			<c:if test="${viewPage == 'viewcourses'}">
+				<c:set var="viewcourses" value="active" />
+			</c:if>
+
 			<section id="action">
 			<ul class="default-filters">
 				<li><a href="clearFilter"><i
 				class="fa fa-home" aria-hidden="true"></i></a></li>
-				<li><a href="dashboard?leadStatus=1" class="${newActive}"> Add/Edit Agents </a></li>
-				<li><a href="dashboard?leadStatus=2" class="${openActive}"> Add/Edit Categories </a></li>
-				<li><a href="dashboard?leadStatus=2" class="${openActive}"> Add/Edit Courses </a></li>
+				<li><a href="viewAgents" class="${viewagents}"> Add/Edit Agents </a></li>
+				<li><a href="viewCategories" class="${viewcategories}"> Add/Edit Categories </a></li>
+				<li><a href="dashboard?leadStatus=2" class="${viewcourses}"> Add/Edit Courses </a></li>
 				
 			</ul>
-			</section>
-		<a data-toggle="modal" role="button" data-target="#addAgent" class="btn btn-success">Add Agent</a>
-		<p></p>
-		<table class="table table-bordered">
-						<thead>
+		</section>
+		
+			
+			<c:if test="${viewPage == 'viewagents'}">
+			<a data-toggle="modal" role="button" data-target="#addAgent" class="btn btn-success">Add Agent</a>
+			<h2 class="sucess-messages">${message}</h2>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Edit</th>
+						<th>Activate/Deactivate</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:if test="${agentsList != null}">
+						<c:forEach items="${agentsList}" var="agent">
 							<tr>
-								<th>Name</th>
-								<th>Email</th>
-								<th>Edit</th>
-								<th>Activate/Deactivate</th>
+								<td>${agent.userName}</td>
+								<td>${agent.email}</td>
+								<td><a data-toggle="modal" role="button"
+									data-target="#editAgent" onclick="getAgentInfo(${agent.userId})"><i
+										class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+								<td>
+								<c:if test="${agent.isActive == 0}">
+								<a href="#" onclick="updateAgent(${agent.userId}, 1)"><i class="fa fa-external-link" aria-hidden="true"></i> Activate</a>
+								</c:if>
+								<c:if test="${agent.isActive == 1}">
+								<a href="#" onclick="updateAgent(${agent.userId}, 0)"><i class="fa fa-external-link" aria-hidden="true"></i> Deactivate</a>
+								</c:if>
+								</td>
 							</tr>
-						</thead>
-						<tbody>
-							<c:if test="${agentsList != null}">
-								<c:forEach items="${agentsList}" var="agent">
-									<tr>
-										<td>${agent.userName}</td>
-										<td>${agent.email}</td>
-										<td><a data-toggle="modal" role="button"
-											data-target="#editAgent" onclick="getAgentInfo(${agent.userId})"><i
-												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
-										<td>
-										<c:if test="${agent.isActive == 0}">
-										<a href="updateAgent?isActive=1" ><i class="fa fa-external-link" aria-hidden="true"></i> Activate</a>
-										</c:if>
-										<c:if test="${agent.isActive == 1}">
-										<a href="updateAgent?isActive=0" ><i class="fa fa-external-link" aria-hidden="true"></i> Deactivate</a>
-										</c:if>
-										</td>
-									</tr>
-								</c:forEach>
-							</c:if>
-	
-						</tbody>
-					</table> 
+						</c:forEach>
+					</c:if>
+				</tbody>
+			</table>
+			</c:if>
+			<c:if test="${viewPage == 'viewcategories'}">
+			<a data-toggle="modal" role="button" data-target="#addCategory" class="btn btn-success">Add Category</a>
+			<h2 class="sucess-messages">${messaget}</h2>
+				<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Category Name</th>
+						<th>Activate/Deactivate</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:if test="${categoriesList != null}">
+						<c:forEach items="${categoriesList}" var="category">
+							<tr>
+								<td>${category.categeoryName}</td>
+								<td>
+								<c:if test="${category.isActive == 0}">
+								<a href="#" onclick="updateCategory(${category.categoryId}, 1)"><i class="fa fa-external-link" aria-hidden="true"></i> Activate</a>
+								</c:if>
+								<c:if test="${category.isActive == 1}">
+								<a href="#" onclick="updateCategory(${category.categoryId}, 0)"><i class="fa fa-external-link" aria-hidden="true"></i> Deactivate</a>
+								</c:if>
+								</td>
+							</tr>
+						</c:forEach>
+					</c:if>
+				</tbody>
+			</table>
+			</c:if>
+			 
 		</div>
 	</div>
 
@@ -300,7 +400,7 @@ var basepath = "${pageContext.request.contextPath}";
 							<div class="form-group">
 								<label for="email">Name</label> <input type="text"
 									class="form-control" id="editName" name="userName"
-									placeholder="Please enter Name">
+									placeholder="Please enter Name" disabled>
 							</div>
 							<div class="form-group">
 								<label for="email">Password</label> <input type="text"
@@ -319,6 +419,31 @@ var basepath = "${pageContext.request.contextPath}";
 			</div>
 		</div>
 	</div>
+	
+	<!--Add Category-->
+	<div id="addCategory" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Add Category</h4>
+				</div>
+				<div class="modal-body">
+					<form:form method="post" action="addCategory" name="addCategoryForm"
+						onsubmit="return validateaddCategoryForm()" role="form">
+							<div class="form-group">
+								<label for="email">Category Name</label> <input type="text"
+									class="form-control" id="categoryName" name="categoryName"
+									placeholder="Please enter Category Name">
+							</div>
+							<button type="submit" class="btn btn-success">Add Category</button>
+							<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+					</form:form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 
 </body>
 </html>

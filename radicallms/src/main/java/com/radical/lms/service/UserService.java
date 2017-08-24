@@ -70,4 +70,11 @@ public interface UserService {
 	
 	void sendSms(String sms,String mobileNumber);
 	
+	List<CourseCategeoryEntity> getCourseCategoriesList();
+	
+	void saveCategory(CourseCategeoryEntity categoryEntity);
+	
+	CourseCategeoryEntity getCategoryByCategoryId(int categoryId);
+	
+	CourseCategeoryEntity getCategoryByCategoryName(String categoryName);
 }

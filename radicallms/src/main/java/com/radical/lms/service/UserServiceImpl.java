@@ -467,5 +467,25 @@ public class UserServiceImpl implements UserService {
 	public int getTemplatesCount(DashBoardForm dashBoardForm) {
 		return userDao.getTemplatesCount(dashBoardForm);
 	}
-
+	
+	@Transactional
+	public List<CourseCategeoryEntity>  getCourseCategoriesList() {		
+		return userDao.getCourseCategoriesList();
+	}
+	
+	@Transactional
+	public void saveCategory(CourseCategeoryEntity categoryEntity) {
+		userDao.saveCategory(categoryEntity);
+	}
+	
+	@Transactional
+	public CourseCategeoryEntity getCategoryByCategoryId(int categoryId) {
+		return userDao.getCategoryByCategoryId(categoryId);
+	}
+	
+	@Transactional
+	public CourseCategeoryEntity getCategoryByCategoryName(String categoryName) {
+		return userDao.getCategoryByCategoryName(categoryName);
+	}
+	
 }

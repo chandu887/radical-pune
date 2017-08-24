@@ -30,6 +30,12 @@ public class CourseCategeoryEntity {
 	@Column(name = "createdtime")
 	private Date createdTime; 
 
+	@Column(name = "updatedtime")
+	private Date updatedTime; 
+	
+	@Column(name = "isactive")
+	private int isActive;
+	
 	public String getSubject() {
 		return subject;
 	}
@@ -76,6 +82,22 @@ public class CourseCategeoryEntity {
 
 	public void setCategeoryName(String categeoryName) {
 		this.categeoryName = categeoryName;
+	}
+
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public int getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(int isActive) {
+		this.isActive = isActive;
 	}
 
 }

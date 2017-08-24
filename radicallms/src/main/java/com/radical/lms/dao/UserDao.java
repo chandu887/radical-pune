@@ -54,4 +54,13 @@ public interface UserDao {
 	void sendTemplatedEmail(SendEmailEntity sendEmailEntity);
 	
 	int getTemplatesCount(DashBoardForm dashBoardForm);
+	
+	List<CourseCategeoryEntity> getCourseCategoriesList();
+	
+	void saveCategory(CourseCategeoryEntity categoryEntity);
+	
+	CourseCategeoryEntity getCategoryByCategoryId(int categoryId);
+	
+	CourseCategeoryEntity getCategoryByCategoryName(String categoryName);
+
 }

@@ -189,7 +189,7 @@ public class UserDaoImpl implements UserDao {
 
 	@Transactional
 	public List<CourseCategeoryEntity> getCourseCategories() {
-		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity");
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity where isActive=1");
 		List<CourseCategeoryEntity> courseCategeory = query.list();
 		if (courseCategeory != null && !courseCategeory.isEmpty()) {
 			return courseCategeory;
@@ -295,7 +295,7 @@ public class UserDaoImpl implements UserDao {
 	}
 	
 	public CourseCategeoryEntity getCategoryListBasedOnCourseId(int categoryId) {
-		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity where categoryId=:categoryId");
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity where categoryId=:categoryId and isActive=1");
 		query.setInteger("categoryId", categoryId);
 		CourseCategeoryEntity categoryList = (CourseCategeoryEntity) query.uniqueResult(); 
 		return categoryList;
@@ -325,5 +325,37 @@ public class UserDaoImpl implements UserDao {
 		}
 		return (int)count;
 		
+	}
+	
+	@Transactional
+	public List<CourseCategeoryEntity> getCourseCategoriesList() {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity");
+		List<CourseCategeoryEntity> courseCategeory = query.list();
+		if (courseCategeory != null && !courseCategeory.isEmpty()) {
+			return courseCategeory;
+		}
+		return null;
+	}
+	
+	@Transactional
+	public void saveCategory(CourseCategeoryEntity categoryEntity) {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.saveOrUpdate(categoryEntity);
+	}
+	
+	@Transactional
+	public CourseCategeoryEntity getCategoryByCategoryId(int categoryId) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity where categoryId=:categoryId");
+		query.setInteger("categoryId", categoryId);
+		CourseCategeoryEntity categoryList = (CourseCategeoryEntity) query.uniqueResult(); 
+		return categoryList;
+	}
+	
+	@Transactional
+	public CourseCategeoryEntity getCategoryByCategoryName(String categoryName) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity where categeoryName=:categeoryName");
+		query.setString("categeoryName", categoryName);
+		CourseCategeoryEntity category = (CourseCategeoryEntity) query.uniqueResult(); 
+		return category;
 	}
 }
