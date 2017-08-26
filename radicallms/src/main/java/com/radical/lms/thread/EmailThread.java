@@ -22,7 +22,7 @@ public class EmailThread implements Runnable {
 			EmailService emailService = (EmailService) springContext.getBean("emailService");
 			UserService userService = (UserService) springContext.getBean("userService");
 
-			//emailService.readMailInbox();
+			emailService.readMailInbox();
 			
 			/*List<SendEmailEntity> emailEntries = emailService.getEmailEntries();
 			

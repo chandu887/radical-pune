@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.radical.lms.beans.CourseBean;
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.beans.MailTemplateBean;
@@ -176,6 +177,7 @@ public class UserController {
 		Map<Integer, String> coursesMap = this.userService.getCourses();
 		/*List<CourseCategeoryEntity> courseTemplates = userService.getCategoryList(dashBoardForm);
 		map.addAttribute("courseTemplates", courseTemplates);*/
+		List<UsersEntity> agentsList = userService.getUsersList();
 
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
@@ -183,6 +185,7 @@ public class UserController {
 		map.addAttribute("courseCategories", courseCategories);
 		map.addAttribute("messageText", messageText);
 		map.addAttribute("userName", user.getUserName());
+		map.addAttribute("agentsList", agentsList);
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		
 		return "dashboard";
@@ -230,30 +233,15 @@ public class UserController {
 			@RequestParam("courseList") List<Integer> courseIdList) {
 		
 		LeadsEntity leadsEntity = null;
-		for (Integer courseId : courseIdList) {
+		if (courseIdList != null && !courseIdList.isEmpty()) {			
+			for (Integer courseId : courseIdList) {
+				leadsEntity = new LeadsEntity();
+				leadsEntity = leadService.getLeadEntityBean(leadFormEntity, leadsEntity, courseId);
+				this.leadService.saveLead(leadsEntity);
+			}
+		} else {
 			leadsEntity = new LeadsEntity();
-			leadsEntity.setName(leadFormEntity.getName());
-			leadsEntity.setMobileNo(leadFormEntity.getMobileNo());
-			leadsEntity.setEmailId(leadFormEntity.getEmailId());
-			leadsEntity.setLeadSource(leadFormEntity.getLeadSource());
-			leadsEntity.setComments(leadFormEntity.getComments());
-			leadsEntity.setAddress(leadFormEntity.getAddress());
-			leadsEntity.setArea(leadFormEntity.getArea());
-			leadsEntity.setCity(leadFormEntity.getCity());
-			leadsEntity.setLocation(leadFormEntity.getLocation());
-			leadsEntity.setAssignedTo(leadFormEntity.getAssignedTo());
-			leadsEntity.setModeofTraining(leadFormEntity.getModeofTraining());
-			leadsEntity.setTypeofTraining(leadFormEntity.getTypeofTraining());
-			leadsEntity.setLabels(leadFormEntity.getLabels());
-			/* int courseId = Integer.parseInt(course); */
-			int courseCategeory = this.userService.getCoursesCategeoryMapping().get(courseId);
-			// int courseCategeory =
-			// this.userService.getCoursesCategeoryMapping().get(leadsEntity.getCourse());
-			leadsEntity.setCourse(courseId);
-			leadsEntity.setStatus(leadFormEntity.getStatus());
-			leadsEntity.setCourseCategeory(courseCategeory);
-			leadsEntity.setCreatedDate(new Date());
-			leadsEntity.setLastUpdatedDate(new Date());
+			leadsEntity = leadService.getLeadEntityBean(leadFormEntity, leadsEntity, 0);
 			this.leadService.saveLead(leadsEntity);
 		}
 		
@@ -270,8 +258,9 @@ public class UserController {
 				userService.sendSms(Constants.SMS_TEMPLATE,
 						leadsEntity.getMobileNo());
 			}
+			return "redirect:/dashboard?leadStatus="+leadFormEntity.getStatus()+"&messageText=Lead Added successfully";
 		}
-		return "redirect:/dashboard?leadStatus="+leadFormEntity.getStatus()+"&messageText=Lead Added successfully";
+		return "redirect:/dashboard?leadStatus="+leadFormEntity.getStatus()+"&messageText=Lead Not Added";
 	}
 
 	@RequestMapping(value = "/changeStatus", method = RequestMethod.POST)
@@ -714,13 +703,13 @@ public class UserController {
 		category.setIsActive(value);
 		category.setUpdatedTime(new Date());
 		userService.saveCategory(category);
+		userService.getAllCourseCategories();
 		return "success";
 	}
 	
 	@RequestMapping(value = "/addCategory", method = RequestMethod.POST)
 	public String addCategory(@RequestParam("categoryName") String categoryName) {
 		CourseCategeoryEntity category = userService.getCategoryByCategoryName(categoryName);
-		
 		if (category == null) {			
 			CourseCategeoryEntity categoryEntity = new CourseCategeoryEntity();
 			categoryEntity.setCategeoryName(categoryName);
@@ -731,5 +720,49 @@ public class UserController {
 			return "redirect:/viewCategories?messageText=Category already exists";
 		}
 	}
-
+	
+	@RequestMapping(value = "/viewCourses", method = RequestMethod.GET)
+	public String viewCourses(ModelMap map, @RequestParam(value = "messageText", defaultValue = "", required = false) String messageText) {
+		List<CourseEntity> courseList = userService.getCoursesList();
+		List<CourseBean> courseBeanList = userService.populateCourses(courseList);
+		
+		Map<Integer, String> courseCategories = userService.getCourseCategories();
+		map.addAttribute("courseCategories", courseCategories);
+		map.addAttribute("courseList", courseBeanList);
+		map.addAttribute("viewPage", "viewcourses");
+		map.addAttribute("message", messageText);
+		return "adminactivities";
+	}
+	
+	@RequestMapping(value = "/updateCourse", method = RequestMethod.POST)
+	@ResponseBody
+	public String updateCourse(@RequestParam("courseId") int courseId, @RequestParam("value") int value) {
+		CourseEntity courseEntity = userService.getCourseByCourseId(courseId);
+		courseEntity.setIsActive(value);
+		courseEntity.setUpdatedTime(new Date());
+		userService.saveCourse(courseEntity);
+		userService.getAllCourses();
+		return "success";
+	}
+	
+	@RequestMapping(value = "/isCourseExits", method = RequestMethod.POST)
+	@ResponseBody
+	public String isCourseExits(@RequestParam("courseName") String name) {
+		CourseEntity courseEntity = userService.getCourseByCourseName(name);
+		if (courseEntity == null) {
+			return "no";
+		} else {
+			return "yes";
+		}
+	}
+	
+	@RequestMapping(value = "/addCourse", method = RequestMethod.POST)
+	public String addCourse(@RequestParam("courseName") String courseName, @RequestParam("categeoryId") int categoryId) {
+			CourseEntity courseEntity = new CourseEntity();
+			courseEntity.setCourseName(courseName);
+			courseEntity.setCategeoryId(categoryId);
+			courseEntity.setCreatedTime(new Date());
+			userService.saveCourse(courseEntity);
+			return "redirect:/viewCourses?messageText=Course added successfully";
+	}
 }

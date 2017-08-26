@@ -33,6 +33,13 @@ public class CourseEntity {
 	@Column(name = "createdtime")
 	private Date createdTime;
 	
+	@Column(name = "updatedtime")
+	private Date updatedTime;
+	
+	@Column(name = "isactive")
+	private int isActive;
+	
+	
 	public String getSubject() {
 		return subject;
 	}
@@ -89,6 +96,21 @@ public class CourseEntity {
 	public void setCreatedTime(Date createdTime) {
 		this.createdTime = createdTime;
 	}
-	
+
+	public Date getUpdatedTime() {
+		return updatedTime;
+	}
+
+	public void setUpdatedTime(Date updatedTime) {
+		this.updatedTime = updatedTime;
+	}
+
+	public int getIsActive() {
+		return isActive;
+	}
+
+	public void setIsActive(int isActive) {
+		this.isActive = isActive;
+	}
 
 }

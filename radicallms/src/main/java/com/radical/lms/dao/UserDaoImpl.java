@@ -199,7 +199,7 @@ public class UserDaoImpl implements UserDao {
 
 	@Transactional
 	public List<CourseEntity> getCourses() {
-		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity");
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where isActive=1");
 		List<CourseEntity> courseList = query.list();
 		if (courseList != null && !courseList.isEmpty()) {
 			return courseList;
@@ -209,7 +209,7 @@ public class UserDaoImpl implements UserDao {
 	
 	@Transactional
 	public List<CourseEntity> getCoursesList(DashBoardForm dashBoardForm , boolean flag) {
-		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where subject IS NOT NULL");
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where subject IS NOT NULL and isActive=1");
 		if (flag) {			
 			query.setFirstResult(dashBoardForm.getStartLimit()-1);
 			query.setMaxResults(dashBoardForm.getPageLimit());
@@ -223,7 +223,7 @@ public class UserDaoImpl implements UserDao {
 	
 	@Transactional
 	public List<CourseCategeoryEntity> getCategoryList(DashBoardForm dashBoardForm , boolean flag) {
-		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity where subject IS NOT NULL");
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseCategeoryEntity where subject IS NOT NULL and isActive=1");
 		if (flag) {			
 			query.setFirstResult(dashBoardForm.getStartLimit()-1);
 			query.setMaxResults(dashBoardForm.getPageLimit());
@@ -281,7 +281,7 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	public List<CourseEntity> getCourseList(int categoryId) {
-		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where categeoryId=:categeoryId");
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where categeoryId=:categeoryId and isActive=1");
 		query.setInteger("categeoryId", categoryId);
 		List<CourseEntity> courseList = query.list(); 
 		return courseList;
@@ -316,7 +316,7 @@ public class UserDaoImpl implements UserDao {
 	@Transactional
 	public int getTemplatesCount(DashBoardForm dashBoardForm) {
 				
-		String query = "select count(*) from CourseCategeoryEntity where subject IS NOT NULL";
+		String query = "select count(*) from CourseCategeoryEntity where subject IS NOT NULL and isActive=1";
 		Query sqlQuery = this.sessionFactory.getCurrentSession().createQuery(query);
 		List result = sqlQuery.list();
 		long count = 0;
@@ -357,5 +357,37 @@ public class UserDaoImpl implements UserDao {
 		query.setString("categeoryName", categoryName);
 		CourseCategeoryEntity category = (CourseCategeoryEntity) query.uniqueResult(); 
 		return category;
+	}
+	
+	@Transactional
+	public List<CourseEntity> getCoursesList() {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity");
+		List<CourseEntity> courses= query.list();
+		if (courses != null && !courses.isEmpty()) {
+			return courses;
+		}
+		return null;
+	}
+	
+	@Transactional
+	public void saveCourse(CourseEntity courseEntity) {
+		Session session = this.sessionFactory.getCurrentSession();
+		session.saveOrUpdate(courseEntity);
+	}
+	
+	@Transactional
+	public CourseEntity getCourseByCourseId(int courseId) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where courseId=:courseId");
+		query.setInteger("courseId", courseId);
+		CourseEntity course = (CourseEntity) query.uniqueResult(); 
+		return course;
+	}
+	
+	@Transactional
+	public CourseEntity getCourseByCourseName(String courseName) {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where courseName=:courseName");
+		query.setString("courseName", courseName);
+		CourseEntity course = (CourseEntity) query.uniqueResult(); 
+		return course;
 	}
 }

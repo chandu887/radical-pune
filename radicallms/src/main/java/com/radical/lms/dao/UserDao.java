@@ -62,5 +62,13 @@ public interface UserDao {
 	CourseCategeoryEntity getCategoryByCategoryId(int categoryId);
 	
 	CourseCategeoryEntity getCategoryByCategoryName(String categoryName);
+	
+	List<CourseEntity> getCoursesList();
+	
+	void saveCourse(CourseEntity courseEntity);
+	
+	CourseEntity getCourseByCourseId(int courseId);
+	
+	CourseEntity getCourseByCourseName(String courseName);
 
 }

@@ -5,12 +5,12 @@ import java.util.Map;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import com.radical.lms.beans.CourseBean;
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.beans.MailTemplateBean;
 import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
-import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.SendEmailEntity;
 import com.radical.lms.entity.UsersEntity;
 
@@ -27,12 +27,14 @@ public interface UserService {
 	UsersEntity checkLoginDetails(String userName, String passWord);
 	
 	List<UsersEntity> getUsersList();
-
+	
 	List getCountByStatusType(DashBoardForm dashBoardForm);
 
 	List<LeadsEntityBean> getLeadsStatus(DashBoardForm dashBoardForm );
 
 	void getAllCourseCategories();
+	
+	void getAllCourses();
 	
 	Map<Integer, String> getLeadSourceMapping();
 	
@@ -77,4 +79,15 @@ public interface UserService {
 	CourseCategeoryEntity getCategoryByCategoryId(int categoryId);
 	
 	CourseCategeoryEntity getCategoryByCategoryName(String categoryName);
+	
+	List<CourseEntity> getCoursesList();
+	
+	void saveCourse(CourseEntity courseEntity);
+	
+	CourseEntity getCourseByCourseId(int courseId);
+	
+	CourseEntity getCourseByCourseName(String courseName);
+	
+	List<CourseBean> populateCourses(List<CourseEntity> coursesList);
+	
 }

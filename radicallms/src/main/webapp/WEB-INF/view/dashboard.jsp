@@ -88,6 +88,8 @@
             });
                 }
             });
+        
+        $("#addManualName").hide();
     });
 	</script>
 	<!-- <script>
@@ -107,6 +109,7 @@
 function validateAddLeadform() {
 	var mobileNo = $('#mobileNo').val();
 	var courseId = $('#addCourseName').val();
+	var manualCourse = $('#addManualName').val();
 	 var courseCategeoryName = $('#courseCategeoryName').val();
 	 	 var leadSource = $('#leadSource').val(); 
 	 	 var center = $('#center').val(); 
@@ -138,10 +141,13 @@ function validateAddLeadform() {
 	     	} else if(courseCategeoryName==0 || courseCategeoryName==null){
 	     		alert('Please select Category.');
 	     		return false;
-	     	} else if (courseId == 0 || courseId == null) {
+	     	} else if (courseCategeoryName != 21 && ( courseId == 0 || courseId == null )) {
 	     		alert('Please select Course.');
 	     		return false;
-	     	}  else if(mode == 0){
+	     	} else if ( courseCategeoryName == 21 && isBlank(manualCourse)) {
+	     		alert('Please enter Course name');
+	     		return false;
+	     	} else if(mode == 0){
 	     		alert('Please select Mode of training.');
 	     		return false;
 	     	} else if(type == 0){
@@ -157,13 +163,7 @@ function validateAddLeadform() {
 	 	     if(labelType == 0 || labelType == null){
 	 	    	$('#labelType').val("0"); 
 	 	     }
-	 	 /*  else if(labelType == 0 || labelType == null ){
-	     		alert('Please select Label.');
-	     		return false;
-	     	} else if(statusType == 0 || statusType == null){
-	     		alert('Please select Lead Type.');
-	     		return false;
-	     	} */
+	 	 
 	  	return true;
 	  }
 	 function isInteger(s) {
@@ -195,7 +195,40 @@ function getCourseList(courseID,categeoryID) {
          alert('Error: ' + e); 
         }
        });
-      }
+     }
+
+function getCourseListForAddLead(courseID,categeoryID,courseDiv) {
+	var categeoryId = $("#"+categeoryID).val();
+	if (categeoryId == 21) {
+		$("#"+courseDiv).hide();
+		$("#addManualName").show();
+	} else {
+		$("#"+courseDiv).show();
+		$("#addManualName").hide();
+		var coursedropdown= $("#"+courseID);
+		coursedropdown.empty();
+		if (categeoryID == 'courseCategeory') {
+			coursedropdown.append($('<option>', { value: '0', text: 'Select Course'}, '</option>'));
+		}
+	    $.ajax({
+	        type : "post", 
+	        url : basepath + "/getCoursesBasedOnCategoryId", 
+	        data : "categeoryId=" + categeoryId,
+	        success : function(data) {
+	             for (i=0 ; i<data.length;i++) {
+	            	 coursedropdown.append($('<option>', { value: data[i].courseId, text: data[i].courseName}, '</option>'));
+	             }
+	             $("#"+courseID).selectpicker('refresh');
+	        },
+		    error : function(e) {
+	         alert('Error: ' + e); 
+	        }
+	       });
+	}
+	
+}
+
+     
 
 $(function () {
 	                $("[rel='tooltip']").tooltip();
@@ -1024,22 +1057,11 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Assigned to</label><br> <select
 									class="selectpicker" title="Assigned to" id="filterAssigned"
 									name="assignedToByFilter">
-									<option value="2">Agent 1</option>
-									<option value="3">Agent 2</option>
-									<option value="4">Agent 3</option>
-									<option value="5">Agent 4</option>
-									<option value="6">Agent 5</option>
-									<option value="7">Agent 6</option>
-									<option value="8">Agent 7</option>
-									<option value="9">Agent 8</option>
-									<option value="10">Agent 9</option>
-									<option value="11">Agent 10</option>
-									<option value="12">Agent 11</option>
-									<option value="13">Agent 12</option>
-									<option value="14">Agent 13</option>
-									<option value="15">Agent 14</option>
-									<option value="16">Agent 15</option>
-									
+									<c:forEach items="${agentsList}" var="agent">
+										<c:if test="${agent.isActive == 1}">
+												<option value="${agent.userId}">${agent.userName}</option>
+										</c:if>
+									</c:forEach>
 								</select>
 							</div>
 							<div class="form-group">
@@ -1132,21 +1154,11 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Assigned to</label><br> <select
 									class="selectpicker" title="Assigned to" id="assigned"
 									name="assignedTo">
-									<option value="2">Agent 1</option>
-									<option value="3">Agent 2</option>
-									<option value="4">Agent 3</option>
-									<option value="5">Agent 4</option>
-									<option value="6">Agent 5</option>
-									<option value="7">Agent 6</option>
-									<option value="8">Agent 7</option>
-									<option value="9">Agent 8</option>
-									<option value="10">Agent 9</option>
-									<option value="11">Agent 10</option>
-									<option value="12">Agent 11</option>
-									<option value="13">Agent 12</option>
-									<option value="14">Agent 13</option>
-									<option value="15">Agent 14</option>
-									<option value="16">Agent 15</option>
+									<c:forEach items="${agentsList}" var="agent">
+										<c:if test="${agent.isActive == 1}">
+												<option value="${agent.userId}">${agent.userName}</option>
+										</c:if>
+									</c:forEach>
 								</select>
 							</div>
 							<div class="form-group">
@@ -1162,14 +1174,14 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Category</label><br> <select
 									class="selectpicker" title="Select Category" id="courseCategeoryName"
 									name="courseCategeory"
-									onchange="getCourseList('addCourseName','courseCategeoryName');">
+									onchange="getCourseListForAddLead('addCourseName','courseCategeoryName', 'addCourseDiv');">
 									<option value="0">Select Category</option>
 									<c:forEach var="category" items="${courseCategories}">
 										<option value="${category.key}">${category.value}</option>
 									</c:forEach>
 								</select>
 							</div>
-							<div class="form-group">
+							<div class="form-group" id="addCourseDiv">
 								<label for="pwd">Course</label><br> <select	
 									class="selectpicker" title="Select Course" id="addCourseName"
 									name="courseList">
@@ -1178,6 +1190,12 @@ var basepath = "${pageContext.request.contextPath}";
 									</c:forEach>
 								</select>
 							</div>
+							
+							<div class="form-group">
+								<label for="pwd">Course</label> <input type="text"
+									class="form-control" id="addManualName" value="" name="courseName">
+							</div>
+							
 							<div class="form-group">
 								<label for="pwd">Mode of Training</label><br> <select
 									class="selectpicker" title="Select Training" id="mode"
@@ -1283,21 +1301,11 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Assigned to</label><br> <select
 									class="selectpicker" title="Assigned to" id="editAssigned"
 									name="assignedTo">
-									<option value="2">Agent 1</option>
-									<option value="3">Agent 2</option>
-									<option value="4">Agent 3</option>
-									<option value="5">Agent 4</option>
-									<option value="6">Agent 5</option>
-									<option value="7">Agent 6</option>
-									<option value="8">Agent 7</option>
-									<option value="9">Agent 8</option>
-									<option value="10">Agent 9</option>
-									<option value="11">Agent 10</option>
-									<option value="12">Agent 11</option>
-									<option value="13">Agent 12</option>
-									<option value="14">Agent 13</option>
-									<option value="15">Agent 14</option>
-									<option value="16">Agent 15</option>
+									<c:forEach items="${agentsList}" var="agent">
+										<c:if test="${agent.isActive == 1}">
+												<option value="${agent.userId}">${agent.userName}</option>
+										</c:if>
+									</c:forEach>
 								</select>
 							</div>
 							

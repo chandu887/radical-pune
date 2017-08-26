@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.radical.lms.beans.CourseBean;
 import com.radical.lms.beans.DashBoardForm;
 import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.beans.MailTemplateBean;
@@ -488,4 +489,37 @@ public class UserServiceImpl implements UserService {
 		return userDao.getCategoryByCategoryName(categoryName);
 	}
 	
+	@Transactional
+	public List<CourseEntity> getCoursesList() {
+		return userDao.getCoursesList();
+	}
+	
+	@Transactional
+	public void saveCourse(CourseEntity courseEntity) {
+		userDao.saveCourse(courseEntity);
+	}
+	
+	@Transactional
+	public CourseEntity getCourseByCourseId(int courseId) {
+		return userDao.getCourseByCourseId(courseId);
+	}
+	
+	@Transactional
+	public CourseEntity getCourseByCourseName(String courseName) {
+		return userDao.getCourseByCourseName(courseName);
+	}
+	
+	@Transactional
+	public List<CourseBean> populateCourses(List<CourseEntity> coursesList) {
+		List<CourseBean> courseBeanList = new ArrayList<CourseBean>();
+		for (CourseEntity courseEntity : coursesList) {
+			CourseBean courseBean = new CourseBean();
+			courseBean.setCourseId(courseEntity.getCourseId());
+			courseBean.setCourseName(courseEntity.getCourseName());
+			courseBean.setCategeoryName(courseCategories.get(courseEntity.getCategeoryId()));
+			courseBean.setIsActive(courseEntity.getIsActive());
+			courseBeanList.add(courseBean);
+		}
+		return courseBeanList;
+	}
 }

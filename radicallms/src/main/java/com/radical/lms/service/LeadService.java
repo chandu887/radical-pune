@@ -8,4 +8,6 @@ public interface LeadService {
 	
 	LeadsEntity getLeadByLeadId(int leadId);
 	
+	LeadsEntity getLeadEntityBean(LeadsEntity leadFormEntity, LeadsEntity leadsEntity, int courseId);
+	
 }

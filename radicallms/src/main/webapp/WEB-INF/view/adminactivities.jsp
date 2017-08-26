@@ -73,68 +73,8 @@
 	});
   </script>
   
-<script
-	src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
-	<script >
-	$(document).ready(function(){
-        $('#select_all').on('click',function(){
-            if(this.checked){
-            $('.checkbox').each(function(){
-                this.checked = true;
-            });
-            }else{
-                $('.checkbox').each(function(){
-                    this.checked = false;
-            });
-                }
-            });
-    });
-	</script>
+<script	src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 	
-<script>
-
-function isBlank(inputStr) {
- 	return !(inputStr && inputStr.length)
- }
-function getCourseList(courseID,categeoryID) {
-	var categeoryId = $("#"+categeoryID).val();
-	var coursedropdown= $("#"+courseID);
-	coursedropdown.empty();
-	if (categeoryID == 'courseCategeory') {
-		coursedropdown.append($('<option>', { value: '0', text: 'Select Course'}, '</option>'));
-	}
-	
-    $.ajax({
-        type : "post", 
-        url : basepath + "/getCoursesBasedOnCategoryId", 
-        data : "categeoryId=" + categeoryId,
-        success : function(data) {
-             for (i=0 ; i<data.length;i++) {
-            	 coursedropdown.append($('<option>', { value: data[i].courseId, text: data[i].courseName}, '</option>'));
-             }
-             $("#"+courseID).selectpicker('refresh');
-        },
-	    error : function(e) {
-         alert('Error: ' + e); 
-        }
-       });
-      }
-
-$(function () {
-	                $("[rel='tooltip']").tooltip();
-	            });
-	            $(document).ready(function () {
-	                $('.selectpicker').selectpicker();
-	                $('.datepicker').datepicker({autoclose: true,});
-	                $(".addlead-course").select2({
-	                		                    placeholder: "Select a Course",
-	                		                    allowClear: true,
-												autoclose: true
-												
-	    	                  });
-	            });
-	            </script>
-
 <script type="text/javascript">
 var basepath = "${pageContext.request.contextPath}";
 	$(document).ready(function() {
@@ -159,15 +99,33 @@ var basepath = "${pageContext.request.contextPath}";
 	      	alert('Please enter a email');
 	             $('#addEmail').val("");
 	     	return false;
-	  	}	 	
+	  	}
 	}
 	
+	
+	function isBlank(inputStr) {
+	 	return !(inputStr && inputStr.length)
+	}
 	function validateaddCategoryForm() {
 		var categoryName = $('#categoryName').val();
 		 if(isBlank(categoryName)) {
 	          alert('Please enter category name');
 	              $('#categoryName').val("");
 	              return false;
+	     }
+	}
+	
+
+	function validateaddCourseForm() {
+		var courseName = $('#courseName').val();
+		var categeoryId = $('#categeoryId').val();
+		 if(isBlank(courseName)) {
+	          alert('Please enter course name');
+	              $('#courseName').val("");
+	              return false;
+	     } else if(categeoryId==0 || categeoryId==null){
+	     		alert('Please select Category.');
+	     		return false;
 	     }
 	}
 	
@@ -189,6 +147,27 @@ var basepath = "${pageContext.request.contextPath}";
 	  	        }
 	  	       });
 	}
+	
+	
+	function checkCategoryName() {
+		var name = $('#courseName').val();
+		 $.ajax({
+	  	        type : "post", 
+	  	        url : basepath + "/isCourseExits", 
+	  	        data : "courseName=" + name,
+	  	        success : function(data) {
+	  	             if (data == 'yes') {
+	  	            	 alert('Course Name already exits. Please enter another Course Name');
+	  	            	 $('#addName').val("");
+	  	              	 return false;
+	  	             }
+	  	        },
+	  		    error : function(e) {
+	  	         alert('Error: ' + e); 
+	  	        }
+	  	       });
+	}
+	
 	function getAgentInfo(userId) {
     	$.post(basepath + "/getAgentInfo?userId="+userId, function(data) {
     		$('#editUserId').val(data.userId);
@@ -197,6 +176,7 @@ var basepath = "${pageContext.request.contextPath}";
     		$('#editEmail').val(data.email);
     	});
     }
+	
 	function updateAgent(userId, value) {
 		$.ajax({
   	        type : "post", 
@@ -220,6 +200,7 @@ var basepath = "${pageContext.request.contextPath}";
   	       });
 	}
 	
+	
 	function updateCategory(categoryId, value) {
 		$.ajax({
   	        type : "post", 
@@ -234,6 +215,29 @@ var basepath = "${pageContext.request.contextPath}";
   	            		alert('Category Deactivated successfully'); 
   	            	 }
   	            	 window.location.href = basepath+"/viewCategories";
+  	              	 return false;
+  	             }
+  	        },
+  		    error : function(e) {
+  	         alert('Error: ' + e); 
+  	        }
+  	       });
+	}
+	
+	function updateCourse(courseId, value) {
+		$.ajax({
+  	        type : "post", 
+  	        url : basepath + "/updateCourse", 
+  	        data : "courseId=" + courseId+"&value=" + value,
+  	        success : function(data) {
+  	             if (data == 'success') {
+  	            	 if (value ==1) {
+  	            		alert('Course Activated successfully'); 
+  	            	 }
+  	            	 if (value == 0) {
+  	            		alert('Course Deactivated successfully'); 
+  	            	 }
+  	            	 window.location.href = basepath+"/viewCourses";
   	              	 return false;
   	             }
   	        },
@@ -275,12 +279,10 @@ var basepath = "${pageContext.request.contextPath}";
 				class="fa fa-home" aria-hidden="true"></i></a></li>
 				<li><a href="viewAgents" class="${viewagents}"> Add/Edit Agents </a></li>
 				<li><a href="viewCategories" class="${viewcategories}"> Add/Edit Categories </a></li>
-				<li><a href="dashboard?leadStatus=2" class="${viewcourses}"> Add/Edit Courses </a></li>
-				
+				<li><a href="viewCourses" class="${viewcourses}"> Add/Edit Courses </a></li>
 			</ul>
 		</section>
-		
-			
+
 			<c:if test="${viewPage == 'viewagents'}">
 			<a data-toggle="modal" role="button" data-target="#addAgent" class="btn btn-success">Add Agent</a>
 			<h2 class="sucess-messages">${message}</h2>
@@ -318,7 +320,7 @@ var basepath = "${pageContext.request.contextPath}";
 			</c:if>
 			<c:if test="${viewPage == 'viewcategories'}">
 			<a data-toggle="modal" role="button" data-target="#addCategory" class="btn btn-success">Add Category</a>
-			<h2 class="sucess-messages">${messaget}</h2>
+			<h2 class="sucess-messages">${message}</h2>
 				<table class="table table-bordered">
 				<thead>
 					<tr>
@@ -344,7 +346,39 @@ var basepath = "${pageContext.request.contextPath}";
 					</c:if>
 				</tbody>
 			</table>
-			</c:if>
+		   </c:if>
+		   
+		   <c:if test="${viewPage == 'viewcourses'}">
+		   <a data-toggle="modal" role="button" data-target="#addCourse" class="btn btn-success">Add Course</a>
+			<h2 class="sucess-messages">${message}</h2>
+				<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Course Name</th>
+						<th>Category Name</th>
+						<th>Activate/Deactivate</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:if test="${courseList != null}">
+						<c:forEach items="${courseList}" var="course">
+							<tr>
+								<td>${course.courseName}</td>
+								<td>${course.categeoryName}</td>
+								<td>
+								<c:if test="${course.isActive == 0}">
+								<a href="#" onclick="updateCourse(${course.courseId}, 1)"><i class="fa fa-external-link" aria-hidden="true"></i> Activate</a>
+								</c:if>
+								<c:if test="${course.isActive == 1}">
+								<a href="#" onclick="updateCourse(${course.courseId}, 0)"><i class="fa fa-external-link" aria-hidden="true"></i> Deactivate</a>
+								</c:if>
+								</td>
+							</tr>
+						</c:forEach>
+					</c:if>
+				</tbody>
+			</table>
+		    </c:if>
 			 
 		</div>
 	</div>
@@ -444,6 +478,40 @@ var basepath = "${pageContext.request.contextPath}";
 		</div>
 	</div>
 	
+		<!--Add Course-->
+	<div id="addCourse" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Add Course</h4>
+				</div>
+				<div class="modal-body">
+					<form:form method="post" action="addCourse" name="addCourseForm"
+						onsubmit="return validateaddCourseForm()" role="form">
+						<div class="form-group">
+							<label for="email">Category Name</label> <input type="text"
+								class="form-control" id="courseName" name="courseName"
+								onchange="checkCategoryName()"
+								placeholder="Please enter Course Name">
+						</div>
+						<div class="form-group">
+							<label for="pwd">Category</label><br> <select
+								class="selectpicker" title="Select Category" id="categeoryId"
+								name="categeoryId">
+								<option value="0">Select Category</option>
+								<c:forEach var="category" items="${courseCategories}">
+									<option value="${category.key}">${category.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+						<button type="submit" class="btn btn-success">Add Course</button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+					</form:form>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </body>
 </html>

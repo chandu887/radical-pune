@@ -63,3 +63,10 @@ ALTER TABLE `radicallmspune`.`coursecategory`
 CHANGE COLUMN `createdtime` `createdtime` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
 ADD COLUMN `updatedtime` DATETIME NULL DEFAULT NULL AFTER `createdtime`,
 ADD COLUMN `isactive` INT(3) NULL DEFAULT 0 AFTER `updatedtime`;
+
+ALTER TABLE `radicallmspune`.`courses` 
+CHANGE COLUMN `createdtime` `createdtime` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ,
+ADD COLUMN `updatedtime` DATETIME NULL DEFAULT NULL AFTER `createdtime`,
+ADD COLUMN `isactive` INT(3) NULL DEFAULT 0 AFTER `updatedtime`;
+
+UPDATE `radicallmspune`.`coursecategory` SET `categoryname`='MISCELLANEOUS' WHERE `categoryid`='21';
