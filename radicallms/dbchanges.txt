@@ -69,4 +69,9 @@ CHANGE COLUMN `createdtime` `createdtime` DATETIME NULL DEFAULT CURRENT_TIMESTAM
 ADD COLUMN `updatedtime` DATETIME NULL DEFAULT NULL AFTER `createdtime`,
 ADD COLUMN `isactive` INT(3) NULL DEFAULT 0 AFTER `updatedtime`;
 
-UPDATE `radicallmspune`.`coursecategory` SET `categoryname`='MISCELLANEOUS' WHERE `categoryid`='21';
+
+
+05-09-2017
+===============
+ALTER TABLE `radicallmspune`.`leads` 
+ADD COLUMN `landlinenumber` VARCHAR(45) NULL DEFAULT NULL AFTER `mobileno`;

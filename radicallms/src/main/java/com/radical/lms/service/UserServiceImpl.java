@@ -1,6 +1,9 @@
 package com.radical.lms.service;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
@@ -12,8 +15,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,11 +31,15 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -55,6 +64,12 @@ import com.radical.lms.entity.UsersEntity;
 public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserDao userDao;
+	
+	@Autowired
+	private LeadService leadService;
+	
+	@Autowired
+	private EmailService emailService;
 
 	private Properties properties = new Properties();
 
@@ -69,6 +84,10 @@ public class UserServiceImpl implements UserService {
 	private Map<String, Integer> categoryNameIdMapping = new ConcurrentHashMap<String, Integer>();
 
 	private Map<String, Integer> courseNameIdMapping = new ConcurrentHashMap<String, Integer>();
+	
+	private Map<Integer, String> agentsMapping = new ConcurrentHashMap<Integer, String>();
+	
+	
 
 	public void init() {
 		loadCache();
@@ -79,6 +98,23 @@ public class UserServiceImpl implements UserService {
 		getAllCourseCategories();
 		getAllCourses();
 		getLeadSources();
+		getAgents();
+	}
+	@Transactional
+	public void getAgents() {
+		List<UsersEntity> usersList = userDao.getUsersList();
+		Map<Integer, String> usersMapping = new ConcurrentHashMap<Integer, String>();
+		for (UsersEntity usersEntity : usersList) {
+			usersMapping.put(usersEntity.getUserId(), usersEntity.getUserName());
+		}
+		setAgentsMapping(usersMapping);
+	}
+	public Map<Integer, String> getAgentsMapping() {
+		return agentsMapping;
+	}
+
+	public void setAgentsMapping(Map<Integer, String> agentsMapping) {
+		this.agentsMapping = agentsMapping;
 	}
 
 	@Transactional
@@ -509,6 +545,164 @@ public class UserServiceImpl implements UserService {
 		return userDao.getCourseByCourseName(courseName);
 	}
 	
+	public static Object getKeyFromValue(Map hm, Object value) {
+	    for (Object o : hm.keySet()) {
+	      if (hm.get(o).equals(value)) {
+	        return o;
+	      }
+	    }
+	    return null;
+	  }
+	
+	@Transactional
+	public void processUploadBulkLeadsFile(Iterator<Row> rowIterator, int statusColumnIndex) {
+		while (rowIterator.hasNext()) {
+			Row row = null;
+			try {
+				row = rowIterator.next();
+				if (row.getRowNum() == 0) {
+					row.createCell(statusColumnIndex).setCellValue(Constants.STATUS);
+					continue;
+				}
+				LeadsEntity leadsEntity = new LeadsEntity();
+				if (null != row.getCell(0)) {
+					leadsEntity.setName(row.getCell(0).toString().trim());
+				}
+				String mobileNum = "";
+				if (null != row.getCell(1)) {
+					String mobNumber = row.getCell(1).toString().trim().replace(" ", "").replace("-", "");
+					String numberString = numberE(mobNumber);
+					if(numberString.length() == 10 && NumberUtils.isNumber(numberString)) {
+						mobileNum = numberString;
+					}
+					leadsEntity.setMobileNo(mobileNum);
+				}
+				if (null != row.getCell(2)) {
+					leadsEntity.setLandLineNumber(row.getCell(2).toString().trim());
+				}
+				if (null != row.getCell(3)) {
+					leadsEntity.setEmailId(row.getCell(3).toString().trim());
+				}
+				int categoryId = 0;
+				if (null != row.getCell(4)) {
+					for (Map.Entry<Integer, String> entry : getCourseCategories().entrySet()) {
+						if ((row.getCell(4).toString().trim()).equalsIgnoreCase(entry.getValue())) {
+							categoryId = entry.getKey();
+							break;
+						}
+					}
+				}
+				leadsEntity.setCourseCategeory(categoryId);
+
+				int courseId = 0;
+				if (null != row.getCell(5)) {
+					for (Map.Entry<Integer, String> entry : getCourses().entrySet()) {
+						if ((row.getCell(5).toString().trim()).equalsIgnoreCase(entry.getValue())) {
+							courseId = entry.getKey();
+							break;
+						}
+					}
+				}
+				leadsEntity.setCourse(courseId);
+				;
+				if (null != row.getCell(6)) {
+					leadsEntity.setLeadSource(getLeadSoureId(row.getCell(6).toString().trim()));
+				}
+				if (null != row.getCell(7)) {
+					leadsEntity.setModeofTraining(row.getCell(7).toString().trim());
+				}
+				if (null != row.getCell(8)) {
+					leadsEntity.setAssignedTo(getUserId(row.getCell(8).toString().trim()));
+				}
+				if (null != row.getCell(9)) {
+					leadsEntity.setLocation(row.getCell(9).toString().trim());
+				}
+				if (null != row.getCell(10)) {
+					leadsEntity.setTypeofTraining(row.getCell(10).toString().trim());
+				}
+				if (null != row.getCell(11)) {
+					leadsEntity.setComments(row.getCell(11).toString().trim());
+				}
+				leadsEntity.setStatus(1);
+				leadsEntity.setCreatedDate(new Date());
+				leadService.saveLead(leadsEntity);
+				if (leadsEntity != null) {
+					if (leadsEntity.getEmailId() != null) {
+						if (leadsEntity.getCourseCategeory() != 0) {
+							CourseCategeoryEntity category = getCategoryListBasedOnCourseId(
+									leadsEntity.getCourseCategeory());
+							emailService.sendMail(leadsEntity.getEmailId(), category.getSubject(),
+									category.getMessagebody());
+						} else {
+							emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT, null);
+						}
+					}
+					if (leadsEntity.getMobileNo() != null) {
+						sendSms(Constants.SMS_TEMPLATE, leadsEntity.getMobileNo());
+					}
+				}
+				row.createCell(statusColumnIndex).setCellValue("User Details are added successfully");
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
+	
+	private int getUserId(String userName) {
+		for (Map.Entry<Integer, String> entry : getAgentsMapping().entrySet()) {
+			if (userName.equalsIgnoreCase(entry.getValue())) {
+				return entry.getKey();
+			}
+		}
+		return 0;
+	}
+	
+	/**
+	 * Download the xls file based on the path given
+	 * @param filePath pathOfTheFile
+	 */
+	public void downloadXlsFileBasedOnFileName(String filePath, HttpServletResponse response) {
+		try {
+			String rootPath = System.getProperty(Constants.CATALINA_PATH);
+			File dir = new File(rootPath + File.separator + Constants.TMP);
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+			String fileName = dir.getAbsolutePath() + File.separator + filePath + Constants.XLS;
+			File inputFile = new File(fileName);
+			File outPutFile = new File(filePath + Constants.XLS);
+			outPutFile.createNewFile();
+			FileInputStream fis = new FileInputStream(inputFile);
+			FileOutputStream fos = new FileOutputStream(outPutFile);
+			int i = 0;
+			while ((i = fis.read()) != -1) {
+				fos.write((byte) i);
+			}
+			fos.close();
+			fis.close();
+			FileInputStream file = new FileInputStream(outPutFile);
+			XSSFWorkbook workbook = new XSSFWorkbook(file);
+			XSSFSheet sheet = workbook.getSheetAt(0);
+			ServletOutputStream out = response.getOutputStream();
+			response.setContentType(Constants.MS_EXCEL_FORMAT);
+			response.addHeader(Constants.CONTENT_DISPOSITIONS, Constants.ATTACHMENT_FILE + outPutFile);
+			workbook.write(out);
+			out.close();
+			file.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	
+	private int getLeadSoureId(String leadSource) {
+		for (Map.Entry<Integer, String> entry : getLeadSourceMapping().entrySet()) {
+			if (leadSource.equalsIgnoreCase(entry.getValue())) {
+				return entry.getKey();
+			}
+		}
+		return 0;
+	}
 	@Transactional
 	public List<CourseBean> populateCourses(List<CourseEntity> coursesList) {
 		List<CourseBean> courseBeanList = new ArrayList<CourseBean>();
@@ -522,4 +716,43 @@ public class UserServiceImpl implements UserService {
 		}
 		return courseBeanList;
 	}
+	
+	public static String numberE(String number){
+		if(number.contains(".")) {
+			number = number.replace(".", "").trim();
+			if (number.contains("E14")) {
+				number = number.replace("E14", "").trim();
+			} else if (number.contains("E13")) {
+				number = number.replace("E13", "").trim();
+			} else if (number.contains("E12")) {
+				number = number.replace("E12", "").trim();
+			} else if (number.contains("E11")) {
+				number = number.replace("E11", "").trim();
+			} else if (number.contains("E10")) {
+				number = number.replace("E10", "").trim();
+			} else if (number.contains("E9")) {
+				number = number.replace("E9", "0").trim();
+			} else if (number.contains("E8")) {
+				number = number.replace("E8", "").trim();
+			} else if (number.contains("E7")) {
+				number = number.replace("E7", "").trim();
+			} else if (number.contains("E6")) {
+				number = number.replace("E6", "").trim();
+			} else if (number.contains("E5")) {
+				number = number.replace("E5", "").trim();
+			} else if (number.contains("E4")) {
+				number = number.replace("E4", "").trim();
+			} else if (number.contains("E3")) {
+				number = number.replace("E3", "").trim();
+			} else if (number.contains("E2")) {
+				number = number.replace("E2", "").trim();
+			} else if (number.contains("E1")) {
+				number = number.replace("E1", "").trim();
+			} else if (number.contains("E0")) {
+				number = number.replace("E0", "").trim();
+			}
+		}
+		return number;
+	}
+	
 }

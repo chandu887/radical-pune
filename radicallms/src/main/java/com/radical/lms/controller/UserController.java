@@ -1,5 +1,8 @@
 package com.radical.lms.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,6 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +27,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.radical.lms.beans.CourseBean;
 import com.radical.lms.beans.DashBoardForm;
@@ -733,6 +740,66 @@ public class UserController {
 		map.addAttribute("message", messageText);
 		return "adminactivities";
 	}
+	
+	@RequestMapping(value = "/leadsBulkUpload", method = RequestMethod.GET)
+	public String viewCourses(ModelMap map) {
+		map.addAttribute("viewPage", "leadsBulkUpload");
+		return "adminactivities";
+	}
+	
+
+	@RequestMapping("/downloadFile/{filePath}")
+	public String downloadFile(@PathVariable("filePath") String filePath,
+			HttpServletResponse response) {
+		try {
+			this.userService.downloadXlsFileBasedOnFileName(filePath, response);
+		} catch (Exception ex) {
+			throw new RuntimeException("Some thing went wrong while download the status of the upload file");
+		}
+		return null;
+	}
+	
+	
+	@RequestMapping(value = "/uploadBulkLeads", method = RequestMethod.POST)
+	public String uploadBulkLeads(@RequestParam("file") MultipartFile uploadFile,
+			HttpServletRequest request, HttpServletResponse response, Model model) {
+			HttpSession session = request.getSession();
+			if (!uploadFile.isEmpty()) {
+				try {
+					File convFile = new File(uploadFile.getOriginalFilename());
+					convFile.createNewFile();
+					FileOutputStream fos = new FileOutputStream(convFile);
+					fos.write(uploadFile.getBytes());
+					fos.close();
+					FileInputStream file = new FileInputStream(convFile);
+					XSSFWorkbook workbook = new XSSFWorkbook(file);
+					XSSFSheet sheet = workbook.getSheetAt(0);
+					Iterator<Row> rowIterator = sheet.rowIterator();
+					List<String> childIds = new ArrayList<String>();
+					int statusColumnIndex = 12;
+					userService.processUploadBulkLeadsFile(rowIterator, statusColumnIndex);
+					String rootPath = System.getProperty(Constants.CATALINA_PATH);
+					File dir = new File(rootPath + File.separator + Constants.TMP);
+					if (!dir.exists()) {
+						dir.mkdirs();
+					}
+					File statusFile = new File(
+							dir.getAbsolutePath() + File.separator + "Leads" + new Date().getTime() + Constants.XLS);
+					FileOutputStream out = new FileOutputStream(statusFile);
+					workbook.write(out);
+					model.addAttribute(Constants.FILE_PATHS, statusFile.getName());
+					out.close();
+					file.close();
+					model.addAttribute(Constants.MESSAGE, Constants.FILE_PROCESSING_DONE_SUCCESSFULLY);
+					model.addAttribute("viewPage", "leadsBulkUpload");
+				} catch (Exception ex) {
+					throw new RuntimeException(Constants.LEADS_ADDED_FAILED);
+				}
+			} else {
+				model.addAttribute(Constants.MESSAGE, Constants.PLEASE_UPLOAD_THE_FILE);
+			}
+			return "adminactivities";
+		}
 	
 	@RequestMapping(value = "/updateCourse", method = RequestMethod.POST)
 	@ResponseBody

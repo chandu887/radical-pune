@@ -238,6 +238,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setCourseCategeory(courseCategory);
 
 			leadsEntity.setLeadSource(getLeadSoureId("Radical"));
+			leadsEntity.setComments(mailContent);
 
 			leadService.saveLead(leadsEntity);
 
@@ -286,6 +287,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setCourseCategeory(courseCategory);
 
 			leadsEntity.setLeadSource(getLeadSoureId("YET5"));
+			leadsEntity.setComments(mailContent);
 
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
@@ -330,6 +332,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setCourseCategeory(courseCategory);
 
 			leadsEntity.setLeadSource(getLeadSoureId("YET5"));
+			leadsEntity.setComments(mailContent);
 
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
@@ -356,6 +359,7 @@ public class EmailServiceImpl implements EmailService {
 		String course = spiltContent[14];
 		LeadsEntity leadsEntity = new LeadsEntity();
 		leadsEntity.setName(name);
+		leadsEntity.setComments(mailContent);
 		leadService.saveLead(leadsEntity);
 
 	}
@@ -381,8 +385,9 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setStatus(1);
 			leadsEntity.setCreatedDate(date);
 			leadsEntity.setLastUpdatedDate(date);
-			leadsEntity.setLeadSource(getLeadSoureId("jsutdail"));
+			leadsEntity.setLeadSource(getLeadSoureId("justdail"));
 			leadsEntity.setCity(city);
+			leadsEntity.setComments(mailContent);
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -431,6 +436,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setCourse(courseId);
 			leadsEntity.setCourseCategeory(courseCategory);
 			leadsEntity.setLeadSource(getLeadSoureId("Justdail"));
+			leadsEntity.setComments(mailContent);
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -485,6 +491,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setCourseCategeory(courseCategory);
 
 			leadsEntity.setLeadSource(getLeadSoureId("Justdail"));
+			leadsEntity.setComments(mailContent);
 
 			leadService.saveLead(leadsEntity);
 
@@ -507,6 +514,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setCreatedDate(date);
 			leadsEntity.setLastUpdatedDate(date);
 			leadsEntity.setLeadSource(getLeadSoureId("sulekha"));
+			leadsEntity.setComments(mailContent);
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -629,6 +637,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setCourse(courseId);
 			leadsEntity.setCourseCategeory(courseCategory);
 			leadsEntity.setLeadSource(getLeadSoureId("Justdail"));
+			leadsEntity.setComments(mailContent);
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -681,6 +690,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setLastUpdatedDate(date);
 			leadsEntity.setLeadSource(getLeadSoureId("Web site"));
 			leadsEntity.setComments(message);
+			leadsEntity.setComments(mailContent);
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -722,6 +732,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setCreatedDate(date);
 			leadsEntity.setLastUpdatedDate(date);
 			leadsEntity.setLeadSource(getLeadSoureId("sulekha"));
+			leadsEntity.setComments(mailContent);
 			leadService.saveLead(leadsEntity);
 
 		} catch (Exception e) {
@@ -783,6 +794,7 @@ public class EmailServiceImpl implements EmailService {
 			leadsEntity.setCreatedDate(date);
 			leadsEntity.setLastUpdatedDate(date);
 			leadsEntity.setLeadSource(getLeadSoureId("sulekha"));
+			leadsEntity.setComments(mailContent);
 			leadService.saveLead(leadsEntity);
 		} catch (Exception e) {
 			e.printStackTrace();

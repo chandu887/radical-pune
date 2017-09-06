@@ -75,12 +75,35 @@
   
 <script	src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 	
+	<script type="text/javascript">
+	updateList = function() {
+		  var input = document.getElementById('file');
+		  var output = document.getElementById('fileList');
+
+		  output.innerHTML = '<ul>';
+		  for (var i = 0; i < input.files.length; ++i) {
+		    output.innerHTML += '<li>' + input.files.item(i).name + '</li>';
+		  }
+		  output.innerHTML += '</ul>';
+		}
+	</script>
 <script type="text/javascript">
 var basepath = "${pageContext.request.contextPath}";
 	$(document).ready(function() {
 
 		
 	});
+	function checkFileExsistsOrNot() {
+		var fileValue = $("#file").val();
+		if(null == fileValue || fileValue == "") {
+			alert("Please select the file");
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	
 	
 	function validateAddAgentForm() {
 		var name = $('#addName').val();
@@ -272,6 +295,9 @@ var basepath = "${pageContext.request.contextPath}";
 			<c:if test="${viewPage == 'viewcourses'}">
 				<c:set var="viewcourses" value="active" />
 			</c:if>
+			<c:if test="${viewPage == 'leadsBulkUpload'}">
+				<c:set var="leadsBulkUpload" value="active" />
+			</c:if>
 
 			<section id="action">
 			<ul class="default-filters">
@@ -280,6 +306,7 @@ var basepath = "${pageContext.request.contextPath}";
 				<li><a href="viewAgents" class="${viewagents}"> Add/Edit Agents </a></li>
 				<li><a href="viewCategories" class="${viewcategories}"> Add/Edit Categories </a></li>
 				<li><a href="viewCourses" class="${viewcourses}"> Add/Edit Courses </a></li>
+				<li><a href="leadsBulkUpload" class="${leadsBulkUpload}"> LeadsUpload </a></li>
 			</ul>
 		</section>
 
@@ -347,8 +374,56 @@ var basepath = "${pageContext.request.contextPath}";
 				</tbody>
 			</table>
 		   </c:if>
-		   
-		   <c:if test="${viewPage == 'viewcourses'}">
+			<c:if test="${viewPage == 'leadsBulkUpload'}">
+				 <div id="page-content">
+				<!--  <a href="templateDownload/5"><button class="btn btn-green pull-right" style="
+    position: absolute;  top: 180px; right: 85px; z-index:99;"> Download Template</button></a> -->
+				<form:form method="post" action="uploadBulkLeads"
+					enctype="multipart/form-data">
+					 <h3 class="main">Upload Bulk Leads</h3>
+					<div class="box-typical box-typical-padding addproduct-fromgrup">
+						<%-- <h5 style="color: red;">${message}</h5> --%>
+						<div class="form-control-static adproduct">
+							<div class="drop-zone">
+								<i class="font-icon font-icon-cloud-upload-2"></i>
+								<div class="drop-zone-caption">Choose file to upload bulk
+									Leads</div>
+								<span class="btn btn-rounded btn-green btn-file"> <span>Choose
+										file</span> <input type="file" name="file" id="file" multiple=""
+									onchange="javascript:updateList()">
+
+								</span>
+							</div>
+							<br />Selected files:
+							<div id="fileList"></div>
+						</div>
+					</div>
+					<c:if test="${filePath != null}">
+						<div class="form-group row mrb20">
+							<span class="pull-right col-md-12">
+								<p>Leads Uploaded Successfully</p>
+							</span>
+						</div>
+						<div class="form-group row mrb20">
+							<span class="pull-right col-md-12">
+								<p>
+									Please <a href="downloadFile/${filePath}")>Click here</a> to
+									download the status of Leads upload.
+								</p>
+							</span>
+						</div>
+					</c:if>
+					<div class="form-group row mrb20">
+						<span class="pull-right col-md-12">
+							<button type="submit" class="btn btn-green"
+								onclick="return checkFileExsistsOrNot()">Submit</button>
+						</span>
+					</div>
+				</form:form>
+				</div>
+			</c:if>
+
+			<c:if test="${viewPage == 'viewcourses'}">
 		   <a data-toggle="modal" role="button" data-target="#addCourse" class="btn btn-success">Add Course</a>
 			<h2 class="sucess-messages">${message}</h2>
 				<table class="table table-bordered">

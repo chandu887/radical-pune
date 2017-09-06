@@ -31,6 +31,9 @@ public class LeadsEntity {
 
 	@Column(name = "mobileno")
 	private String mobileNo;
+	
+	@Column(name = "landlinenumber")
+	private String landLineNumber;
 
 	@Column(name = "emailid")
 	private String emailId;
@@ -265,6 +268,14 @@ public class LeadsEntity {
 
 	public void setTypeofTraining(String typeofTraining) {
 		this.typeofTraining = typeofTraining;
+	}
+
+	public String getLandLineNumber() {
+		return landLineNumber;
+	}
+
+	public void setLandLineNumber(String landLineNumber) {
+		this.landLineNumber = landLineNumber;
 	}
 
 

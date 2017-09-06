@@ -328,8 +328,14 @@ var basepath = "${pageContext.request.contextPath}";
 			$.each($("input[name='leadId']:checked"), function() {
 				leadIds.push($(this).val());
 			});
+			var password = $('#deletePassword').val();
+			var dbPassword =  $('#deleteDbPassword').val();
 			if (leadIds.length == 0) {
 				alert("please select any enquiry");
+			} else if((null==password || password=="")){
+				alert("Please enter password ..!")
+			} else if(password  != dbPassword){
+				alert("Incorrect password ..! Please enter correct Password")
 			} else {
 				$('#deleteLeadIds').val(leadIds.join(","));
 				$('#deleteStatus').val("4");
@@ -904,6 +910,11 @@ var basepath = "${pageContext.request.contextPath}";
 						<p>Are you sure you want to delete leads?</p>
 						<p>Note : After deletion, you can ONLY view deleted leads but
 							can't restore it or do ANY operation.</p>
+							<p>Are you sure you want to d leads? Please Provide Password ..</p>
+						</br>
+						<input type="password" style="padding-left: 20px;" id = "deletePassword" placeholder="Profile Password"/>
+						<input type = "hidden" id = "deleteDbPassword" value= "${userInfo.password}"/>
+						</br>
 						<div class="modal-footer">
 							<button type="button" class="btn btn-success"
 								id="leadDeleteButton">Delete</button>

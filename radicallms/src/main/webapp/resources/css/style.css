@@ -58,5 +58,51 @@ body.login{background: #55b460;}
 bootstrap-select.btn-group .dropdown-menu{
 width: 100%;
 }
+.btn-green { background-color: #35af87 !important; border-color: #35af87 !important; color: #fff !important; }
 .bootstrap-select.btn-group .dropdown-menu.inner{
 max-height: 230px !important;}
+.drop-zone-caption {
+    margin: 0 0 21px;
+}
+.box-typical.box-typical-padding {padding: 30px;}
+.box-typical { background: #fff; border: 1px solid #d8e2e7; border-radius: 4px; margin: 0 0 20px; position: relative;}
+.adproduct .drop-zone {
+    border: 2px dashed #adb7be;
+    height: 197px;
+    padding: 64px 0 0;
+    text-align: center;
+    width: 100%;
+}
+.adproduct .drop-zone {
+    border: 2px dashed #adb7be;
+    height: 197px;
+    padding: 64px 0 0;
+    text-align: center;
+    width: 100%;
+}
+.drop-zone-caption {
+    margin: 0 0 21px;
+}
+.drop-zone .fa {
+    color: #919fa9;
+    font-size: 2.75rem;
+    line-height: 60px;
+}
+.btn-file {
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.2s ease-in-out 0s;
+}
+.btn-file input[type="file"] {
+    cursor: pointer;
+    height: 200px;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    width: 1000px;
+}
+.btn.btn-rounded {
+    border-radius: 25rem;
+}

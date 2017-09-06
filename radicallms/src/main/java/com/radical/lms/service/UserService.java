@@ -1,8 +1,12 @@
 package com.radical.lms.service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.radical.lms.beans.CourseBean;
@@ -89,5 +93,9 @@ public interface UserService {
 	CourseEntity getCourseByCourseName(String courseName);
 	
 	List<CourseBean> populateCourses(List<CourseEntity> coursesList);
+	
+	void processUploadBulkLeadsFile(Iterator<Row> rowIterator,int statusColumnIndex);
+	
+	void downloadXlsFileBasedOnFileName(String filePath,HttpServletResponse response);
 	
 }
