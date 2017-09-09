@@ -157,6 +157,7 @@ function validateAddLeadform() {
 	     		alert('Please select Location.');
 	     		return false;
 	     	} 
+	 	 
 	 	     if(labelType ==0 || labelType == null){
 	 	    	$('#statusTypeAdd').val("1"); 
 	 	     }
@@ -436,6 +437,17 @@ var basepath = "${pageContext.request.contextPath}";
  			$("#nonTemplatedEmailOrSmsForm").submit();
  			}
  		});
+         $('#manualmailandsms').change(function() {
+      	   if($(this).is(":checked")) {
+      		$('#sendingemailType').val("manualmailandsms");
+      		   document.getElementById('manualsms').style.display = 'block';
+      		   document.getElementById('manualemail').style.display = 'block';
+      	      return;
+      	   }
+      	 $('#sendingemailType').val("defaultmailandsms");
+      	  document.getElementById('manualsms').style.display  = 'none';
+  	      document.getElementById('manualemail').style.display = 'none';
+      	});
 
 	});
 	
@@ -1235,6 +1247,24 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="Group">Group</option>
 									<option value="Attended-Demo">Attended-Demo</option>
 								</select>
+							</div>
+						</div>
+						<div class="col-sm-12" >
+							<div class="form-group">
+								<input type="checkbox"  id="manualmailandsms" > Please tick here to send manual mail and sms
+							</div>
+							<input type="hidden" id="sendingemailType" name="sendingeMailAndSmsType" value="defaultmailandsms">
+							<div class="form-group" id="manualsms" style="display:none;">
+									<label for="pwd">SMS</label><br>
+									<textarea  maxlength="160" class="form-control" name = "nonTemplatedSms" id="smsValueId" placeholder="Please enter SMS"
+										rows="5"></textarea>
+							</div>
+							<div class="form-group" id="manualemail" style="display:none;">
+									<label for="pwd">Email</label><br> <input
+										class="form-control" placeholder="Email Subject" name = "nonTemplatedEmailSubject"/>
+									<label for="pwd">Email Content</label><br>
+									<textarea class="form-control" id = "emailContentTextArea"
+										placeholder="Please enter Email Content" rows="10" name = "nonTemplatedEmailBody"></textarea>
 							</div>
 						</div>
 						<div class="col-sm-12">

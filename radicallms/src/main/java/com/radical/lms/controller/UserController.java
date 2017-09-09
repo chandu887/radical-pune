@@ -237,7 +237,10 @@ public class UserController {
 
 	@RequestMapping(value = "/addlead", method = RequestMethod.POST)
 	public String addLead(@ModelAttribute(value = "addLeadForm") LeadsEntity leadFormEntity, Model model,
-			@RequestParam("courseList") List<Integer> courseIdList) {
+			@RequestParam("courseList") List<Integer> courseIdList, @RequestParam("sendingeMailAndSmsType") String sendingeMailAndSmsType,
+			@RequestParam("nonTemplatedSms") String sms, @RequestParam("nonTemplatedEmailSubject") String subject,
+			@RequestParam("nonTemplatedEmailBody") String mailbody
+			) {
 		
 		LeadsEntity leadsEntity = null;
 		if (courseIdList != null && !courseIdList.isEmpty()) {			
@@ -253,18 +256,29 @@ public class UserController {
 		}
 		
 		if (leadsEntity != null) {
-			if (leadsEntity.getEmailId() != null) {
-				if(leadsEntity.getCourseCategeory()!=0){
-					CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(leadsEntity.getCourseCategeory());
-					emailService.sendMail(leadsEntity.getEmailId(),category.getSubject(),category.getMessagebody());
-				} else {
-				emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,null);
+			if ("defaultmailandsms".equals(sendingeMailAndSmsType)) {
+				if (leadsEntity.getEmailId() != null) {
+					if(leadsEntity.getCourseCategeory()!=0){
+						CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(leadsEntity.getCourseCategeory());
+						emailService.sendMail(leadsEntity.getEmailId(),category.getSubject(),category.getMessagebody());
+					} else {
+					emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,null);
+					}
 				}
+				if (leadsEntity.getMobileNo() != null) {
+					userService.sendSms(Constants.SMS_TEMPLATE,
+							leadsEntity.getMobileNo());
+				}
+			} else if ("manualmailandsms".equals(sendingeMailAndSmsType)) {
+				if (leadsEntity.getEmailId() != null) {
+					emailService.sendMail(leadsEntity.getEmailId(), subject, mailbody);
+				}
+				if (leadsEntity.getMobileNo() != null) {
+					userService.sendSms(sms, leadsEntity.getMobileNo());
+				}
+
 			}
-			if (leadsEntity.getMobileNo() != null) {
-				userService.sendSms(Constants.SMS_TEMPLATE,
-						leadsEntity.getMobileNo());
-			}
+				
 			return "redirect:/dashboard?leadStatus="+leadFormEntity.getStatus()+"&messageText=Lead Added successfully";
 		}
 		return "redirect:/dashboard?leadStatus="+leadFormEntity.getStatus()+"&messageText=Lead Not Added";
