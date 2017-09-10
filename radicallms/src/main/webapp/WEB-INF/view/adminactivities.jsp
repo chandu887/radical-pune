@@ -11,20 +11,13 @@
 <meta charset="utf-8">
 <title>LMS Dashboard</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
-<link href="<c:url value="/resources/css/select2.css"/>"
-	rel="stylesheet" />
+<link href="<c:url value="/resources/css/select2.css"/>" rel="stylesheet" />
 <!-- Bootstrap -->
-<link
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
-	rel="stylesheet">
-<link
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css"
-	rel="stylesheet">
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/css/bootstrap-select.min.css">
-
-<link rel="stylesheet"
-	href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.1/css/bootstrap-datepicker.css">
+<link href="<c:url value="/resources/css/bootstrap.min.css"/>" rel="stylesheet" />
+<link href="<c:url value="/resources/css/font-awesome.css"/>" rel="stylesheet" />
+<link href="<c:url value="/resources/css/bootstrap-select.min.css"/>" rel="stylesheet" />
+<link href="<c:url value="/resources/css/bootstrap-datepicker.css"/>" rel="stylesheet" />
+<link href="<c:url value="/resources/css/jquery-ui.css"/>" rel="stylesheet" />
 </head>
 
 <script src="<c:url value="/resources/js/jquery1_8_1.js" />"></script>
@@ -32,11 +25,12 @@
 <script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 <script src="<c:url value="/resources/js/bootstrap-select.min.js"/>"></script>
 <script src="<c:url value="/resources/js/bootstrap-datepicker.min.js"/>"></script>
-<link rel="stylesheet"
-	href="//code.jquery.com/ui/1.12.0/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.js"></script>
+
+<script src="<c:url value="/resources/js/jquery-ui.js"/>"></script>
+
 <script src='https://cloud.tinymce.com/stable/tinymce.min.js'></script>
 <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=p031zjwoastgbi16tmvaq8m8ef3dthcs5kqhdftdbwmcv77q"></script>
+
  <!--  <script>
   tinymce.init({
    
