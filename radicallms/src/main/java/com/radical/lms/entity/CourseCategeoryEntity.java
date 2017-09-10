@@ -27,6 +27,14 @@ public class CourseCategeoryEntity {
 	@Column(name = "messagebody")
 	private String messagebody;
 	
+	public String getMailerPath() {
+		return mailerPath;
+	}
+
+	public void setMailerPath(String mailerPath) {
+		this.mailerPath = mailerPath;
+	}
+
 	@Column(name = "createdtime")
 	private Date createdTime; 
 
@@ -35,6 +43,10 @@ public class CourseCategeoryEntity {
 	
 	@Column(name = "isactive")
 	private int isActive;
+	
+	@Column(name = "mailerpath")
+	private String mailerPath;
+	
 	
 	public String getSubject() {
 		return subject;

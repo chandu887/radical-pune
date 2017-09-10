@@ -79,6 +79,28 @@
         
         $("#addManualName").hide();
     });
+	
+	updateList = function() {
+		  var input = document.getElementById('file');
+		  var output = document.getElementById('fileList');
+
+		  output.innerHTML = '<ul>';
+		  for (var i = 0; i < input.files.length; ++i) {
+		    output.innerHTML += '<li>' + input.files.item(i).name + '</li>';
+		  }
+		  output.innerHTML += '</ul>';
+		}
+	function checkFileExsistsOrNot() {
+		var fileValue = $("#file").val();
+		if(null == fileValue || fileValue == "") {
+			alert("Please select the file");
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	
 	</script>
 	<!-- <script>
 	$("#fromDate").on('changeDate', function(ev){
@@ -1534,10 +1556,10 @@ var basepath = "${pageContext.request.contextPath}";
 					<h4 class="modal-title">Send Templated Email/SMS</h4>
 				</div>
 				<div class="modal-body">
-					<form:form method="post" action="createMailTemplate" name="createMailTemplateForm"
-						onsubmit="return validateCreateTemplateForm()" role="form">
+					<form:form method="post" action="createMailTemplate" 
+						enctype="multipart/form-data">
 						<div class="col-sm-12">
-							<div class="form-group">
+							<!-- <div class="form-group">
 								<label for="email">Subject</label> <input type="text"
 									class="form-control" id="subject" name="subject"
 									placeholder="Please enter Subject">
@@ -1546,9 +1568,8 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Message</label>
 								<textarea placeholder="Please enter message here"
 									class="form-control"  id= "messageBody" name="messagebody" rows="10"></textarea>
-							</div>
+							</div> -->
 							<div class="form-group">
-							
 								<label for="pwd">Category</label><br> <select
 									class="selectpicker" title="Select Category"
 									id="createTempateCategory" name="categoryId"
@@ -1558,6 +1579,20 @@ var basepath = "${pageContext.request.contextPath}";
 									</c:forEach>
 								</select>
 							</div>
+							<div class="form-control-static adproduct">
+							<div class="drop-zone">
+								<i class="font-icon font-icon-cloud-upload-2"></i>
+								<div class="drop-zone-caption">Choose file to upload bulk
+									Leads</div>
+								<span class="btn btn-rounded btn-green btn-file"> <span>Choose
+										file</span> <input type="file" name="file" id="file" multiple=""
+									onchange="javascript:updateList()">
+
+								</span>
+							</div>
+							<br />Selected files:
+							<div id="fileList"></div>
+						</div>
 							<%-- <div class="form-group">
 								<label for="pwd">Course</label><br> <select
 									class="selectpicker" title="Select Course"
@@ -1567,7 +1602,7 @@ var basepath = "${pageContext.request.contextPath}";
 									</c:forEach>
 								</select>
 							</div> --%>
-							<button type="submit" class="btn btn-success">Create
+							<button type="submit" class="btn btn-success" onclick="return checkFileExsistsOrNot()">Create
 								Template</button>
 								<button type="button" class="btn btn-danger"
 									data-dismiss="modal">Cancel</button>

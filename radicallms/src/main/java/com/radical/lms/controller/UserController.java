@@ -1,5 +1,7 @@
 package com.radical.lms.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -543,18 +546,49 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/createMailTemplate", method = RequestMethod.POST)
-	public String saveTemplate(@ModelAttribute(value = "createMailTemplateForm") CourseCategeoryEntity categeoryEntity,
-			Model model) {
-		CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(categeoryEntity.getCategoryId());
-		category.setSubject(categeoryEntity.getSubject());
-		category.setMessagebody(categeoryEntity.getMessagebody());
-		category.setCreatedTime(new Date());
-		
-		/*CourseEntity course = userService.getCourseListBasedOnCourseId(courseEntity.getCourseId());
-		course.setSubject(courseEntity.getSubject());
-		course.setMessagebody(courseEntity.getMessagebody());
-		course.setCreatedTime(new Date());*/
-		userService.saveTemplate(category);
+	public String saveTemplate(@RequestParam("file") MultipartFile uploadFile, @RequestParam("categeoryId") String categeoryId,HttpServletRequest request, HttpServletResponse response, Model model) {
+		HttpSession session = request.getSession();
+		CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(Integer.parseInt(categeoryId));
+		if (!uploadFile.isEmpty()) {
+			try {
+				String name = "";
+				String rootPath = System.getProperty(Constants.CATALINA_PATH) + File.separator + "webapps"
+						+ File.separator + "CategoryMailer" + File.separator + "resources" + File.separator + "images"
+						+ File.separator;
+				
+				File dir = new File(rootPath);
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+				name = uploadFile.getOriginalFilename();
+				int pos = name.lastIndexOf(".");
+				if (pos != -1) {
+					name = name.substring(0, pos);
+				}
+				BufferedImage bufImage = ImageIO.read(new ByteArrayInputStream(uploadFile.getBytes()));
+				File serverFile = new File(dir.getAbsolutePath() + File.separator + name + Constants.JPG_IMAGE);
+				String imagePath = dir.getAbsolutePath() + File.separator + name+"-"+new Date()+ Constants.JPG_IMAGE;
+				ImageIO.write(bufImage, Constants.JPG, serverFile);
+				imagePath = imagePath.replace(
+						System.getProperty(Constants.CATALINA_PATH) + File.separator + "webapps" + File.separator,
+						"www.radicaltechnologies.org/").replace(File.separator, "/");
+				category.setMailerPath(imagePath);
+				/*category.setSubject(categeoryEntity.getSubject());
+				category.setMessagebody(categeoryEntity.getMessagebody());*/
+				category.setCreatedTime(new Date());
+
+				/*
+				 * CourseEntity course =
+				 * userService.getCourseListBasedOnCourseId(courseEntity.
+				 * getCourseId()); course.setSubject(courseEntity.getSubject());
+				 * course.setMessagebody(courseEntity.getMessagebody());
+				 * course.setCreatedTime(new Date());
+				 */
+				userService.saveTemplate(category);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		return "redirect:/dashboard?leadStatus=1&messageText=Mail Template Created Successfully";
 	}
 
@@ -758,6 +792,7 @@ public class UserController {
 	@RequestMapping(value = "/leadsBulkUpload", method = RequestMethod.GET)
 	public String viewCourses(ModelMap map) {
 		map.addAttribute("viewPage", "leadsBulkUpload");
+		map.addAttribute("templateDownloadFile", "radical.xlx");
 		return "adminactivities";
 	}
 	
@@ -806,6 +841,7 @@ public class UserController {
 					file.close();
 					model.addAttribute(Constants.MESSAGE, Constants.FILE_PROCESSING_DONE_SUCCESSFULLY);
 					model.addAttribute("viewPage", "leadsBulkUpload");
+					model.addAttribute("templateDownloadFile", "radical.xlx");
 				} catch (Exception ex) {
 					throw new RuntimeException(Constants.LEADS_ADDED_FAILED);
 				}

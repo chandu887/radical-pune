@@ -50,5 +50,10 @@ public final class Constants {
 	public static final String  LEADS_ADDED_FAILED = "Leads upload failed due to internal eror  --- ";
 	
 	public static final String STATUS = "Status";
+	
+public static final String JPG_IMAGE = ".jpg";
+ 	
+	public static final String JPG = "jpg";
+
 
 }
