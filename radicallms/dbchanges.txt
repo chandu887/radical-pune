@@ -76,7 +76,7 @@ ADD COLUMN `isactive` INT(3) NULL DEFAULT 0 AFTER `updatedtime`;
 ALTER TABLE `radicallmspune`.`leads` 
 ADD COLUMN `landlinenumber` VARCHAR(45) NULL DEFAULT NULL AFTER `mobileno`;
 
-ALTER TABLE `radicallms`.`coursecategory` 
+ALTER TABLE `radicallmspune`.`coursecategory` 
 ADD COLUMN `mailerpath` TEXT NULL DEFAULT NULL AFTER `subject`;
 
 

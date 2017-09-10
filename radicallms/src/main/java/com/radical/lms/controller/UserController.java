@@ -546,7 +546,9 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/createMailTemplate", method = RequestMethod.POST)
-	public String saveTemplate(@RequestParam("file") MultipartFile uploadFile, @RequestParam("categeoryId") String categeoryId,HttpServletRequest request, HttpServletResponse response, Model model) {
+	public String saveTemplate(@RequestParam("file") MultipartFile uploadFile,
+			@RequestParam("categoryId") String categeoryId, HttpServletRequest request, HttpServletResponse response,
+			Model model) {
 		HttpSession session = request.getSession();
 		CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(Integer.parseInt(categeoryId));
 		if (!uploadFile.isEmpty()) {
