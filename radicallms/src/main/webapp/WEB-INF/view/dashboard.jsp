@@ -28,8 +28,8 @@
 
 <script src="<c:url value="/resources/js/jquery-ui.js"/>"></script>
 
-<script src='https://cloud.tinymce.com/stable/tinymce.min.js'></script>
-<script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=p031zjwoastgbi16tmvaq8m8ef3dthcs5kqhdftdbwmcv77q"></script>
+<script src='/resources/js/tinymce.min.js'></script>
+<!-- <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=p031zjwoastgbi16tmvaq8m8ef3dthcs5kqhdftdbwmcv77q"></script> -->
 
    <script>
   /* tinymce.init({
@@ -60,6 +60,14 @@
 	  content_css: '//www.tinymce.com/css/codepen.min.css'
 	});
   </script>
+  <script>
+		function viewImages(reportId){
+			//alert("Hi");
+			window.open( basepath + "/viewImages/"+reportId);
+			
+			 		}
+		</script>
+</head>
   
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
@@ -545,6 +553,9 @@ var basepath = "${pageContext.request.contextPath}";
 			<c:if test="${dashBoardForm.currentStatus == 3}">
 				<c:set var="closeActive" value="active" />
 			</c:if>
+			<c:if test="${dashBoardForm.currentStatus == 4}">
+				<c:set var="deleteActive" value="active" />
+			</c:if>
 			<c:if test="${dashBoardForm.currentStatus == 5}">
 				<c:set var="hotActive" value="active" />
 			</c:if>
@@ -563,6 +574,9 @@ var basepath = "${pageContext.request.contextPath}";
 				<li><a href="dashboard?leadStatus=3" class="${closeActive}"><i
 						class="fa fa-folder-o" aria-hidden="true"></i> Closed
 						${dashBoardForm.closedCount}</a></li>
+				<li><a href="dashboard?leadStatus=4" class="${deleteActive}"><i
+						class="fa fa-folder-o" aria-hidden="true"></i> Deleted
+						${dashBoardForm.deleteCount}</a></li>
 				<li><a href="dashboard?leadStatus=5" class="${hotActive}"><i
 						class="fa fa-eye" aria-hidden="true"></i> Hot lead
 						${dashBoardForm.hotCount}</a></li>
@@ -611,10 +625,9 @@ var basepath = "${pageContext.request.contextPath}";
 								<li><a data-toggle="modal" data-target="#freeemail">Free
 										Text Email/SMS</a></li>
 										<c:if test="${userName == 'admin'}">
-								<li><a data-toggle="modal" data-target="#createTemple">Create
-										Templated Email</a></li>
-								<li><a href="viewTemplatedMail">View All Templated
-										Email</a></li>
+								<li><a data-toggle="modal" data-target="#createTemple">Create Category Emailer</a></li>
+								<li><a href="viewTemplatedMail">View All Category
+										Emailers</a></li>
 										<li><a href="viewAgents">Admin Activities</a></li>
 										</c:if>
 							</ul></li>
@@ -733,29 +746,29 @@ var basepath = "${pageContext.request.contextPath}";
 				 <table class="table table-bordered">
 					<thead>
                             <tr>
-                                <th></th>
-                                <th></th>
+                              <!--   <th></th>
+                                <th></th> -->
                                 <th>Category</th>
-                                <th>Subject</th>
                                 <th>Time Created</th>
+                                <th>View Mailer</th>
                             </tr>
                         </thead>
                         
                         <c:forEach items="${templateList}" var="template">
 									<tr>
-										<td><input type="checkbox" value="${template.categoryId}"
+										<%-- <td><input type="checkbox" value="${template.categoryId}"
 											name="leadId"></td>
 										<td><a data-toggle="modal" role="button"
 											data-target="#editTemple" onclick="getTemplateInfo(${template.categoryId}, '${template.mailSubject}', '${template.mailBody}')"><i
-												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td> --%>
 										
 										<td>${template.categoryName}</td>
-										<td>${template.mailSubject}</td>
 										<td>${template.createdTime}</td>
-										
+										<td><button type="button" 
+														onclick="viewImages(${template.categoryId})">view</button></td>
 									</tr>
 								</c:forEach>
-                    </table>
+                    </table>	
 				</c:if>
 				<span class="pull-left">Showing ${dashBoardForm.startLimit}
 					to ${dashBoardForm.endLimit} of ${dashBoardForm.pageTotalCount}
@@ -1553,7 +1566,7 @@ var basepath = "${pageContext.request.contextPath}";
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Send Templated Email/SMS</h4>
+					<h4 class="modal-title">Create Category Emailer</h4>
 				</div>
 				<div class="modal-body">
 					<form:form method="post" action="createMailTemplate" 
@@ -1582,8 +1595,8 @@ var basepath = "${pageContext.request.contextPath}";
 							<div class="form-control-static adproduct">
 							<div class="drop-zone">
 								<i class="font-icon font-icon-cloud-upload-2"></i>
-								<div class="drop-zone-caption">Choose file to upload bulk
-									Leads</div>
+								<div class="drop-zone-caption">Choose file to upload 
+									Emailer</div>
 								<span class="btn btn-rounded btn-green btn-file"> <span>Choose
 										file</span> <input type="file" name="file" id="file" multiple=""
 									onchange="javascript:updateList()">
@@ -1602,8 +1615,7 @@ var basepath = "${pageContext.request.contextPath}";
 									</c:forEach>
 								</select>
 							</div> --%>
-							<button type="submit" class="btn btn-success" onclick="return checkFileExsistsOrNot()">Create
-								Template</button>
+							<button type="submit" class="btn btn-success" onclick="return checkFileExsistsOrNot()">Create Emailer</button>
 								<button type="button" class="btn btn-danger"
 									data-dismiss="modal">Cancel</button>
 						</div>

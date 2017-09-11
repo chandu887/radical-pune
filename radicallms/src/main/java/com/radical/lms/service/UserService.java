@@ -86,6 +86,8 @@ public interface UserService {
 	
 	List<CourseEntity> getCoursesList();
 	
+	List<CourseEntity> getCoursesListForEmailer();
+	
 	void saveCourse(CourseEntity courseEntity);
 	
 	CourseEntity getCourseByCourseId(int courseId);

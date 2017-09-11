@@ -39,7 +39,18 @@ public class CourseEntity {
 	@Column(name = "isactive")
 	private int isActive;
 	
+	@Column(name = "mailerpath")
+	private String mailerPath;
 	
+	
+	public String getMailerPath() {
+		return mailerPath;
+	}
+
+	public void setMailerPath(String mailerPath) {
+		this.mailerPath = mailerPath;
+	}
+
 	public String getSubject() {
 		return subject;
 	}

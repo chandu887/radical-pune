@@ -30,12 +30,12 @@
         
         <init-param>
             <param-name>allowed-adminUrls</param-name>
-            <param-value>/,favicon.ico,/dashboard,/logout,/testCron,/addlead,/changeStatus,/filterByDateAndCourse,/getLeadInfo,/editlead,/downloadLeadsToSheet,/clearFilter,/createMailTemplate,/sendTemplatedMail,/nonTemplatedEmailOrSms,/viewAgents,/getAgentInfo,/addAgent,/editAgent,/updateAgent,/isUserExits,/viewCategories,/updateCategory,/addCategory,/viewCourses,/updateCourse,/isCourseExits,/addCourse,/leadsBulkUpload,/uploadBulkLeads,/downloadFile</param-value>
+            <param-value>/,favicon.ico,/dashboard,/logout,/testCron,/addlead,/changeStatus,/filterByDateAndCourse,/getLeadInfo,/editlead,/downloadLeadsToSheet,/clearFilter,/createMailTemplate,/sendTemplatedMail,/nonTemplatedEmailOrSms,/viewAgents,/getAgentInfo,/addAgent,/editAgent,/updateAgent,/isUserExits,/viewCategories,/updateCategory,/addCategory,/viewCourses,/updateCourse,/isCourseExits,/addCourse,/leadsBulkUpload,/uploadBulkLeads,/downloadFile,/viewImages,/viewCourseAttachements,/createCourseAttachment</param-value>
         </init-param>
         
         <init-param>
             <param-name>allowed-allUrls</param-name>
-            <param-value>/,/favicon.ico,/resources/images/*,/resources/js/*.js,/resources/css/*.css,/resources/fonts/*,/login,/getModelsList,/getCountryList,/testCron,/getPaginationData,/getShowingData,/getPaginationData,/getShowingData,/getCoursesBasedOnCategoryId,/searchByCourse,/viewTemplatedMail,/editMailTemplate,/filterByDateAndCourse,/viewAgents,/getAgentInfo,/addAgent,/editAgent,/updateAgent,/isUserExits,/viewCategories,/updateCategory,/addCategory,/viewCourses,/updateCourse,/isCourseExits,/addCourse,/leadsBulkUpload,/uploadBulkLeads,/downloadFile</param-value>
+            <param-value>/,/favicon.ico,/resources/images/*,/resources/js/*.js,/resources/css/*.css,/resources/fonts/*,/login,/getModelsList,/getCountryList,/testCron,/getPaginationData,/getShowingData,/getPaginationData,/getShowingData,/getCoursesBasedOnCategoryId,/searchByCourse,/viewTemplatedMail,/editMailTemplate,/filterByDateAndCourse,/viewAgents,/getAgentInfo,/addAgent,/editAgent,/updateAgent,/isUserExits,/viewCategories,/updateCategory,/addCategory,/viewCourses,/updateCourse,/isCourseExits,/addCourse,/leadsBulkUpload,/uploadBulkLeads,/downloadFile,/viewImages,/viewCourseAttachements,/createCourseAttachment</param-value>
         </init-param>
     </filter>
     

@@ -28,8 +28,8 @@
 
 <script src="<c:url value="/resources/js/jquery-ui.js"/>"></script>
 
-<script src='https://cloud.tinymce.com/stable/tinymce.min.js'></script>
-<script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=p031zjwoastgbi16tmvaq8m8ef3dthcs5kqhdftdbwmcv77q"></script>
+<script src='/resources/js/tinymce.min.js'></script>
+<!-- <script src="https://cloud.tinymce.com/stable/tinymce.min.js?apiKey=p031zjwoastgbi16tmvaq8m8ef3dthcs5kqhdftdbwmcv77q"></script> -->
 
  <!--  <script>
   tinymce.init({
@@ -292,6 +292,10 @@ var basepath = "${pageContext.request.contextPath}";
 			<c:if test="${viewPage == 'leadsBulkUpload'}">
 				<c:set var="leadsBulkUpload" value="active" />
 			</c:if>
+			
+			<c:if test="${viewPage == 'viewCourseAttachements'}">
+				<c:set var="viewCourseAttachements" value="active" />
+			</c:if>
 
 			<section id="action">
 			<ul class="default-filters">
@@ -301,9 +305,9 @@ var basepath = "${pageContext.request.contextPath}";
 				<li><a href="viewCategories" class="${viewcategories}"> Add/Edit Categories </a></li>
 				<li><a href="viewCourses" class="${viewcourses}"> Add/Edit Courses </a></li>
 				<li><a href="leadsBulkUpload" class="${leadsBulkUpload}"> LeadsUpload </a></li>
+				<li><a href="viewCourseAttachements" class="${viewCoursesAttachements}"> Add/View CoursesAttachements </a></li>
 			</ul>
 		</section>
-
 			<c:if test="${viewPage == 'viewagents'}">
 			<a data-toggle="modal" role="button" data-target="#addAgent" class="btn btn-success">Add Agent</a>
 			<h2 class="sucess-messages">${message}</h2>
@@ -333,6 +337,28 @@ var basepath = "${pageContext.request.contextPath}";
 								<a href="#" onclick="updateAgent(${agent.userId}, 0)"><i class="fa fa-external-link" aria-hidden="true"></i> Deactivate</a>
 								</c:if>
 								</td>
+							</tr>
+						</c:forEach>
+					</c:if>
+				</tbody>
+			</table>
+			</c:if>
+			<c:if test="${viewPage == 'viewCourseAttachements'}">
+			<a data-toggle="modal" role="button" data-target="#createTemple" class="btn btn-success">Add Attachement For Course</a>
+			<h2 class="sucess-messages">${message}</h2>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>CourseName</th>
+						<th>attachement</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:if test="${coursesList != null}">
+						<c:forEach items="${coursesList}" var="course">
+							<tr>
+								<td>${course.courseName}</td>
+								<td><a href="downloadFile/${course.mailerPath}")>Click here</a></td>
 							</tr>
 						</c:forEach>
 					</c:if>
@@ -370,7 +396,7 @@ var basepath = "${pageContext.request.contextPath}";
 		   </c:if>
 			<c:if test="${viewPage == 'leadsBulkUpload'}">
 				 <div id="page-content">
-				 <a href="downloadFile/templateDownloadFile"><button class="btn btn-green pull-right" style="
+				 <a href="downloadFile/${templateDownloadFile}"><button class="btn btn-green pull-right" style="
     position: absolute;  top: 180px; right: 85px; z-index:99;"> Download Template</button></a>
 				<form:form method="post" action="uploadBulkLeads"
 					enctype="multipart/form-data">
@@ -451,7 +477,70 @@ var basepath = "${pageContext.request.contextPath}";
 			 
 		</div>
 	</div>
+<div id="createTemple" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Create Course Attachement</h4>
+				</div>
+				<div class="modal-body">
+					<form:form method="post" action="createCourseAttachment" 
+						enctype="multipart/form-data">
+						<div class="col-sm-12">
+							<!-- <div class="form-group">
+								<label for="email">Subject</label> <input type="text"
+									class="form-control" id="subject" name="subject"
+									placeholder="Please enter Subject">
+							</div>
+							<div class="form-group">
+								<label for="pwd">Message</label>
+								<textarea placeholder="Please enter message here"
+									class="form-control"  id= "messageBody" name="messagebody" rows="10"></textarea>
+							</div> -->
+							<div class="form-group">
+								<label for="pwd">Course</label><br> <select
+									class="selectpicker" title="Select Category"
+									 name="courseId"
+									>
+									<c:forEach var="category" items="${course}">
+										<option value="${category.courseId}">${category.courseName}</option>
+									</c:forEach>
+								</select>
+							</div>
+							<div class="form-control-static adproduct">
+							<div class="drop-zone">
+								<i class="font-icon font-icon-cloud-upload-2"></i>
+								<div class="drop-zone-caption">Choose file to upload 
+									Attachement</div>
+								<span class="btn btn-rounded btn-green btn-file"> <span>Choose
+										file</span> <input type="file" name="courseFile" id="file" multiple=""
+									onchange="javascript:updateList()">
 
+								</span>
+							</div>
+							<br />Selected files:
+							<div id="fileList"></div>
+						</div>
+							<%-- <div class="form-group">
+								<label for="pwd">Course</label><br> <select
+									class="selectpicker" title="Select Course"
+									id="createTemplateCourse" name="courseId">
+									<c:forEach var="courses" items="${coursesMap}">
+										<option value="${courses.key}">${courses.value}</option>
+									</c:forEach>
+								</select>
+							</div> --%>
+							<button type="submit" class="btn btn-success" onclick="return checkFileExsistsOrNot()">Create Attachement</button>
+								<button type="button" class="btn btn-danger"
+									data-dismiss="modal">Cancel</button>
+						</div>
+					</form:form>
+				</div>
+			</div>
+		</div>
+
+	</div>
 	
 	<div id="addAgent" class="modal fade" role="dialog">
 		<div class="modal-dialog">

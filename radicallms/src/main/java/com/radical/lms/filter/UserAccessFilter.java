@@ -181,18 +181,18 @@ public class UserAccessFilter extends BaseFilter {
 		
 		UsersEntity user = (UsersEntity) session.getAttribute("userInfo");
 		if (user != null) {
-			switch (user.getRoleId()) {
-			case 1:
+			/*switch (user.getRoleId()) {
+			case 1:*/
 				for (int count = MIN_SIZE; count < allowedAdmins.size(); ++count) {
 					Pattern pattern = (Pattern) allowedAdmins.get(count);
 					if (pattern.match(path)) {
 						return true;
 					}
 				}
-				break;
-			default:
+				/*break;
+			default:*/
 				return false;
-			}
+			/*}*/
 		}
 		
 		return false;

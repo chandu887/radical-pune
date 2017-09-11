@@ -76,12 +76,13 @@ public class UserController {
 		HttpSession session = request.getSession();
 		UsersEntity user = (UsersEntity) session.getAttribute("userInfo");
 		if (user != null) {
-			switch (user.getRoleId()) {
+			/*switch (user.getRoleId()) {
 			case 1:
 				return "redirect:/dashboard?leadStatus=1";
 			default:
 				return "login";
-			}
+			}*/
+			return "redirect:/dashboard?leadStatus=1";
 		}
 		return "login";
 	}
@@ -130,6 +131,7 @@ public class UserController {
 		dashBoardForm.setNewCount((int) newCount);
 		dashBoardForm.setOpenCount((int) openCount);
 		dashBoardForm.setClosedCount((int) closeCount);
+		dashBoardForm.setDeleteCount((int) deletedCount);
 		dashBoardForm.setHotCount((int) hotCount); 
 
 		dashBoardForm.setCurrentStatus(leadStatus);
@@ -208,10 +210,10 @@ public class UserController {
 		if (user != null) {
 			HttpSession session = request.getSession();
 			session.setAttribute("userInfo", user);
-			switch (user.getRoleId()) {
-			case 1:
+			/*switch (user.getRoleId()) {
+			case 1:*/
 				return "redirect:/dashboard?leadStatus=1";
-			}
+			/*}*/
 		}
 		return "loginfailure";
 	}
@@ -544,6 +546,46 @@ public class UserController {
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=1";
 	}
+	
+	@RequestMapping(value = "/createCourseAttachment", method = RequestMethod.POST)
+	public String createCourseAttachment(@RequestParam("courseFile") MultipartFile uploadFile,
+			@RequestParam("courseId") int courseId, HttpServletRequest request, HttpServletResponse response,
+			Model model) {
+		HttpSession session = request.getSession();
+		CourseEntity courseEntity = userService.getCourseByCourseId(courseId);
+		if (!uploadFile.isEmpty()) {
+			try {
+				String name = "";
+				String rootPath = System.getProperty(Constants.CATALINA_PATH) + File.separator + "webapps"
+						+ File.separator + "CategoryMailer" + File.separator + "resources" + File.separator + "images"
+						+ File.separator;
+				
+				File dir = new File(rootPath);
+				if (!dir.exists()) {
+					dir.mkdirs();
+				}
+				name = uploadFile.getOriginalFilename();
+				int pos = name.lastIndexOf(".");
+				if (pos != -1) {
+					name = name.substring(0, pos);
+				}
+				BufferedImage bufImage = ImageIO.read(new ByteArrayInputStream(uploadFile.getBytes()));
+				File serverFile = new File(dir.getAbsolutePath() + File.separator + name + Constants.JPG_IMAGE);
+				String imagePath = dir.getAbsolutePath() + File.separator + name+ Constants.JPG_IMAGE;
+				ImageIO.write(bufImage, Constants.JPG, serverFile);
+				imagePath = imagePath.replace(
+						System.getProperty(Constants.CATALINA_PATH) + File.separator + "webapps" + File.separator,
+						"www.radicaltechnologies.org/").replace(File.separator, "/");
+				courseEntity.setMailerPath(imagePath);
+				courseEntity.setCreatedTime(new Date());
+				userService.saveCourse(courseEntity);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return "redirect:/viewCourseAttachements?messageText=Course attachemnt added successfully";
+	}
+
 
 	@RequestMapping(value = "/createMailTemplate", method = RequestMethod.POST)
 	public String saveTemplate(@RequestParam("file") MultipartFile uploadFile,
@@ -569,7 +611,7 @@ public class UserController {
 				}
 				BufferedImage bufImage = ImageIO.read(new ByteArrayInputStream(uploadFile.getBytes()));
 				File serverFile = new File(dir.getAbsolutePath() + File.separator + name + Constants.JPG_IMAGE);
-				String imagePath = dir.getAbsolutePath() + File.separator + name+"-"+new Date()+ Constants.JPG_IMAGE;
+				String imagePath = dir.getAbsolutePath() + File.separator + name+ Constants.JPG_IMAGE;
 				ImageIO.write(bufImage, Constants.JPG, serverFile);
 				imagePath = imagePath.replace(
 						System.getProperty(Constants.CATALINA_PATH) + File.separator + "webapps" + File.separator,
@@ -693,6 +735,18 @@ public class UserController {
 		return "adminactivities";
 	}
 	
+	@RequestMapping(value = "/viewCourseAttachements", method = RequestMethod.GET)
+	public String viewCourseAttachements(ModelMap map, @RequestParam(value = "messageText", defaultValue = "", required = false) String messageText) {
+		List<CourseEntity> coursesList = userService.getCoursesListForEmailer();
+		List<CourseEntity> course = userService.getCoursesList();
+		map.addAttribute("course", course);
+		map.addAttribute("coursesList", coursesList);
+		map.addAttribute("message", messageText);
+		map.addAttribute("viewPage", "viewCourseAttachements");
+		return "adminactivities";
+	}
+	
+	
 	@RequestMapping(value = "/getAgentInfo", method = RequestMethod.POST)
 	@ResponseBody
 	public UsersEntity getAgentInfoByUserId(@RequestParam("userId") int userId) {
@@ -794,7 +848,7 @@ public class UserController {
 	@RequestMapping(value = "/leadsBulkUpload", method = RequestMethod.GET)
 	public String viewCourses(ModelMap map) {
 		map.addAttribute("viewPage", "leadsBulkUpload");
-		map.addAttribute("templateDownloadFile", "radical.xlx");
+		//map.addAttribute("templateDownloadFile", "radical.xlx");
 		return "adminactivities";
 	}
 	
@@ -884,4 +938,16 @@ public class UserController {
 			userService.saveCourse(courseEntity);
 			return "redirect:/viewCourses?messageText=Course added successfully";
 	}
+	
+	@RequestMapping(value="/viewImages/{categoryId}", method = RequestMethod.GET)
+	public String viewImages(Model model,HttpServletRequest request,@PathVariable int categoryId) {
+		HttpSession session = request.getSession();
+		try {
+			CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(categoryId);
+			model.addAttribute("reportImagesList",category.getMailerPath()/*.replace("www.radicaltechnologies.org", "D://radical-pune/trunk/radicallms/target/tomcat/webapps")*/);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return "viewImage";
+	} 
 }

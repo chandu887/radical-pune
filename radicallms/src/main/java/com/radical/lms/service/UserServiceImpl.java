@@ -450,8 +450,8 @@ public class UserServiceImpl implements UserService {
 			templateBean.setCourseName(courseEntity.getCourseName());*/
 			templateBean.setCategoryId(categoryEntity.getCategoryId());
 			templateBean.setCategoryName(getCourseCategories().get(categoryEntity.getCategoryId()));
-			templateBean.setMailSubject(categoryEntity.getSubject());
-			templateBean.setMailBody(categoryEntity.getMessagebody());
+			//templateBean.setMailSubject(categoryEntity.getSubject());
+			templateBean.setMailBody(categoryEntity.getMailerPath());
 			if (categoryEntity.getCreatedTime() != null) {
 				templateBean.setCreatedTime(dateFormat.format(categoryEntity.getCreatedTime()));
 			}
@@ -528,6 +528,11 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	public List<CourseEntity> getCoursesList() {
 		return userDao.getCoursesList();
+	}
+	
+	@Transactional
+	public List<CourseEntity> getCoursesListForEmailer() {
+		return userDao.getCoursesListForEmailer();
 	}
 	
 	@Transactional

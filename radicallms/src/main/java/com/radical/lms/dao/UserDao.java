@@ -65,6 +65,8 @@ public interface UserDao {
 	
 	List<CourseEntity> getCoursesList();
 	
+	List<CourseEntity> getCoursesListForEmailer();
+	
 	void saveCourse(CourseEntity courseEntity);
 	
 	CourseEntity getCourseByCourseId(int courseId);
