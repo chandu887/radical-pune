@@ -40,6 +40,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -575,7 +576,11 @@ public class UserServiceImpl implements UserService {
 				}
 				String mobileNum = "";
 				if (null != row.getCell(1)) {
-					String mobNumber = row.getCell(1).toString().trim().replace(" ", "").replace("-", "");
+					String mobNumber = "";
+					if(row.getCell(1).getCellType() == row.getCell(1).CELL_TYPE_NUMERIC) {
+						mobNumber = NumberToTextConverter.toText(row.getCell(1).getNumericCellValue());
+					}
+					mobNumber = mobNumber.toString().trim().replace(" ", "").replace("-", "");
 					String numberString = numberE(mobNumber);
 					if(numberString.length() == 10 && NumberUtils.isNumber(numberString)) {
 						mobileNum = numberString;
@@ -583,7 +588,13 @@ public class UserServiceImpl implements UserService {
 					leadsEntity.setMobileNo(mobileNum);
 				}
 				if (null != row.getCell(2)) {
-					leadsEntity.setLandLineNumber(row.getCell(2).toString().trim());
+					String landLineNumber = "";
+					/*if(row.getCell(2).getCellType() == row.getCell(2).CELL_TYPE_NUMERIC) {
+						landLineNumber = NumberToTextConverter.toText(row.getCell(2).getNumericCellValue());
+					}*/
+					//row.getCell(2).toString().trim().replace(" ", "").replace("-", "")
+					landLineNumber = row.getCell(2).toString().trim().replace(" ", "").replace("-", "");
+					leadsEntity.setLandLineNumber(landLineNumber);
 				}
 				if (null != row.getCell(3)) {
 					leadsEntity.setEmailId(row.getCell(3).toString().trim());
@@ -699,7 +710,44 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	
+	/**
+	 * Download the xls file based on the path given
+	 * @param filePath pathOfTheFile
+	 */
+	public void downloadCourseFile(String courseId, HttpServletResponse response) {
+		try {
+			/*CourseEntity courseEntity = getCourseByCourseId(Integer.parseInt(courseId));
+			Blob blob = courseEntity.getContent();
+			InputStream in = blob.getBinaryStream();
+			OutputStream out = new FileOutputStream(someFile);
+			byte[] buff = blob.getBytes(1,(int)blob.getLength());
+			out.write(buff);
+			out.close();
+			File inputFile = new File(fileName);
+			File outPutFile = new File(filePath + Constants.XLS);
+			outPutFile.createNewFile();	
+			FileInputStream fis = new FileInputStream(inputFile);
+			FileOutputStream fos = new FileOutputStream(outPutFile);
+			int i = 0;
+			while ((i = fis.read()) != -1) {
+				fos.write((byte) i);
+			}
+			fos.close();
+			fis.close();
+			FileInputStream file = new FileInputStream(outPutFile);
+			XSSFWorkbook workbook = new XSSFWorkbook(file);
+			XSSFSheet sheet = workbook.getSheetAt(0);
+			ServletOutputStream out = response.getOutputStream();
+			response.setContentType(Constants.MS_EXCEL_FORMAT);
+			response.addHeader(Constants.CONTENT_DISPOSITIONS, Constants.ATTACHMENT_FILE + outPutFile);
+			workbook.write(out);
+			out.close();
+			file.close();*/
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	private int getLeadSoureId(String leadSource) {
 		for (Map.Entry<Integer, String> entry : getLeadSourceMapping().entrySet()) {
 			if (leadSource.equalsIgnoreCase(entry.getValue())) {
@@ -736,7 +784,7 @@ public class UserServiceImpl implements UserService {
 			} else if (number.contains("E10")) {
 				number = number.replace("E10", "").trim();
 			} else if (number.contains("E9")) {
-				number = number.replace("E9", "0").trim();
+				number = number.replace("E9", "").trim();
 			} else if (number.contains("E8")) {
 				number = number.replace("E8", "").trim();
 			} else if (number.contains("E7")) {

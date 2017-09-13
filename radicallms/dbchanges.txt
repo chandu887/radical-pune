@@ -84,4 +84,13 @@ ALTER TABLE `radicallmspune`.`courses`
 ADD COLUMN `mailerpath` TEXT NULL DEFAULT NULL AFTER `subject`;
 
 
+13-09-2017
+================
+ALTER TABLE `radicallmspune`.`courses` 
+CHANGE COLUMN `mailerpath` `mailerpath` VARCHAR(250) NULL DEFAULT NULL ,
+ADD COLUMN `type` VARCHAR(45) NULL AFTER `mailerpath`,
+ADD COLUMN `content` LONGBLOB NULL AFTER `type`;
+
+
+
 

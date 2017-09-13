@@ -49,14 +49,14 @@
 			}
 		.panel-body ul li { 
 				width: 320px;
-				margin: 0 18px 30px 18px; 
+				margin: 0 100px 30px 18px; 
 				display: inline-block; 
 			/*	border:5px solid #8bc750; 
 				border-radius: 5px; */
 			}
 		.panel-body ul li img {
-				width: 320px; 
-				height: 250px; 
+				width: 500px; 
+				height: 700px; 
 				display: block; 
 				/* border-radius: 5px 5px 0 0; */
 				border:5px solid #8bc750; 

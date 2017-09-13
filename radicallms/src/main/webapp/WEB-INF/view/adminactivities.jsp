@@ -358,7 +358,7 @@ var basepath = "${pageContext.request.contextPath}";
 						<c:forEach items="${coursesList}" var="course">
 							<tr>
 								<td>${course.courseName}</td>
-								<td><a href="downloadFile/${course.mailerPath}")>Click here</a></td>
+								<td><a href="downloadFile/${course.}")>Click here</a></td>
 							</tr>
 						</c:forEach>
 					</c:if>

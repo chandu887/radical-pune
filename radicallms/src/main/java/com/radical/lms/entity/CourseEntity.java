@@ -1,5 +1,6 @@
 package com.radical.lms.entity;
 
+import java.sql.Blob;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -7,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 @Entity
@@ -42,7 +44,31 @@ public class CourseEntity {
 	@Column(name = "mailerpath")
 	private String mailerPath;
 	
+	@Column(name = "type")
+	 private String fileType;
+
+	 @Column(name = "content")
+	 @Lob
+	 private Blob  content;	
+	 
 	
+	
+	public String getFileType() {
+		return fileType;
+	}
+
+	public void setFileType(String fileType) {
+		this.fileType = fileType;
+	}
+
+	public Blob getContent() {
+		return content;
+	}
+
+	public void setContent(Blob content) {
+		this.content = content;
+	}
+
 	public String getMailerPath() {
 		return mailerPath;
 	}

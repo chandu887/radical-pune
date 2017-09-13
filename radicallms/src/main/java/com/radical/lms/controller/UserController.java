@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -24,6 +25,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hibernate.Hibernate;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -555,28 +557,10 @@ public class UserController {
 		CourseEntity courseEntity = userService.getCourseByCourseId(courseId);
 		if (!uploadFile.isEmpty()) {
 			try {
-				String name = "";
-				String rootPath = System.getProperty(Constants.CATALINA_PATH) + File.separator + "webapps"
-						+ File.separator + "CategoryMailer" + File.separator + "resources" + File.separator + "images"
-						+ File.separator;
-				
-				File dir = new File(rootPath);
-				if (!dir.exists()) {
-					dir.mkdirs();
-				}
-				name = uploadFile.getOriginalFilename();
-				int pos = name.lastIndexOf(".");
-				if (pos != -1) {
-					name = name.substring(0, pos);
-				}
-				BufferedImage bufImage = ImageIO.read(new ByteArrayInputStream(uploadFile.getBytes()));
-				File serverFile = new File(dir.getAbsolutePath() + File.separator + name + Constants.JPG_IMAGE);
-				String imagePath = dir.getAbsolutePath() + File.separator + name+ Constants.JPG_IMAGE;
-				ImageIO.write(bufImage, Constants.JPG, serverFile);
-				imagePath = imagePath.replace(
-						System.getProperty(Constants.CATALINA_PATH) + File.separator + "webapps" + File.separator,
-						"www.radicaltechnologies.org/").replace(File.separator, "/");
-				courseEntity.setMailerPath(imagePath);
+				courseEntity.setMailerPath(uploadFile.getOriginalFilename());
+				courseEntity.setFileType(uploadFile.getContentType());
+				Blob blob = Hibernate.createBlob(uploadFile.getInputStream());
+				courseEntity.setContent(blob);
 				courseEntity.setCreatedTime(new Date());
 				userService.saveCourse(courseEntity);
 			} catch (Exception e) {
@@ -615,7 +599,7 @@ public class UserController {
 				ImageIO.write(bufImage, Constants.JPG, serverFile);
 				imagePath = imagePath.replace(
 						System.getProperty(Constants.CATALINA_PATH) + File.separator + "webapps" + File.separator,
-						"www.radicaltechnologies.org/").replace(File.separator, "/");
+						"http://www.radicaltechnologies.org/").replace(File.separator, "/");
 				category.setMailerPath(imagePath);
 				/*category.setSubject(categeoryEntity.getSubject());
 				category.setMessagebody(categeoryEntity.getMessagebody());*/
@@ -858,6 +842,18 @@ public class UserController {
 			HttpServletResponse response) {
 		try {
 			this.userService.downloadXlsFileBasedOnFileName(filePath, response);
+		} catch (Exception ex) {
+			throw new RuntimeException("Some thing went wrong while download the status of the upload file");
+		}
+		return null;
+	}
+	
+	@RequestMapping("/downloadCourseFile/{courseId}")
+	public String downloadCourseFile(@PathVariable("courseId") String courseId,
+			HttpServletResponse response) {
+		try {
+			this.userService.downloadCourseFile(courseId,response);
+			//this.userService.downloadXlsFileBasedOnFileName(filePath, response);
 		} catch (Exception ex) {
 			throw new RuntimeException("Some thing went wrong while download the status of the upload file");
 		}

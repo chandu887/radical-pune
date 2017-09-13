@@ -43,6 +43,7 @@ public class LeadServiceImpl implements LeadService {
 		leadEntity.setCreatedDate(new Date());
 		leadEntity.setLastUpdatedDate(new Date());
 		leadEntity.setCourseName(leadFormEntity.getCourseName());
+		leadEntity.setLandLineNumber(leadFormEntity.getLandLineNumber());
 		return leadEntity;
 	}
 	

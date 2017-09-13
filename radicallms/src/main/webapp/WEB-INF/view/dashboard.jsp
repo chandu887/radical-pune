@@ -481,6 +481,7 @@ var basepath = "${pageContext.request.contextPath}";
     		$('#editStatus').val(data.status);
     		$('#editName').val(data.name);
     		$('#editMobileNo').val(data.mobileNo);
+    		$('#editLandLineNo').val(data.landLineNumber);
     		$('#editEmail').val(data.emailId);
     		$('#editAddress').val(data.address);
     		$('#editArea').val(data.area);
@@ -1161,6 +1162,10 @@ var basepath = "${pageContext.request.contextPath}";
 									class="form-control" id="mobileNo" value="" name="mobileNo">
 							</div>
 							<div class="form-group">
+								<label for="pwd">LandLine Number</label> <input type="text"
+									class="form-control" id="landLineNo" value="" name="landLineNumber">
+							</div>
+							<div class="form-group">
 								<label for="pwd">Email ID</label> <input type="email"
 									class="form-control" id="emailId" value="" name="emailId">
 							</div>
@@ -1184,15 +1189,6 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="Aundh-Pune">Aundh-Pune</option>
 									<!-- <option value="Kharadi-Pune">Kharadi-Pune</option> -->
 								</select>
-							</div>
-							<div class="form-group">
-								<label for="pwd">Type Of Lead</label><br> <select
-									class="selectpicker" title="Select lead type" id="statusTypeAdd" name="status"
-									>
-								<option value="1">New</option>
-								<option value="2">Open</option>
-								<option value="5">Hot Lead</option>
-							</select>
 							</div>
 						</div>
 						<div class="col-sm-6">
@@ -1237,9 +1233,9 @@ var basepath = "${pageContext.request.contextPath}";
 								</select>
 							</div>
 							
-							<div class="form-group">
+							<div class="form-group" id="addManualName">
 								<label for="pwd">Course</label> <input type="text"
-									class="form-control" id="addManualName" value="" name="courseName">
+									class="form-control" value="" name="courseName">
 							</div>
 							
 							<div class="form-group">
@@ -1270,6 +1266,15 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="Group">Group</option>
 									<option value="Attended-Demo">Attended-Demo</option>
 								</select>
+							</div>
+							<div class="form-group">
+								<label for="pwd">Type Of Lead</label><br> <select
+									class="selectpicker" title="Select lead type" id="statusTypeAdd" name="status"
+									>
+								<option value="1">New</option>
+								<option value="2">Open</option>
+								<option value="5">Hot Lead</option>
+							</select>
 							</div>
 						</div>
 						<div class="col-sm-12" >
@@ -1331,6 +1336,10 @@ var basepath = "${pageContext.request.contextPath}";
 							<div class="form-group">
 								<label for="pwd">Phone Number</label> <input type="text"
 									class="form-control" id="editMobileNo" value="" name="mobileNo">
+							</div>
+							<div class="form-group">
+								<label for="pwd">LandLine Number</label> <input type="text"
+									class="form-control" id="editLandLineNo" value="" name="landLineNumber">
 							</div>
 							<div class="form-group">
 								<label for="pwd">Email ID</label> <input type="email"
