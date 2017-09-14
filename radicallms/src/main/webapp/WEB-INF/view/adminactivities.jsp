@@ -358,7 +358,7 @@ var basepath = "${pageContext.request.contextPath}";
 						<c:forEach items="${coursesList}" var="course">
 							<tr>
 								<td>${course.courseName}</td>
-								<td><a href="downloadFile/${course.}")>Click here</a></td>
+								<td><a href="downloadCourseFile/${course.courseId}")>Click here</a></td>
 							</tr>
 						</c:forEach>
 					</c:if>
@@ -396,7 +396,7 @@ var basepath = "${pageContext.request.contextPath}";
 		   </c:if>
 			<c:if test="${viewPage == 'leadsBulkUpload'}">
 				 <div id="page-content">
-				 <a href="downloadFile/${templateDownloadFile}"><button class="btn btn-green pull-right" style="
+				 <a href="downloadFile/radical.xlsx"><button class="btn btn-green pull-right" style="
     position: absolute;  top: 180px; right: 85px; z-index:99;"> Download Template</button></a>
 				<form:form method="post" action="uploadBulkLeads"
 					enctype="multipart/form-data">
@@ -500,7 +500,7 @@ var basepath = "${pageContext.request.contextPath}";
 							</div> -->
 							<div class="form-group">
 								<label for="pwd">Course</label><br> <select
-									class="selectpicker" title="Select Category"
+									class="selectpicker" title="Select Course"
 									 name="courseId"
 									>
 									<c:forEach var="category" items="${course}">

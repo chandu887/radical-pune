@@ -246,7 +246,7 @@ public class UserController {
 	public String addLead(@ModelAttribute(value = "addLeadForm") LeadsEntity leadFormEntity, Model model,
 			@RequestParam("courseList") List<Integer> courseIdList, @RequestParam("sendingeMailAndSmsType") String sendingeMailAndSmsType,
 			@RequestParam("nonTemplatedSms") String sms, @RequestParam("nonTemplatedEmailSubject") String subject,
-			@RequestParam("nonTemplatedEmailBody") String mailbody
+			@RequestParam("nonTemplatedEmailBody") String mailbody,@RequestParam("nonTemplateFile") MultipartFile attachementFile
 			) {
 		
 		LeadsEntity leadsEntity = null;
@@ -278,7 +278,11 @@ public class UserController {
 				}
 			} else if ("manualmailandsms".equals(sendingeMailAndSmsType)) {
 				if (leadsEntity.getEmailId() != null) {
+					if (!attachementFile.isEmpty()) {
+					emailService.sendMailWithAttachement(leadsEntity.getEmailId(), subject, mailbody, attachementFile);
+					} else {
 					emailService.sendMail(leadsEntity.getEmailId(), subject, mailbody);
+					}
 				}
 				if (leadsEntity.getMobileNo() != null) {
 					userService.sendSms(sms, leadsEntity.getMobileNo());
@@ -402,7 +406,7 @@ public class UserController {
 			@RequestParam(value = "isFromViewMailTemplate", defaultValue = "false", required = false) Boolean isFromViewMailTemplate) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
-		clearDashBoardFilter(dashBoardForm);
+		//clearDashBoardFilter(dashBoardForm);
 		dashBoardForm.setPageNumber(currentPage);
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		if (isFromViewMailTemplate) {
@@ -417,7 +421,7 @@ public class UserController {
 			@RequestParam(value = "isFromViewMailTemplate", defaultValue = "false", required = false) Boolean isFromViewMailTemplate) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
-		clearDashBoardFilter(dashBoardForm);
+		//clearDashBoardFilter(dashBoardForm);
 		dashBoardForm.setPageNumber(1);
 		dashBoardForm.setPageLimit(pageLimit);
 		session.setAttribute("dashBoardForm", dashBoardForm);
@@ -663,7 +667,7 @@ public class UserController {
 	public String nonTemplatedEmailOrSms(HttpServletRequest request, HttpServletResponse response,
 			@RequestParam("nonTemplatedSms") String sms, @RequestParam("nonTemplatedEmailSubject") String subject,
 			@RequestParam("nonTemplatedEmailBody") String mailbody,
-			@RequestParam("leadIds") String sendNonTemplateLeadIds, @RequestParam("optradio") int type) {
+			@RequestParam("leadIds") String sendNonTemplateLeadIds, @RequestParam("optradio") int type,@RequestParam("nonTemplateFile") MultipartFile attachementFile) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
@@ -676,7 +680,11 @@ public class UserController {
 			LeadsEntity lead = leadService.getLeadByLeadId(Integer.parseInt(leadId));
 			if (type == 1) {
 				if (lead.getEmailId() != null) {
-					emailService.sendMail(lead.getEmailId(), subject, mailbody);
+					if (!attachementFile.isEmpty()) {
+						emailService.sendMailWithAttachement(lead.getEmailId(), subject, mailbody, attachementFile);
+					} else {
+						emailService.sendMail(lead.getEmailId(), subject, mailbody);
+					}
 					message = "&messageText=Mail Sent Successfully";
 				}
 			} else if (type == 0) {
@@ -849,7 +857,7 @@ public class UserController {
 	}
 	
 	@RequestMapping("/downloadCourseFile/{courseId}")
-	public String downloadCourseFile(@PathVariable("courseId") String courseId,
+	public String downloadCourseFile(@PathVariable("courseId") int courseId,
 			HttpServletResponse response) {
 		try {
 			this.userService.downloadCourseFile(courseId,response);

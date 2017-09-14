@@ -1,11 +1,16 @@
 package com.radical.lms.service;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.annotation.PostConstruct;
 import javax.mail.Address;
 import javax.mail.BodyPart;
@@ -29,6 +34,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.radical.lms.constants.Constants;
 import com.radical.lms.dao.EmailDao;
@@ -563,6 +569,63 @@ public class EmailServiceImpl implements EmailService {
 			messageBodyPartBody.setContent(mailBody, "text/html");
 			MimeMultipart multipart = new MimeMultipart("related");
 			multipart.addBodyPart(messageBodyPartBody);
+			message.setContent(multipart);
+			Transport transport = session.getTransport("smtps");
+			transport.connect(host, userid, password);
+			transport.sendMessage(message, message.getAllRecipients());
+			transport.close();
+			return true;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+	}
+
+	
+	@Transactional
+	public boolean sendMailWithAttachement(String toMailId, String subject, String mailBody,MultipartFile attachement) {
+		try {
+			if (mailBody == null) {
+				mailBody = properties.getProperty(Constants.MAIL_BODY);
+			} else {
+				mailBody = properties.getProperty(Constants.MAIL_HEAD) + mailBody + properties.getProperty(Constants.MAIL_TAIL);
+			}
+			if (subject == null) {
+				subject = Constants.MAIL_SUBJECT;
+			}
+			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
+			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
+			String host = properties.getProperty("host");
+			MimeMessage message = new MimeMessage(session);
+			InternetAddress fromAddress = null;
+			InternetAddress toAddress = null;
+			try {
+				fromAddress = new InternetAddress(userid);
+				toAddress = new InternetAddress(toMailId);
+			} catch (AddressException e) {
+				e.printStackTrace();
+			}
+
+			message.setFrom(fromAddress);
+			message.setRecipient(RecipientType.TO, toAddress);
+			message.setSubject(subject);
+			
+			
+			BodyPart messageBodyPartBody = new MimeBodyPart();
+			messageBodyPartBody.setContent(mailBody, "text/html");
+			MimeMultipart multipart = new MimeMultipart("related");
+			multipart.addBodyPart(messageBodyPartBody);
+			File convFile = new File(attachement.getOriginalFilename());
+			convFile.createNewFile();
+			FileOutputStream fos = new FileOutputStream(convFile);
+			fos.write(attachement.getBytes());
+			fos.close();
+			BodyPart messageBodyPart = new MimeBodyPart();
+			String filename = convFile.getName();
+			DataSource source = new FileDataSource(filename);
+	        messageBodyPart.setDataHandler(new DataHandler(source));
+	        messageBodyPart.setFileName(filename);
+	        multipart.addBodyPart(messageBodyPart);
 			message.setContent(multipart);
 			Transport transport = session.getTransport("smtps");
 			transport.connect(host, userid, password);

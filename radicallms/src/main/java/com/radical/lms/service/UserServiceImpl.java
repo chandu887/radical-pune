@@ -5,12 +5,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.Blob;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -714,35 +717,22 @@ public class UserServiceImpl implements UserService {
 	 * Download the xls file based on the path given
 	 * @param filePath pathOfTheFile
 	 */
-	public void downloadCourseFile(String courseId, HttpServletResponse response) {
+	public void downloadCourseFile(int courseId, HttpServletResponse response) {
 		try {
-			/*CourseEntity courseEntity = getCourseByCourseId(Integer.parseInt(courseId));
+			CourseEntity courseEntity = getCourseByCourseId(courseId);
 			Blob blob = courseEntity.getContent();
 			InputStream in = blob.getBinaryStream();
-			OutputStream out = new FileOutputStream(someFile);
-			byte[] buff = blob.getBytes(1,(int)blob.getLength());
-			out.write(buff);
-			out.close();
-			File inputFile = new File(fileName);
-			File outPutFile = new File(filePath + Constants.XLS);
-			outPutFile.createNewFile();	
-			FileInputStream fis = new FileInputStream(inputFile);
-			FileOutputStream fos = new FileOutputStream(outPutFile);
-			int i = 0;
-			while ((i = fis.read()) != -1) {
-				fos.write((byte) i);
-			}
-			fos.close();
-			fis.close();
-			FileInputStream file = new FileInputStream(outPutFile);
-			XSSFWorkbook workbook = new XSSFWorkbook(file);
-			XSSFSheet sheet = workbook.getSheetAt(0);
+			String someFile = courseEntity.getMailerPath();
 			ServletOutputStream out = response.getOutputStream();
-			response.setContentType(Constants.MS_EXCEL_FORMAT);
-			response.addHeader(Constants.CONTENT_DISPOSITIONS, Constants.ATTACHMENT_FILE + outPutFile);
-			workbook.write(out);
-			out.close();
-			file.close();*/
+			response.setContentType(courseEntity.getFileType());
+			response.addHeader(Constants.CONTENT_DISPOSITIONS, Constants.ATTACHMENT_FILE + someFile);
+			int bytesRead = -1;
+            byte[] buffer = new byte[4096];
+            while ((bytesRead = in.read(buffer)) != -1) {
+            	out.write(buffer, 0, bytesRead);
+            }
+            in.close();
+            out.close();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -807,5 +797,7 @@ public class UserServiceImpl implements UserService {
 		}
 		return number;
 	}
+
+	
 	
 }

@@ -100,6 +100,6 @@ public interface UserService {
 	
 	void downloadXlsFileBasedOnFileName(String filePath,HttpServletResponse response);
 	
-	void downloadCourseFile(String filePath,HttpServletResponse response);
+	void downloadCourseFile(int courseId,HttpServletResponse response);
 	
 }

@@ -98,6 +98,27 @@
 		  }
 		  output.innerHTML += '</ul>';
 		}
+	updateManulaList = function() {
+		  var input = document.getElementById('manualEmailFile');
+		  var output = document.getElementById('manualEmailFileList');
+
+		  output.innerHTML = '<ul>';
+		  for (var i = 0; i < input.files.length; ++i) {
+		    output.innerHTML += '<li>' + input.files.item(i).name + '</li>';
+		  }
+		  output.innerHTML += '</ul>';
+		}
+	updateSendNonTemplateFileList = function() {
+		  var input = document.getElementById('sendNonTemplateFile');
+		  var output = document.getElementById('sendNonTemplateFileList');
+
+		  output.innerHTML = '<ul>';
+		  for (var i = 0; i < input.files.length; ++i) {
+		    output.innerHTML += '<li>' + input.files.item(i).name + '</li>';
+		  }
+		  output.innerHTML += '</ul>';
+		}
+	
 	function checkFileExsistsOrNot() {
 		var fileValue = $("#file").val();
 		if(null == fileValue || fileValue == "") {
@@ -1151,7 +1172,7 @@ var basepath = "${pageContext.request.contextPath}";
 				</div>
 				<div class="modal-body">
 					<form:form method="post" action="addlead" name="addLeadForm"
-						onsubmit="return validateAddLeadform()">
+						onsubmit="return validateAddLeadform()" enctype="multipart/form-data">
 						<div class="col-sm-6">
 							<div class="form-group">
 								<label for="email">Student Name</label> <input type="text"
@@ -1291,8 +1312,15 @@ var basepath = "${pageContext.request.contextPath}";
 									<label for="pwd">Email</label><br> <input
 										class="form-control" placeholder="Email Subject" name = "nonTemplatedEmailSubject"/>
 									<label for="pwd">Email Content</label><br>
-									<textarea class="form-control" id = "emailContentTextArea"
+									<textarea class="form-control" id = "addLeadEmailContentTextArea"
 										placeholder="Please enter Email Content" rows="10" name = "nonTemplatedEmailBody"></textarea>
+										<br>
+										<span class="btn btn-rounded btn-green btn-file"> 
+										<span>Choose
+										file</span> <input type="file" name="nonTemplateFile" id="manualEmailFile"
+									onchange="javascript:updateManulaList()">
+										</span>
+										<div id="manualEmailFileList"></div>
 							</div>
 						</div>
 						<div class="col-sm-12">
@@ -1475,7 +1503,7 @@ var basepath = "${pageContext.request.contextPath}";
 				</div>
 				<div class="modal-body">
 					<form:form method="post" action="nonTemplatedEmailOrSms" id="nonTemplatedEmailOrSmsForm"
-						 role="form">
+						 enctype="multipart/form-data">
 						<div class="col-sm-12">
 						<div class="form-group">
 								<label for="pwd">Select Email/SMS:</label><br>
@@ -1496,8 +1524,14 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Email</label><br> <input
 									class="form-control" placeholder="Email Subject" name = "nonTemplatedEmailSubject"/>
 								<label for="pwd">Email Content</label><br>
-								<textarea class="form-control" id = "emailContentTextArea"
+								<textarea class="form-control" id = "nonTemplateEmailContentTextArea"
 									placeholder="Please enter Email Content" rows="10" name = "nonTemplatedEmailBody"></textarea>
+									<br>
+								<span class="btn btn-rounded btn-green btn-file"> <span>Choose
+										file</span> <input type="file" name="nonTemplateFile" id="sendNonTemplateFile"
+									onchange="javascript:updateSendNonTemplateFileList()">
+										</span>
+										<div id="sendNonTemplateFileList"></div>
 							</div>
 							
 						</div>
