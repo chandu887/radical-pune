@@ -396,7 +396,7 @@ var basepath = "${pageContext.request.contextPath}";
 		   </c:if>
 			<c:if test="${viewPage == 'leadsBulkUpload'}">
 				 <div id="page-content">
-				 <a href="downloadFile/radical.xlsx"><button class="btn btn-green pull-right" style="
+				 <a href="downloadFile/Leads1505401818936.xlsx"><button class="btn btn-green pull-right" style="
     position: absolute;  top: 180px; right: 85px; z-index:99;"> Download Template</button></a>
 				<form:form method="post" action="uploadBulkLeads"
 					enctype="multipart/form-data">
