@@ -235,10 +235,25 @@ public class UserController {
 
 	@RequestMapping(value = "/testCron", method = RequestMethod.GET)
 	public String testCron(HttpServletRequest request) throws JobExecutionException {
-		/*MailReadingJob mail = new MailReadingJob();*/
-		emailService.readMailInbox();
+		/*MailReadingJob mail = new MailReadingJob();
+		//emailService.readMailInbox();
 		// MailSendingJob mail = new MailSendingJob();
-		/*mail.executeInternal(null);*/
+		mail.executeInternal(null);
+		LeadsEntity leadsEntity = new LeadsEntity();
+		leadsEntity.setEmailId("chandu.mutta@gmail.com");
+		leadsEntity.setCourseCategeory(0);
+		
+		if (leadsEntity.getEmailId() != null) {
+			CourseCategeoryEntity caterogy = null;
+			if (leadsEntity.getCourseCategeory() != 0) {
+				caterogy = userService.getCategoryByCategoryId(leadsEntity.getCourseCategeory());
+			}
+			if (caterogy == null) {							
+				emailService.sendMailWithAttachementDynamically(leadsEntity.getEmailId(), null, null, null);
+			} else {
+				emailService.sendMailWithAttachementDynamically(leadsEntity.getEmailId(), caterogy.getSubject(), caterogy.getMailerPath(), null);
+			}
+		}*/
 		return "login";
 	}
 
@@ -267,9 +282,8 @@ public class UserController {
 				if (leadsEntity.getEmailId() != null) {
 					if(leadsEntity.getCourseCategeory()!=0){
 						CourseCategeoryEntity category = userService.getCategoryListBasedOnCourseId(leadsEntity.getCourseCategeory());
-						emailService.sendMail(leadsEntity.getEmailId(),category.getSubject(),category.getMessagebody());
-					} else {
-					emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,null);
+						CourseEntity courseEntity = userService.getCourseByCourseId(leadsEntity.getCourse());
+						emailService.sendMailWithAttachementDynamically(leadsEntity.getEmailId(),category.getSubject(), category.getMailerPath(), courseEntity);
 					}
 				}
 				if (leadsEntity.getMobileNo() != null) {
@@ -279,7 +293,7 @@ public class UserController {
 			} else if ("manualmailandsms".equals(sendingeMailAndSmsType)) {
 				if (leadsEntity.getEmailId() != null) {
 					if (!attachementFile.isEmpty()) {
-					emailService.sendMailWithAttachement(leadsEntity.getEmailId(), subject, mailbody, attachementFile);
+					emailService.sendMailWithAttachementManually(leadsEntity.getEmailId(), subject, mailbody, attachementFile);
 					} else {
 					emailService.sendMail(leadsEntity.getEmailId(), subject, mailbody);
 					}
@@ -287,7 +301,6 @@ public class UserController {
 				if (leadsEntity.getMobileNo() != null) {
 					userService.sendSms(sms, leadsEntity.getMobileNo());
 				}
-
 			}
 				
 			return "redirect:/dashboard?leadStatus="+leadFormEntity.getStatus()+"&messageText=Lead Added successfully";
@@ -646,20 +659,15 @@ public class UserController {
 		String[] sendTemplateLeadIdsSplitArray = sendTemplateLeadIds.split(",");
 		for (String leadId : sendTemplateLeadIdsSplitArray) {
 			LeadsEntity leadsEntity = leadService.getLeadByLeadId(Integer.parseInt(leadId));
-			
 			if (leadsEntity != null) {
 				if (leadsEntity.getEmailId() != null) {
 					if(leadsEntity.getCourseCategeory()!=0){
 						CourseCategeoryEntity categoryEntity = userService.getCategoryListBasedOnCourseId(leadsEntity.getCourseCategeory());
-						emailService.sendMail(leadsEntity.getEmailId(), categoryEntity.getSubject(), categoryEntity.getMessagebody());
-					} else {
-						emailService.sendMail(leadsEntity.getEmailId(), Constants.MAIL_SUBJECT,null);
+						emailService.sendMailWithAttachementDynamically(leadsEntity.getEmailId(), categoryEntity.getSubject(), categoryEntity.getMailerPath(), null);
 					}
 				}
 			}
-		}
-		
-		
+		}		
 		return "redirect:/dashboard?leadStatus=" + dashBoardForm.getCurrentStatus()+"&messageText=Mail Sent Successfully";
 	}
 
@@ -681,7 +689,7 @@ public class UserController {
 			if (type == 1) {
 				if (lead.getEmailId() != null) {
 					if (!attachementFile.isEmpty()) {
-						emailService.sendMailWithAttachement(lead.getEmailId(), subject, mailbody, attachementFile);
+						emailService.sendMailWithAttachementManually(lead.getEmailId(), subject, mailbody, attachementFile);
 					} else {
 						emailService.sendMail(lead.getEmailId(), subject, mailbody);
 					}

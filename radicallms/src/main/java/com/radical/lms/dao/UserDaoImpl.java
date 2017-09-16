@@ -280,11 +280,17 @@ public class UserDaoImpl implements UserDao {
 		return usersList;
 	}
 
-	public List<CourseEntity> getCourseList(int categoryId) {
-		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where categeoryId=:categeoryId and isActive=1");
+	public List getCourseList(int categoryId) {
+		/*Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where categeoryId=:categeoryId and isActive=1");
 		query.setInteger("categeoryId", categoryId);
 		List<CourseEntity> courseList = query.list(); 
-		return courseList;
+		return courseList;*/
+		
+		String query = "select courseid, coursename from courses where categoryid= :categoryid";
+		Query sqlQuery = this.sessionFactory.getCurrentSession().createSQLQuery(query);
+		sqlQuery.setParameter("categoryid", categoryId);
+		return sqlQuery.list();
+
 	}
 	
 	public CourseEntity getCourseListBasedOnCourseId(int courseId) {

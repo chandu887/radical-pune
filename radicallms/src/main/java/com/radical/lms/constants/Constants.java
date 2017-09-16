@@ -1,6 +1,7 @@
 package com.radical.lms.constants;
 
 public final class Constants {
+	public static final String ENVIRONMENT = "environment";
 	/** propertie file varible. */
 	public static final String PROPERTIES_MAILID = "mailid";
 
@@ -8,6 +9,13 @@ public final class Constants {
 	public static final String PROPERTIES_PASSWORD = "password";
 	
 	public static final String MAIL_BODY = "defaultmailbody";
+	
+	public static final String DAFAULT_MAILER = "dafaultmailer";
+	
+	public static final String CATEGORY_MAILER = "categorymailer";
+	
+	public static final String MAILER_PATH = "%mailerpath%";
+	
 	
 	public static final String MAIL_HEAD = "defaultHead";
 	

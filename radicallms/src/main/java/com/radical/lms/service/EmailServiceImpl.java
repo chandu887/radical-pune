@@ -3,6 +3,8 @@ package com.radical.lms.service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Blob;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +40,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.radical.lms.constants.Constants;
 import com.radical.lms.dao.EmailDao;
+import com.radical.lms.entity.CourseCategeoryEntity;
+import com.radical.lms.entity.CourseEntity;
 import com.radical.lms.entity.EmailTimeEntity;
 import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.SendEmailEntity;
@@ -67,6 +71,17 @@ public class EmailServiceImpl implements EmailService {
 		setMailStore();
 		new Thread(new EmailThread()).start();
 	}
+
+	
+	public Properties getProperties() {
+		return properties;
+	}
+
+
+	public void setProperties(Properties properties) {
+		this.properties = properties;
+	}
+
 
 	private void setEmailSession() {
 		try {
@@ -192,6 +207,21 @@ public class EmailServiceImpl implements EmailService {
 							}
 						}
 					}
+
+					if (properties.getProperty(Constants.ENVIRONMENT).equalsIgnoreCase("production")) {
+						if (leadsEntity.getEmailId() != null) {
+							CourseCategeoryEntity caterogy = null;
+							if (leadsEntity.getCourseCategeory() != 0) {
+								caterogy = userService.getCategoryByCategoryId(leadsEntity.getCourseCategeory());
+							}
+							if (caterogy == null) {							
+								sendMailWithAttachementDynamically(leadsEntity.getEmailId(), null, null, null);
+							} else {
+								sendMailWithAttachementDynamically(leadsEntity.getEmailId(), caterogy.getSubject(), caterogy.getMailerPath(), null);
+							}
+						}
+					}
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -583,7 +613,7 @@ public class EmailServiceImpl implements EmailService {
 
 	
 	@Transactional
-	public boolean sendMailWithAttachement(String toMailId, String subject, String mailBody,MultipartFile attachement) {
+	public boolean sendMailWithAttachementManually(String toMailId, String subject, String mailBody,MultipartFile attachement) {
 		try {
 			if (mailBody == null) {
 				mailBody = properties.getProperty(Constants.MAIL_BODY);
@@ -610,7 +640,6 @@ public class EmailServiceImpl implements EmailService {
 			message.setRecipient(RecipientType.TO, toAddress);
 			message.setSubject(subject);
 			
-			
 			BodyPart messageBodyPartBody = new MimeBodyPart();
 			messageBodyPartBody.setContent(mailBody, "text/html");
 			MimeMultipart multipart = new MimeMultipart("related");
@@ -625,6 +654,83 @@ public class EmailServiceImpl implements EmailService {
 			DataSource source = new FileDataSource(filename);
 	        messageBodyPart.setDataHandler(new DataHandler(source));
 	        messageBodyPart.setFileName(filename);
+	        multipart.addBodyPart(messageBodyPart);
+			message.setContent(multipart);
+			Transport transport = session.getTransport("smtps");
+			transport.connect(host, userid, password);
+			transport.sendMessage(message, message.getAllRecipients());
+			transport.close();
+			return true;
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+	}
+	
+	@Transactional
+	public boolean sendMailWithAttachementDynamically(String toMailId, String subject, String mailerPath, CourseEntity courseEntity) {
+		try {
+			String mailBody = "";
+			if (mailerPath == null) {
+				mailBody = properties.getProperty(Constants.DAFAULT_MAILER);
+			} else {
+				mailBody = properties.getProperty(Constants.CATEGORY_MAILER);
+				mailBody = mailBody.replaceAll(Constants.MAILER_PATH, mailerPath);
+			}
+			if (subject == null) {
+				subject = Constants.MAIL_SUBJECT;
+			}
+			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
+			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
+			String host = properties.getProperty("host");
+			
+			MimeMessage message = new MimeMessage(session);
+			InternetAddress fromAddress = null;
+			InternetAddress toAddress = null;
+			try {
+				fromAddress = new InternetAddress(userid);
+				toAddress = new InternetAddress(toMailId);
+			} catch (AddressException e) {
+				e.printStackTrace();
+			}
+
+			message.setFrom(fromAddress);
+			message.setRecipient(RecipientType.TO, toAddress);
+			message.setSubject(subject);
+			
+			BodyPart messageBodyPartBody = new MimeBodyPart();
+			messageBodyPartBody.setContent(mailBody, "text/html");
+			MimeMultipart multipart = new MimeMultipart("related");
+			multipart.addBodyPart(messageBodyPartBody);
+			
+			BodyPart messageBodyPart = new MimeBodyPart();
+			
+			if (courseEntity != null && courseEntity.getContent() != null){
+				Blob blob = courseEntity.getContent();
+				InputStream in = blob.getBinaryStream();
+				File convFile = new File(courseEntity.getMailerPath());
+				convFile.createNewFile();
+				FileOutputStream fos = new FileOutputStream(convFile);
+
+				int bytesRead = -1;
+	            byte[] buffer = new byte[4096];
+	            while ((bytesRead = in.read(buffer)) != -1) {
+	            	fos.write(buffer, 0, bytesRead);
+	            }
+	            in.close();
+	            fos.close();
+				String filename = convFile.getName();
+				DataSource source = new FileDataSource(filename);
+		        messageBodyPart.setDataHandler(new DataHandler(source));
+		        messageBodyPart.setFileName(filename);
+			} else {
+				String filePath = System.getProperty(Constants.CATALINA_PATH) + File.separator + "webapps"
+						+ File.separator + "CategoryMailer" + File.separator + "brochures" + File.separator;
+				String fileName = "Radical_Brochure.pdf";
+				DataSource source = new FileDataSource(filePath+fileName);
+		        messageBodyPart.setDataHandler(new DataHandler(source));
+		        messageBodyPart.setFileName(fileName);
+			}
 	        multipart.addBodyPart(messageBodyPart);
 			message.setContent(multipart);
 			Transport transport = session.getTransport("smtps");

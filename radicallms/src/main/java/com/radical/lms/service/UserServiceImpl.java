@@ -416,7 +416,18 @@ public class UserServiceImpl implements UserService {
 
 	@Transactional
 	public List<CourseEntity> getCourseList(int categoryId) {
-		return userDao.getCourseList(categoryId);
+		List courses =  userDao.getCourseList(categoryId);
+		List<CourseEntity> coursesList = new ArrayList<CourseEntity>();
+		for (Iterator courseIter = courses.iterator(); courseIter.hasNext();) {
+			Object[] objects = (Object[]) courseIter.next();
+			int courseId = (Integer) objects[0];
+			String courseName = (String) objects[1];
+			CourseEntity courseEntity = new CourseEntity();
+			courseEntity.setCourseId(courseId);
+			courseEntity.setCourseName(courseName);
+			coursesList.add(courseEntity);
+		}
+		return coursesList;
 	}
 
 	@Transactional
