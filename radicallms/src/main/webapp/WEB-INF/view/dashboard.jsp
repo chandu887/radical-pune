@@ -7,7 +7,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
- <meta http-equiv="refresh" content="120" >
+<meta http-equiv="refresh" content="300" >
 <meta charset="utf-8">
 <title>LMS Dashboard</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
@@ -148,7 +148,7 @@
 function validateAddLeadform() {
 	var mobileNo = $('#mobileNo').val();
 	var courseId = $('#addCourseName').val();
-	var manualCourse = $('#addManualName').val();
+	var manualCourse = $('#addManualNameValue').val();
 	 var courseCategeoryName = $('#courseCategeoryName').val();
 	 	 var leadSource = $('#leadSource').val(); 
 	 	 var center = $('#center').val(); 
@@ -1256,7 +1256,7 @@ var basepath = "${pageContext.request.contextPath}";
 							
 							<div class="form-group" id="addManualName">
 								<label for="pwd">Course</label> <input type="text"
-									class="form-control" value="" name="courseName">
+									class="form-control" value="" name="courseName" id="addManualNameValue">
 							</div>
 							
 							<div class="form-group">

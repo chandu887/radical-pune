@@ -506,7 +506,7 @@ public class UserController {
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
-		clearDashBoardFilter(dashBoardForm);
+		//clearDashBoardFilter(dashBoardForm);
 		String[] downloadLeadIdsSplitArray = downloadLeadIds.split(",");
 		List<Integer> downloadLeadIdsList = new ArrayList<Integer>();
 		for (String leadId : downloadLeadIdsSplitArray) {
@@ -825,6 +825,7 @@ public class UserController {
 			CourseCategeoryEntity categoryEntity = new CourseCategeoryEntity();
 			categoryEntity.setCategeoryName(categoryName);
 			categoryEntity.setCreatedTime(new Date());
+			categoryEntity.setIsActive(1);
 			userService.saveCategory(categoryEntity);
 			return "redirect:/viewCategories?messageText=Category added successfully";
 		} else {
@@ -946,6 +947,7 @@ public class UserController {
 			CourseEntity courseEntity = new CourseEntity();
 			courseEntity.setCourseName(courseName);
 			courseEntity.setCategeoryId(categoryId);
+			courseEntity.setIsActive(1);
 			courseEntity.setCreatedTime(new Date());
 			userService.saveCourse(courseEntity);
 			return "redirect:/viewCourses?messageText=Course added successfully";
