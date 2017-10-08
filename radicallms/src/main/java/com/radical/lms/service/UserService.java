@@ -32,6 +32,8 @@ public interface UserService {
 	
 	List<UsersEntity> getUsersList();
 	
+	List<UsersEntity> getAgentsList();
+	
 	List getCountByStatusType(DashBoardForm dashBoardForm);
 
 	List<LeadsEntityBean> getLeadsStatus(DashBoardForm dashBoardForm );

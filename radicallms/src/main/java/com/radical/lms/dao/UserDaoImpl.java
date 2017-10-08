@@ -71,6 +71,12 @@ public class UserDaoImpl implements UserDao {
 	
 	@Transactional
 	public List<UsersEntity> getUsersList() {
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from UsersEntity where roleId = 1");
+		return query.list();
+	}
+	
+	@Transactional
+	public List<UsersEntity> getAgentsList() {
 		Query query = this.sessionFactory.getCurrentSession().createQuery("from UsersEntity where roleId = 2");
 		return query.list();
 	}

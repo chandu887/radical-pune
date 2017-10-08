@@ -301,7 +301,7 @@ var basepath = "${pageContext.request.contextPath}";
 			<ul class="default-filters">
 				<li><a href="clearFilter"><i
 				class="fa fa-home" aria-hidden="true"></i></a></li>
-				<li><a href="viewAgents" class="${viewagents}"> Add/Edit Agents </a></li>
+				<li><a href="viewAgents" class="${viewagents}"> Add/Edit Admin/Agents </a></li>
 				<li><a href="viewCategories" class="${viewcategories}"> Add/Edit Categories </a></li>
 				<li><a href="viewCourses" class="${viewcourses}"> Add/Edit Courses </a></li>
 				<li><a href="leadsBulkUpload" class="${leadsBulkUpload}"> LeadsUpload </a></li>
@@ -311,6 +311,32 @@ var basepath = "${pageContext.request.contextPath}";
 			<c:if test="${viewPage == 'viewagents'}">
 			<a data-toggle="modal" role="button" data-target="#addAgent" class="btn btn-success">Add Agent</a>
 			<h2 class="sucess-messages">${message}</h2>
+			
+			<h2 class="sucess-messages">Admins List</h2>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Email</th>
+						<th>Edit</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:if test="${userssList != null}">
+						<c:forEach items="${userssList}" var="admin">
+							<tr>
+								<td>${admin.userName}</td>
+								<td>${admin.email}</td>
+								<td><a data-toggle="modal" role="button"
+									data-target="#editAgent" onclick="getAgentInfo(${admin.userId})"><i
+										class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+							</tr>
+						</c:forEach>
+					</c:if>
+				</tbody>
+			</table>
+			
+			<h2 class="sucess-messages">Agents List</h2>
 			<table class="table table-bordered">
 				<thead>
 					<tr>

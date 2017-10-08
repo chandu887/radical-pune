@@ -191,7 +191,7 @@ public class UserController {
 		Map<Integer, String> coursesMap = this.userService.getCourses();
 		/*List<CourseCategeoryEntity> courseTemplates = userService.getCategoryList(dashBoardForm);
 		map.addAttribute("courseTemplates", courseTemplates);*/
-		List<UsersEntity> agentsList = userService.getUsersList();
+		List<UsersEntity> agentsList = userService.getAgentsList();
 
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
@@ -486,7 +486,8 @@ public class UserController {
 		
 		leadsEntity.setLastUpdatedDate(new Date());
 		leadsEntity.setReason(lead.getReason());
-		if (leadsEntity.getCourse() != lead.getCourse() && leadsEntity.getCourse() != 0) {
+		
+		if (lead.getCourseCategeory() != 21 && leadsEntity.getCourse() != lead.getCourse() && leadsEntity.getCourse() != 0) {
 			leadsEntity.setLeadiId(0);
 			leadsEntity.setCreatedDate(new Date());
 		} else {
@@ -728,7 +729,10 @@ public class UserController {
 	
 	@RequestMapping(value = "/viewAgents", method = RequestMethod.GET)
 	public String viewAgents(ModelMap map, @RequestParam(value = "messageText", defaultValue = "", required = false) String messageText) {
-		List<UsersEntity> agentsList = userService.getUsersList();
+		List<UsersEntity> userssList = userService.getUsersList();
+		map.addAttribute("userssList", userssList);
+		
+		List<UsersEntity> agentsList = userService.getAgentsList();
 		map.addAttribute("agentsList", agentsList);
 		map.addAttribute("message", messageText);
 		map.addAttribute("viewPage", "viewagents");
@@ -773,7 +777,11 @@ public class UserController {
 		user.setEmail(userEntity.getEmail());
 		user.setLastUpdatedtime(new Date());
 		userService.saveOrUpdateUser(user);
-		return "redirect:/viewAgents?messageText=Agent updated successfully";
+		if (user.getRoleId() == 1) {			
+			return "redirect:/viewAgents?messageText=Admin updated successfully";
+		} else {
+			return "redirect:/viewAgents?messageText=Agent updated successfully";
+		}
 	}
 	
 	

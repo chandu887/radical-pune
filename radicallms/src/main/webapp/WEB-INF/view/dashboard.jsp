@@ -7,7 +7,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
-<meta http-equiv="refresh" content="300" >
+<meta http-equiv="refresh" content="200" >
 <meta charset="utf-8">
 <title>LMS Dashboard</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
@@ -183,9 +183,6 @@ function validateAddLeadform() {
 	     	} else if (courseCategeoryName != 21 && ( courseId == 0 || courseId == null )) {
 	     		alert('Please select Course.');
 	     		return false;
-	     	} else if ( courseCategeoryName == 21 && isBlank(manualCourse)) {
-	     		alert('Please enter Course name');
-	     		return false;
 	     	} else if(mode == 0){
 	     		alert('Please select Mode of training.');
 	     		return false;
@@ -237,14 +234,14 @@ function getCourseList(courseID,categeoryID) {
        });
      }
 
-function getCourseListForAddLead(courseID,categeoryID,courseDiv) {
+function getCourseListForAddAndEditLead(courseID,categeoryID,courseDiv, manualCourseDiv) {
 	var categeoryId = $("#"+categeoryID).val();
 	if (categeoryId == 21) {
 		$("#"+courseDiv).hide();
-		$("#addManualName").show();
+		$("#"+manualCourseDiv).show();
 	} else {
 		$("#"+courseDiv).show();
-		$("#addManualName").hide();
+		$("#"+manualCourseDiv).hide();
 		var coursedropdown= $("#"+courseID);
 		coursedropdown.empty();
 		if (categeoryID == 'courseCategeory') {
@@ -521,6 +518,15 @@ var basepath = "${pageContext.request.contextPath}";
     		$('#editMode').selectpicker('val', data.modeofTraining);
     		$('#editType').selectpicker('val', data.typeofTraining);
     		$('#editComments').val(data.comments);
+    		$('#editManualNameValue').val(data.courseName);
+    		if (data.courseCategeory == 21) {
+    			$("#editCourseDiv").hide();
+    			$("#editManualName").show();
+    		} else {
+    			$("#editCourseDiv").show();
+    			$("#editManualName").hide();
+    		}
+    		
     	});
     }
     
@@ -1237,7 +1243,7 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Category</label><br> <select
 									class="selectpicker" title="Select Category" id="courseCategeoryName"
 									name="courseCategeory"
-									onchange="getCourseListForAddLead('addCourseName','courseCategeoryName', 'addCourseDiv');">
+									onchange="getCourseListForAddAndEditLead('addCourseName','courseCategeoryName', 'addCourseDiv','addManualName');">
 									<option value="0">Select Category</option>
 									<c:forEach var="category" items="${courseCategories}">
 										<option value="${category.key}">${category.value}</option>
@@ -1423,20 +1429,25 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Category</label><br> <select
 									class="selectpicker" title="Select Category" id="editCategory"
 									name="courseCategeory"
-									onchange="getCourseList('editCourse','editCategory');">
+									onchange="getCourseListForAddAndEditLead('editCourse','editCategory', 'editCourseDiv','editManualName');">
 									<c:forEach var="category" items="${courseCategories}">
 										<option value="${category.key}">${category.value}</option>
 									</c:forEach>
 								</select>
 							</div>
-							<div class="form-group">
+							<div class="form-group" id="editCourseDiv">
 								<label for="pwd">Course</label><br> <select	
 									class="selectpicker" title="Select Course" id="editCourse"
-									name="course">
+									name="course" id="editCourseName">
 									<c:forEach var="courses" items="${coursesMap}">
 										<option value="${courses.key}">${courses.value}</option>
 									</c:forEach>
 								</select>
+							</div>
+							
+							<div class="form-group" id="editManualName">
+								<label for="pwd">Course</label> <input type="text"
+									class="form-control" value="" name="courseName" id="editManualNameValue">
 							</div>
 							<div class="form-group">
 								<label for="pwd">Mode of Training</label><br> <select

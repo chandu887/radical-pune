@@ -184,6 +184,13 @@ public class UserServiceImpl implements UserService {
 	public List<UsersEntity> getUsersList() {
 		return userDao.getUsersList();
 	}
+	
+	@Transactional
+	public List<UsersEntity> getAgentsList() {
+		return userDao.getAgentsList();
+	}
+	
+	
 
 	@Transactional
 	public List getCountByStatusType(DashBoardForm dashBoardForm) {
