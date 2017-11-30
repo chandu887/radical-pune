@@ -20,6 +20,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.IconifyAction;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.poi.ss.usermodel.Row;
@@ -487,11 +488,24 @@ public class UserController {
 		leadsEntity.setLastUpdatedDate(new Date());
 		leadsEntity.setReason(lead.getReason());
 		
-		if (lead.getCourseCategeory() != 21 && leadsEntity.getCourse() != lead.getCourse() && leadsEntity.getCourse() != 0) {
+		if (/*lead.getCourseCategeory() != 21 &&*/ leadsEntity.getCourse() != lead.getCourse() && leadsEntity.getCourse() != 0 ) {
 			leadsEntity.setLeadiId(0);
 			leadsEntity.setCreatedDate(new Date());
 		} else {
 			leadsEntity.setCreatedDate(lead.getCreatedDate());
+		}
+		if(leadsEntity.getCourseCategeory()  == 21){
+			if(lead.getCourseCategeory() != 21) {
+			leadsEntity.setLeadiId(0);
+			leadsEntity.setCreatedDate(new Date());
+			leadsEntity.setCourse(0);
+			leadsEntity.setCourseName(leadsEntity.getCourseName());
+			} else if(!(lead.getCourseName()).equalsIgnoreCase(leadsEntity.getCourseName())) {
+				leadsEntity.setLeadiId(0);
+				leadsEntity.setCreatedDate(new Date());
+				leadsEntity.setCourse(0);
+				leadsEntity.setCourseName(leadsEntity.getCourseName());
+			}
 		}
 		
 		leadService.saveLead(leadsEntity);

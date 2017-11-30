@@ -399,7 +399,7 @@ public class UserDaoImpl implements UserDao {
 	
 	@Transactional
 	public CourseEntity getCourseByCourseId(int courseId) {
-		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where courseId=:courseId");
+		Query query = this.sessionFactory.getCurrentSession().createQuery("from CourseEntity where courseId=:courseId and isActive=1");
 		query.setInteger("courseId", courseId);
 		CourseEntity course = (CourseEntity) query.uniqueResult(); 
 		return course;

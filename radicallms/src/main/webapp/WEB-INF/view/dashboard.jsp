@@ -159,7 +159,7 @@ function validateAddLeadform() {
 	 	var statusType = $('#statusTypeAdd').val();
 	 	
 	 	 var mobileNumberChecking = /^[7-9][0-9]*$/;
-	 	 if(!isBlank(mobileNo) && !isInteger(mobileNo)) {
+	 	 /* if(!isBlank(mobileNo) && !isInteger(mobileNo)) {
 	          alert('Please enter a valid mobile no.');
 	              $('#mobileNo').val("");
 	              return false;
@@ -171,7 +171,7 @@ function validateAddLeadform() {
 	      		alert('Please Enter a valid Mobile No.');
 	                $('#mobileNo').val("");
 	        	return false;
-	     	}  else if(assigned == 0){
+	     	}  else  */if(assigned == 0){
 	     		alert('Please select Assigned to.');
 	     		return false;
 	     	} else if(leadSource == null || leadSource ==0){
@@ -210,8 +210,14 @@ function validateAddLeadform() {
 	 	return !(inputStr && inputStr.length)
 	 }
 	
-function getCourseList(courseID,categeoryID) {
+function getCourseList(courseID,categeoryID,filterNewCourseDiv,filterCourseManualNewDiv) {
 	var categeoryId = $("#"+categeoryID).val();
+	if(categeoryId == 21){
+		$("#"+filterNewCourseDiv).hide();
+		$("#"+filterCourseManualNewDiv).show();
+	} else {
+		$("#"+filterCourseManualNewDiv).hide();
+		$("#"+filterNewCourseDiv).show();
 	var coursedropdown= $("#"+courseID);
 	coursedropdown.empty();
 	if (categeoryID == 'courseCategeory') {
@@ -232,7 +238,8 @@ function getCourseList(courseID,categeoryID) {
          alert('Error: ' + e); 
         }
        });
-     }
+	}
+ }
 
 function getCourseListForAddAndEditLead(courseID,categeoryID,courseDiv, manualCourseDiv) {
 	var categeoryId = $("#"+categeoryID).val();
@@ -1044,7 +1051,7 @@ var basepath = "${pageContext.request.contextPath}";
 							<label for="pwd">Category</label><br> <select
 								class="addlead-course form-control" id="courseCategeory"
 								name="courseCategeory"
-								onchange="getCourseList('courseName','courseCategeory');">
+								onchange="getCourseList('courseName','courseCategeory','filterCourseDiv','filterCourseManualDiv');">
 								<option value="0">Select Category</option>
 								<c:forEach var="category" items="${courseCategories}">
 									<option value="${category.key}">${category.value}</option>
@@ -1110,13 +1117,17 @@ var basepath = "${pageContext.request.contextPath}";
 								</div>
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group" id="filterCourseDiv">
 							<label for="pwd">Course</label><br> <select
 								class="addlead-course form-control" id="courseName"
 								name="course">
 								<option value="0">Select Course</option>
 							</select>
 						</div>
+						<div class="form-group" id="filterCourseManualDiv">
+								<label for="pwd">Course</label> <input type="text"
+									class="form-control" value="" name="courseName" id="courseName">
+							</div>
 						 <div class="form-group">
 								<label for="pwd">Center Location</label><br> <select
 									class="selectpicker" title="Select Location" id="filterCenter"

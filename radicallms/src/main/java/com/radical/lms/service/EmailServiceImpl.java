@@ -578,8 +578,8 @@ public class EmailServiceImpl implements EmailService {
 			if (subject == null) {
 				subject = Constants.MAIL_SUBJECT;
 			}
-			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
-			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
+			String userid = properties.getProperty(/*Constants.PROPERTIES_MAILID*/"");
+			String password = properties.getProperty(/*Constants.PROPERTIES_PASSWORD*/"");
 			String host = properties.getProperty("host");
 			MimeMessage message = new MimeMessage(session);
 			InternetAddress fromAddress = null;
@@ -623,8 +623,8 @@ public class EmailServiceImpl implements EmailService {
 			if (subject == null) {
 				subject = Constants.MAIL_SUBJECT;
 			}
-			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
-			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
+			String userid = properties.getProperty(/*Constants.PROPERTIES_MAILID*/"");
+			String password = properties.getProperty(/*Constants.PROPERTIES_PASSWORD*/"");
 			String host = properties.getProperty("host");
 			MimeMessage message = new MimeMessage(session);
 			InternetAddress fromAddress = null;
@@ -680,8 +680,8 @@ public class EmailServiceImpl implements EmailService {
 			if (subject == null) {
 				subject = Constants.MAIL_SUBJECT;
 			}
-			String userid = properties.getProperty(Constants.PROPERTIES_MAILID);
-			String password = properties.getProperty(Constants.PROPERTIES_PASSWORD);
+			String userid = properties.getProperty(/*Constants.PROPERTIES_MAILID*/"");
+			String password = properties.getProperty(/*Constants.PROPERTIES_PASSWORD*/"");
 			String host = properties.getProperty("host");
 			
 			MimeMessage message = new MimeMessage(session);
