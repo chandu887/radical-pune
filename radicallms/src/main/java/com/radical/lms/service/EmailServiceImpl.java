@@ -179,7 +179,7 @@ public class EmailServiceImpl implements EmailService {
 							mailContent = doc.text();
 							if (mailId.contains("care@yet5.com")) {
 								leadsEntity = processYet5MailContentHTML(mailContent, emailReceivedDate);
-							} else if (mailId.contains("blrfeedback@justdial.com")) {
+							} else if (mailId.contains("punefeedback@justdial.com")) {
 								leadsEntity = processJustDailMailContentHTML(mailContent, emailReceivedDate);
 							} else if (mailId.contains("ypleads@sulekhanotifications.com")) {
 								leadsEntity = processSulekhaMailContentHTML(mailContent, emailReceivedDate);
