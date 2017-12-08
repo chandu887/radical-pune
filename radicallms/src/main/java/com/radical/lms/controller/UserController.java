@@ -85,6 +85,8 @@ public class UserController {
 			default:
 				return "login";
 			}*/
+			DashBoardForm dashBoardForm = null;
+			session.setAttribute("dashBoardForm", dashBoardForm);
 			return "redirect:/dashboard?leadStatus=1";
 		}
 		return "login";
@@ -193,6 +195,8 @@ public class UserController {
 		/*List<CourseCategeoryEntity> courseTemplates = userService.getCategoryList(dashBoardForm);
 		map.addAttribute("courseTemplates", courseTemplates);*/
 		List<UsersEntity> agentsList = userService.getAgentsList();
+		List<UsersEntity> userssList = userService.getUsersList();
+		map.addAttribute("userssList", userssList);
 
 		map.addAttribute("dashBoardForm", dashBoardForm);
 		map.addAttribute("coursesMap", coursesMap);
@@ -362,16 +366,16 @@ public class UserController {
 		int statusFilter = 0;
 		if(null != filterByStatus && !(filterByStatus.equalsIgnoreCase(""))) {
 			statusFilter = Integer.parseInt(filterByStatus);
-		} else {
+		} /*else {
 			statusFilter = dashBoardForm.getCurrentStatus();
-		}
+		}*/
 		/*int filterTypeByLead= 0;
 		if(Integer.parseInt(filterLeadType) == 0){
 			filterTypeByLead = dashBoardForm.getCurrentStatus();
 		} else {
 			filterTypeByLead = Integer.parseInt(filterLeadType);
 		}*/
-		
+		dashBoardForm.setCurrentStatus(statusFilter);
 		dashBoardForm.setFilterType(filterType);
 		if(null != labelByFilter  && !(labelByFilter.equalsIgnoreCase(""))){
 			dashBoardForm.setLabels(labelByFilter);
@@ -393,12 +397,13 @@ public class UserController {
 			int assigned = Integer.parseInt(assignedToByFilter);
 			dashBoardForm.setAssignedTo(assigned);
 		}
-		session.setAttribute("dashBoardForm", dashBoardForm);
 		if (filterType == 0) {
+			session.setAttribute("dashBoardForm", dashBoardForm);
 			return "redirect:/dashboard?leadStatus=" + statusFilter + "&isFromFilter=true";
 		} else if (filterType == 1) {
 			List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
 			XSSFWorkbook workbook = this.userService.downloadLeadsSheet(leadsList);
+			clearDashBoardFilter(dashBoardForm);
 			try {
 				String fileName = "leadsdump-" + new Date().getTime() + ".xlsx";
 				ServletOutputStream out = response.getOutputStream();
@@ -573,10 +578,10 @@ public class UserController {
 	public String clearFilter(HttpServletRequest request) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
-		if (session.getAttribute("dashBoardForm") != null) {
+		/*if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		}
-		clearDashBoardFilter(dashBoardForm);
+		clearDashBoardFilter(dashBoardForm); */
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		return "redirect:/dashboard?leadStatus=1";
 	}

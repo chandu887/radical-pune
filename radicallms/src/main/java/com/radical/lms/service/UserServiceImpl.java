@@ -331,6 +331,7 @@ public class UserServiceImpl implements UserService {
 		int rowCount = 1;
 		if (null != leadsEntityBeanList) {
 			for (LeadsEntityBean LeadsEntityBean : leadsEntityBeanList) {
+				if(!"Deleted".equalsIgnoreCase(LeadsEntityBean.getStatus())){
 				XSSFRow aRow = sheet.createRow(rowCount);
 				aRow.createCell(0).setCellValue(LeadsEntityBean.getEnqID());
 				aRow.createCell(1).setCellValue(LeadsEntityBean.getName());
@@ -352,6 +353,7 @@ public class UserServiceImpl implements UserService {
 				aRow.createCell(17).setCellValue(LeadsEntityBean.getModeOfTraining());
 				aRow.createCell(18).setCellValue(LeadsEntityBean.getTypeOfTraining());
 				rowCount++;
+				}
 			}
 		} else {
 			XSSFRow aRow = sheet.createRow(rowCount);

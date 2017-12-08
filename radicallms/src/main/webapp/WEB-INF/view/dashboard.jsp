@@ -7,7 +7,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
-<meta http-equiv="refresh" content="200" >
+<meta http-equiv="refresh" content="600" >
 <meta charset="utf-8">
 <title>LMS Dashboard</title>
 <link href="<c:url value="/resources/css/style.css"/>" rel="stylesheet" />
@@ -1142,6 +1142,11 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Assigned to</label><br> <select
 									class="selectpicker" title="Assigned to" id="filterAssigned"
 									name="assignedToByFilter">
+									<c:forEach items="${userssList}" var="user">
+										<c:if test="${user.isActive == 1}">
+												<option value="${user.userId}">${user.userName}</option>
+										</c:if>
+									</c:forEach>
 									<c:forEach items="${agentsList}" var="agent">
 										<c:if test="${agent.isActive == 1}">
 												<option value="${agent.userId}">${agent.userName}</option>
@@ -1234,6 +1239,11 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Assigned to</label><br> <select
 									class="selectpicker" title="Assigned to" id="assigned"
 									name="assignedTo">
+									<c:forEach items="${userssList}" var="user">
+										<c:if test="${user.isActive == 1}">
+												<option value="${user.userId}">${user.userName}</option>
+										</c:if>
+									</c:forEach>
 									<c:forEach items="${agentsList}" var="agent">
 										<c:if test="${agent.isActive == 1}">
 												<option value="${agent.userId}">${agent.userName}</option>
@@ -1419,6 +1429,11 @@ var basepath = "${pageContext.request.contextPath}";
 								<label for="pwd">Assigned to</label><br> <select
 									class="selectpicker" title="Assigned to" id="editAssigned"
 									name="assignedTo">
+									<c:forEach items="${userssList}" var="user">
+										<c:if test="${user.isActive == 1}">
+												<option value="${user.userId}">${user.userName}</option>
+										</c:if>
+									</c:forEach>
 									<c:forEach items="${agentsList}" var="agent">
 										<c:if test="${agent.isActive == 1}">
 												<option value="${agent.userId}">${agent.userName}</option>
