@@ -578,9 +578,19 @@ public class EmailServiceImpl implements EmailService {
 			if (subject == null) {
 				subject = Constants.MAIL_SUBJECT;
 			}
-			String userid = properties.getProperty(/*Constants.PROPERTIES_MAILID*/"");
-			String password = properties.getProperty(/*Constants.PROPERTIES_PASSWORD*/"");
-			String host = properties.getProperty("host");
+			String userid = "radicalpune@radicaltechnologies.org";/*properties.getProperty(Constants.PROPERTIES_MAILID"")*/;
+			String password = "Radical@123"/*properties.getProperty(Constants.PROPERTIES_PASSWORD"")*/;
+			//String host = properties.getProperty("host");
+
+			Properties props = System.getProperties();
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.host", "smtp.zoho.com");
+			props.setProperty("mail.transport.protocol", "smtps");
+			props.put("mail.smtp.user", userid);
+			props.put("mail.smtp.password", password);
+			props.put("mail.smtp.port", "465");
+			props.put("mail.smtps.auth", "true");
+			Session session = Session.getDefaultInstance(props, null);
 			MimeMessage message = new MimeMessage(session);
 			InternetAddress fromAddress = null;
 			InternetAddress toAddress = null;
@@ -601,7 +611,7 @@ public class EmailServiceImpl implements EmailService {
 			multipart.addBodyPart(messageBodyPartBody);
 			message.setContent(multipart);
 			Transport transport = session.getTransport("smtps");
-			transport.connect(host, userid, password);
+			transport.connect("smtp.zoho.com", userid, password);
 			transport.sendMessage(message, message.getAllRecipients());
 			transport.close();
 			return true;
@@ -623,9 +633,19 @@ public class EmailServiceImpl implements EmailService {
 			if (subject == null) {
 				subject = Constants.MAIL_SUBJECT;
 			}
-			String userid = properties.getProperty(/*Constants.PROPERTIES_MAILID*/"");
-			String password = properties.getProperty(/*Constants.PROPERTIES_PASSWORD*/"");
-			String host = properties.getProperty("host");
+			String userid = "radicalpune@radicaltechnologies.org";/*properties.getProperty(Constants.PROPERTIES_MAILID"")*/;
+			String password = "Radical@123"/*properties.getProperty(Constants.PROPERTIES_PASSWORD"")*/;
+			//String host = properties.getProperty("host");
+
+			Properties props = System.getProperties();
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.host", "smtp.zoho.com");
+			props.setProperty("mail.transport.protocol", "smtps");
+			props.put("mail.smtp.user", userid);
+			props.put("mail.smtp.password", password);
+			props.put("mail.smtp.port", "465");
+			props.put("mail.smtps.auth", "true");
+			Session session = Session.getDefaultInstance(props, null);
 			MimeMessage message = new MimeMessage(session);
 			InternetAddress fromAddress = null;
 			InternetAddress toAddress = null;
@@ -657,7 +677,7 @@ public class EmailServiceImpl implements EmailService {
 	        multipart.addBodyPart(messageBodyPart);
 			message.setContent(multipart);
 			Transport transport = session.getTransport("smtps");
-			transport.connect(host, userid, password);
+			transport.connect("smtp.zoho.com", userid, password);
 			transport.sendMessage(message, message.getAllRecipients());
 			transport.close();
 			return true;
@@ -680,7 +700,7 @@ public class EmailServiceImpl implements EmailService {
 			if (subject == null) {
 				subject = Constants.MAIL_SUBJECT;
 			}
-			String userid = "radicalbangalore@radicaltechnologies.org";/*properties.getProperty(Constants.PROPERTIES_MAILID"")*/;
+			String userid = "radicalpune@radicaltechnologies.org";/*properties.getProperty(Constants.PROPERTIES_MAILID"")*/;
 			String password = "Radical@123"/*properties.getProperty(Constants.PROPERTIES_PASSWORD"")*/;
 			//String host = properties.getProperty("host");
 
