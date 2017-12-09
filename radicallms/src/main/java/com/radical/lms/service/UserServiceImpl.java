@@ -380,11 +380,10 @@ public class UserServiceImpl implements UserService {
 					status = "Hot Lead";
 				}
 				String assgniedTo = "";
-				if (leadsEntity.getAssignedTo() == 0) {
-					assgniedTo = "";
-				} else {
+				if (leadsEntity.getAssignedTo() != 0) {
 					assgniedTo = userDao.getAssignedToName(leadsEntity.getAssignedTo());
 				}
+				
 				Date createdDate = leadsEntity.getCreatedDate();
 				Date updateDate = leadsEntity.getLastUpdatedDate();
 				DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy / HH:mm a");
