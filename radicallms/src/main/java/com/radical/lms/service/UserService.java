@@ -15,6 +15,7 @@ import com.radical.lms.beans.LeadsEntityBean;
 import com.radical.lms.beans.MailTemplateBean;
 import com.radical.lms.entity.CourseCategeoryEntity;
 import com.radical.lms.entity.CourseEntity;
+import com.radical.lms.entity.LeadsEntity;
 import com.radical.lms.entity.SendEmailEntity;
 import com.radical.lms.entity.UsersEntity;
 
@@ -36,7 +37,7 @@ public interface UserService {
 	
 	List getCountByStatusType(DashBoardForm dashBoardForm);
 
-	List<LeadsEntityBean> getLeadsStatus(DashBoardForm dashBoardForm );
+	List<LeadsEntity> getLeadsStatus(DashBoardForm dashBoardForm );
 
 	void getAllCourseCategories();
 	
@@ -56,9 +57,9 @@ public interface UserService {
 	
 	String leadsChangeStatus(List<Integer>changeStatusLeadIdsList,int statusType,String reason);
 	
-	XSSFWorkbook  downloadLeadsSheet(List<LeadsEntityBean> leadsEntityBeanList);
+	XSSFWorkbook  downloadLeadsSheet(List<LeadsEntity> leadsEntityBeanList);
 	
-	List<LeadsEntityBean> getLeadsListForDownload(List<Integer> downloadLeadIdsList);
+	List<LeadsEntity> getLeadsListForDownload(List<Integer> downloadLeadIdsList);
 	
 	List<CourseEntity> getCourseList(int intCategoryId);
 	
@@ -104,4 +105,5 @@ public interface UserService {
 	
 	void downloadCourseFile(int courseId,HttpServletResponse response);
 	
+	Map<Integer, String> getStatusMap();
 }

@@ -43,6 +43,8 @@ public interface UserDao {
 	
 	String getAssignedToName(int assignedToId);
 	
+	List getAllUsersList();
+	
 	List<LeadsEntity> getLeadsListForDownload(List<Integer> downloadLeadIdsList);
 	
 	List<CourseEntity> getCourseList(int intCategoryId);

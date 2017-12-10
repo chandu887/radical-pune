@@ -18,6 +18,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -198,10 +199,15 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Transactional
-	public List<LeadsEntityBean> getLeadsStatus(DashBoardForm dashBoardForm) {
+	public List<LeadsEntity> getLeadsStatus(DashBoardForm dashBoardForm) {
+		Date date1 = new Date();
 		List<LeadsEntity> leads = userDao.getLeadsByStatus(dashBoardForm);
-		List<LeadsEntityBean> leadBeanList = getLeadsEntityBeanByLeadsEntity(leads);
-		return leadBeanList;
+		Date date2 = new Date();
+		System.out.println("millis to lead data query" + (date2.getTime()- date1.getTime()));
+		/*List<LeadsEntityBean> leadBeanList = getLeadsEntityBeanByLeadsEntity(leads);
+		Date date3 = new Date();
+		System.out.println("millis to convert bean" + (date3.getTime()- date2.getTime()));*/
+		return leads;
 	}
 
 	public Map<Integer, String> getCourseCategories() {
@@ -257,7 +263,9 @@ public class UserServiceImpl implements UserService {
 		return userDao.leadsChangeStatus(changeStatusLeadIdsList, statusType, reason);
 	}
 
-	public XSSFWorkbook downloadLeadsSheet(List<LeadsEntityBean> leadsEntityBeanList) {
+	public XSSFWorkbook downloadLeadsSheet(List<LeadsEntity> leadsEntityList) {
+		Date date1 = new Date();
+
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet("Leads");
 		sheet.setDefaultColumnWidth(30);
@@ -329,29 +337,50 @@ public class UserServiceImpl implements UserService {
 		header.getCell(18).setCellStyle(style);
 
 		int rowCount = 1;
-		if (null != leadsEntityBeanList) {
-			for (LeadsEntityBean LeadsEntityBean : leadsEntityBeanList) {
-				if(!"Deleted".equalsIgnoreCase(LeadsEntityBean.getStatus())){
+		Map<Integer, String> usersMap = getUsersMap();
+		Map<Integer, String> statusMap = getStatusMap();
+		if (leadsEntityList != null) {
+			for (LeadsEntity leadsEntity : leadsEntityList) {
+				if(leadsEntity.getStatus() != 4){
 				XSSFRow aRow = sheet.createRow(rowCount);
-				aRow.createCell(0).setCellValue(LeadsEntityBean.getEnqID());
-				aRow.createCell(1).setCellValue(LeadsEntityBean.getName());
-				aRow.createCell(2).setCellValue(LeadsEntityBean.getMobileNo());
-				aRow.createCell(3).setCellValue(LeadsEntityBean.getEmailId());
-				aRow.createCell(4).setCellValue(LeadsEntityBean.getStatus());
-				aRow.createCell(5).setCellValue(LeadsEntityBean.getCourse());
-				aRow.createCell(6).setCellValue(LeadsEntityBean.getCategeory());
-				aRow.createCell(7).setCellValue(LeadsEntityBean.getSourceLead());
-				aRow.createCell(8).setCellValue(LeadsEntityBean.getAssignedTo());
-				aRow.createCell(9).setCellValue(LeadsEntityBean.getCreatedTime());
-				aRow.createCell(10).setCellValue(LeadsEntityBean.getUpdatedTime());
-				aRow.createCell(11).setCellValue(LeadsEntityBean.getCity());
-				aRow.createCell(12).setCellValue(LeadsEntityBean.getComments());
-				aRow.createCell(13).setCellValue(LeadsEntityBean.getReason());
-				aRow.createCell(14).setCellValue(LeadsEntityBean.getAddress());
-				aRow.createCell(15).setCellValue(LeadsEntityBean.getArea());
-				aRow.createCell(16).setCellValue(LeadsEntityBean.getLocation());
-				aRow.createCell(17).setCellValue(LeadsEntityBean.getModeOfTraining());
-				aRow.createCell(18).setCellValue(LeadsEntityBean.getTypeOfTraining());
+				aRow.createCell(0).setCellValue(leadsEntity.getLeadiId());
+				aRow.createCell(1).setCellValue(leadsEntity.getName());
+				aRow.createCell(2).setCellValue(leadsEntity.getMobileNo());
+				aRow.createCell(3).setCellValue(leadsEntity.getEmailId());
+				aRow.createCell(4).setCellValue(statusMap.get(leadsEntity.getStatus()));
+				
+				String courseName="";
+				if(leadsEntity.getCourse()==0){
+					courseName = leadsEntity.getCourseName();
+				} else {
+					courseName = getCourses().get(leadsEntity.getCourse());
+				}
+				aRow.createCell(5).setCellValue(courseName);
+				aRow.createCell(6).setCellValue(getCourseCategories().get(leadsEntity.getCourseCategeory()));
+				aRow.createCell(7).setCellValue(getLeadSourceMapping().get(leadsEntity.getLeadSource()));
+				if (leadsEntity.getAssignedTo() != 0) {					
+					aRow.createCell(8).setCellValue(usersMap.get(leadsEntity.getAssignedTo()));
+				} else {
+					aRow.createCell(8).setCellValue("");
+				}
+				
+				Date createdDate = leadsEntity.getCreatedDate();
+				Date updateDate = leadsEntity.getLastUpdatedDate();
+				DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy / HH:mm a");
+				String updateDateString = "";
+				if (updateDate != null) {
+					updateDateString = dateFormat.format(updateDate);
+				}
+				aRow.createCell(9).setCellValue(dateFormat.format(createdDate));
+				aRow.createCell(10).setCellValue(updateDateString);
+				aRow.createCell(11).setCellValue(leadsEntity.getCity());
+				aRow.createCell(12).setCellValue(leadsEntity.getComments());
+				aRow.createCell(13).setCellValue(leadsEntity.getReason());
+				aRow.createCell(14).setCellValue(leadsEntity.getAddress());
+				aRow.createCell(15).setCellValue(leadsEntity.getArea());
+				aRow.createCell(16).setCellValue(leadsEntity.getLocation());
+				aRow.createCell(17).setCellValue(leadsEntity.getModeofTraining());
+				aRow.createCell(18).setCellValue(leadsEntity.getTypeofTraining());
 				rowCount++;
 				}
 			}
@@ -359,7 +388,9 @@ public class UserServiceImpl implements UserService {
 			XSSFRow aRow = sheet.createRow(rowCount);
 			aRow.createCell(0).setCellValue("No Leads");
 		}
-
+		Date date2 = new Date();
+		System.out.println("millis to create excel" + (date2.getTime()- date1.getTime()));
+		
 		return workbook;
 	}
 
@@ -416,10 +447,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Transactional
-	public List<LeadsEntityBean> getLeadsListForDownload(List<Integer> downloadLeadIdsList) {
+	public List<LeadsEntity> getLeadsListForDownload(List<Integer> downloadLeadIdsList) {
 		List<LeadsEntity> leads = userDao.getLeadsListForDownload(downloadLeadIdsList);
-		List<LeadsEntityBean> leadBeanList = getLeadsEntityBeanByLeadsEntity(leads);
-		return leadBeanList;
+		//List<LeadsEntityBean> leadBeanList = getLeadsEntityBeanByLeadsEntity(leads);
+		return leads;
 	}
 
 	@Transactional
@@ -816,7 +847,28 @@ public class UserServiceImpl implements UserService {
 		}
 		return number;
 	}
-
 	
+	@Transactional
+	public Map<Integer, String> getUsersMap() {
+		List users =  userDao.getAllUsersList();
+		Map<Integer, String> usersMap = new HashMap<Integer, String>();
+		for (Iterator courseIter = users.iterator(); courseIter.hasNext();) {
+			Object[] objects = (Object[]) courseIter.next();
+			usersMap.put((Integer) objects[0], (String) objects[1]);
+		}
+		return usersMap;
+	}
+	
+	@Transactional
+	public Map<Integer, String> getStatusMap() {
+		Map<Integer, String> statusMap = new HashMap<Integer, String>();
+		statusMap.put(0, "");
+		statusMap.put(1, "New");
+		statusMap.put(2, "Open");
+		statusMap.put(3, "Closed");
+		statusMap.put(4, "Deleted");
+		statusMap.put(5, "Hot Lead");
+		return statusMap;
+	}
 	
 }

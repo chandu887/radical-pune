@@ -4,6 +4,7 @@
 <%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix = "fmt" uri = "http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="en">
 <head>
@@ -713,22 +714,27 @@ var basepath = "${pageContext.request.contextPath}";
 							<c:if test="${leadsList != null}">
 								<c:forEach items="${leadsList}" var="lead">
 									<tr>
-										<td><input type="checkbox" value="${lead.enqID}"
+										<td><input type="checkbox" value="${lead.leadiId}"
 											name="leadId" class="action_box checkbox"></td>
 										<td><a data-toggle="modal" role="button"
-											data-target="#editlead" onclick="getLeadInfo(${lead.enqID})"><i
+											data-target="#editlead" onclick="getLeadInfo(${lead.leadiId})"><i
 												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
-										<td>ENQ ${lead.enqID}</td>
+										<td>ENQ ${lead.leadiId}</td>
 										<td>${lead.mobileNo}</td>
 										<td>${lead.emailId}</td>
-										<td>${lead.course}</td>
-										<td>${lead.sourceLead}</td>
+										<c:if test="${lead.course == 0}">
+											<td>${lead.courseName}</td>
+										</c:if>
+										<c:if test="${lead.course != 0}">
+											<td><c:out value="${coursesMap[lead.course]}"/></td>
+										</c:if>
+										<td><c:out value="${leadSourceMapping[lead.leadSource]}"/></td>
 										<td>${lead.location}</td>
-										<td>${lead.lables}</td>
-										<td>${lead.status}</td>
-										<td>${lead.modeOfTraining}</td>
-										<td>${lead.createdTime}</td>
-										<td>${lead.updatedTime}</td>
+										<td>${lead.labels}</td>
+										<td><c:out value="${statusMap[lead.status]}"/></td>
+										<td>${lead.modeofTraining}</td>
+										<td><fmt:formatDate type = "both" dateStyle = "short" timeStyle = "short" value = "${lead.createdDate}" /></td>
+										<td><fmt:formatDate type = "both" dateStyle = "short" timeStyle = "short" value = "${lead.lastUpdatedDate}" /></td>
 									</tr>
 								</c:forEach>
 							</c:if>

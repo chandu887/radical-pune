@@ -113,7 +113,11 @@ public class UserController {
 			dashBoardForm.setPageNumber(1);
 		}
 
+		Date date1 = new Date();
 		List countList = this.userService.getCountByStatusType(dashBoardForm);
+		Date date2 = new Date();
+		System.out.println("millis to get count query" + (date2.getTime()- date1.getTime()));
+		
 		Map<Integer, Integer> countMap = new ConcurrentHashMap<Integer, Integer>();
 		countMap.put(1, 0);
 		countMap.put(2, 0);
@@ -184,7 +188,7 @@ public class UserController {
 			map.addAttribute("templateList", templateList);
 			dashBoardForm.setViewPage("viewMailTemplate");
 		} else {
-			List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
+			List<LeadsEntity> leadsList = this.userService.getLeadsStatus(dashBoardForm);
 			map.addAttribute("leadsList", leadsList);
 			dashBoardForm.setViewPage("viewLeads");
 		}
@@ -205,6 +209,7 @@ public class UserController {
 		map.addAttribute("messageText", messageText);
 		map.addAttribute("userName", user.getUserName());
 		map.addAttribute("agentsList", agentsList);
+		map.addAttribute("statusMap", userService.getStatusMap());
 		session.setAttribute("dashBoardForm", dashBoardForm);
 		
 		return "dashboard";
@@ -401,7 +406,7 @@ public class UserController {
 			session.setAttribute("dashBoardForm", dashBoardForm);
 			return "redirect:/dashboard?leadStatus=" + statusFilter + "&isFromFilter=true";
 		} else if (filterType == 1) {
-			List<LeadsEntityBean> leadsList = this.userService.getLeadsStatus(dashBoardForm);
+			List<LeadsEntity> leadsList = this.userService.getLeadsStatus(dashBoardForm);
 			XSSFWorkbook workbook = this.userService.downloadLeadsSheet(leadsList);
 			clearDashBoardFilter(dashBoardForm);
 			try {
@@ -412,7 +417,6 @@ public class UserController {
 				workbook.write(out);
 				out.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -532,7 +536,7 @@ public class UserController {
 		for (String leadId : downloadLeadIdsSplitArray) {
 			downloadLeadIdsList.add(Integer.parseInt(leadId));
 		}
-		List<LeadsEntityBean> leadsList = this.userService.getLeadsListForDownload(downloadLeadIdsList);
+		List<LeadsEntity> leadsList = this.userService.getLeadsListForDownload(downloadLeadIdsList);
 		XSSFWorkbook workbook = this.userService.downloadLeadsSheet(leadsList);
 		try {
 			String fileName = "leadsdump-" + new Date().getTime() + ".xlsx";
@@ -542,7 +546,6 @@ public class UserController {
 			workbook.write(out);
 			out.close();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		return null;
