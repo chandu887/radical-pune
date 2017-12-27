@@ -100,7 +100,7 @@ public class UserController {
 			@RequestParam(value = "messageText", defaultValue = "", required = false) String messageText) {
 		HttpSession session = request.getSession();
 		UsersEntity user = (UsersEntity) session.getAttribute("userInfo");
-
+		
 		DashBoardForm dashBoardForm = null;
 		if (session.getAttribute("dashBoardForm") != null) {
 			dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
@@ -112,7 +112,14 @@ public class UserController {
 		if (!isFromPagination) {
 			dashBoardForm.setPageNumber(1);
 		}
-
+		setDashboadData(dashBoardForm, map, leadStatus, isFromViewMailTemplate, messageText, user.getUserName());
+		
+		session.setAttribute("dashBoardForm", dashBoardForm);
+		
+		return "dashboard";
+	}
+	
+	private void setDashboadData(DashBoardForm dashBoardForm, ModelMap map, int leadStatus, boolean isFromViewMailTemplate, String messageText, String userName) {
 		Date date1 = new Date();
 		List countList = this.userService.getCountByStatusType(dashBoardForm);
 		Date date2 = new Date();
@@ -207,12 +214,9 @@ public class UserController {
 		map.addAttribute("leadSourceMapping", leadSourceMapping);
 		map.addAttribute("courseCategories", courseCategories);
 		map.addAttribute("messageText", messageText);
-		map.addAttribute("userName", user.getUserName());
+		map.addAttribute("userName", userName);
 		map.addAttribute("agentsList", agentsList);
 		map.addAttribute("statusMap", userService.getStatusMap());
-		session.setAttribute("dashBoardForm", dashBoardForm);
-		
-		return "dashboard";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
@@ -348,7 +352,8 @@ public class UserController {
 			@RequestParam("leadSource") String leadSource,
 			@RequestParam("labelByFilter") String labelByFilter,
 			@RequestParam("filterByTraining") String filterByTraining,
-			@RequestParam("filterByStatus") String filterByStatus
+			@RequestParam("filterByStatus") String filterByStatus,
+			@RequestParam("courseName") String courseName
 			){
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = null;
@@ -362,24 +367,21 @@ public class UserController {
 		if(null != toDate && !(toDate.equalsIgnoreCase(""))){
 			dashBoardForm.setToDate(toDate);
 		}
-		if(course!=0){
-			dashBoardForm.setCourse(course);
-		} 
+		
 		if(category !=0){
 			dashBoardForm.setCategory(category);
 		}
+		if (dashBoardForm.getCategory() == 21 ) {
+			dashBoardForm.setCourseName(courseName);
+		}
+		if(course!=0){
+			dashBoardForm.setCourse(course);
+		} 
+		
 		int statusFilter = 0;
 		if(null != filterByStatus && !(filterByStatus.equalsIgnoreCase(""))) {
 			statusFilter = Integer.parseInt(filterByStatus);
-		} /*else {
-			statusFilter = dashBoardForm.getCurrentStatus();
-		}*/
-		/*int filterTypeByLead= 0;
-		if(Integer.parseInt(filterLeadType) == 0){
-			filterTypeByLead = dashBoardForm.getCurrentStatus();
-		} else {
-			filterTypeByLead = Integer.parseInt(filterLeadType);
-		}*/
+		}
 		dashBoardForm.setCurrentStatus(statusFilter);
 		dashBoardForm.setFilterType(filterType);
 		if(null != labelByFilter  && !(labelByFilter.equalsIgnoreCase(""))){
@@ -456,28 +458,30 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/searchByCourse", method = RequestMethod.POST)
-	public String searchByCourse(HttpServletRequest request, @RequestParam("course") String courseName) {
+	public String searchByCourse(HttpServletRequest request, @RequestParam("course") String searchData) {
 		HttpSession session = request.getSession();
 		DashBoardForm dashBoardForm = (DashBoardForm) session.getAttribute("dashBoardForm");
 		clearDashBoardFilter(dashBoardForm);
-		dashBoardForm.setSearchData(courseName);
+		dashBoardForm.setSearchData(searchData);
 		dashBoardForm.setCourse(0);
 		dashBoardForm.setCategory(0);
 		dashBoardForm.setMobileNumber(null);
 		dashBoardForm.setEmail(null);
 
-		if (userService.getCategoryNameIdMapping().containsKey(courseName)) {
-			dashBoardForm.setCategory(userService.getCategoryNameIdMapping().get(courseName));
-		} else if (userService.getCourseNameIdMapping().containsKey(courseName)) {
-			dashBoardForm.setCourse(userService.getCourseNameIdMapping().get(courseName));
-		} else if (courseName.contains("@")) {
-			dashBoardForm.setEmail(courseName);
-		} else if (NumberUtils.isNumber(courseName) && courseName.length() == 10) {
-			dashBoardForm.setMobileNumber(courseName);
-		} else if (NumberUtils.isNumber(courseName)) {
-			dashBoardForm.setLeadId(Integer.parseInt(courseName));
+		if (userService.getCategoryNameIdMapping().containsKey(searchData)) {
+			dashBoardForm.setCategory(userService.getCategoryNameIdMapping().get(searchData));
+		} else if (userService.getCourseNameIdMapping().containsKey(searchData)) {
+			dashBoardForm.setCourse(userService.getCourseNameIdMapping().get(searchData));
+		} else if (searchData.contains("@")) {
+			dashBoardForm.setEmail(searchData);
+		} else if (NumberUtils.isNumber(searchData) && searchData.length() >= 10) {
+			dashBoardForm.setMobileNumber(searchData);
+		} else if (searchData.contains("-") && searchData.length() >= 10) {
+			dashBoardForm.setMobileNumber(searchData);
+		} else if (NumberUtils.isNumber(searchData)) {
+			dashBoardForm.setLeadId(Integer.parseInt(searchData));
 		} else {
-			dashBoardForm.setName(courseName);
+			dashBoardForm.setName(searchData);
 		}
 
 		session.setAttribute("dashBoardForm", dashBoardForm);
@@ -497,18 +501,19 @@ public class UserController {
 		leadsEntity.setLastUpdatedDate(new Date());
 		leadsEntity.setReason(lead.getReason());
 		
-		if (/*lead.getCourseCategeory() != 21 &&*/ leadsEntity.getCourse() != lead.getCourse() && leadsEntity.getCourse() != 0 ) {
+		if (lead.getCourseCategeory() != 21 && leadsEntity.getCourse() != lead.getCourse() && leadsEntity.getCourse() != 0 ) {
 			leadsEntity.setLeadiId(0);
 			leadsEntity.setCreatedDate(new Date());
 		} else {
 			leadsEntity.setCreatedDate(lead.getCreatedDate());
 		}
+		
 		if(leadsEntity.getCourseCategeory()  == 21){
 			if(lead.getCourseCategeory() != 21) {
-			leadsEntity.setLeadiId(0);
-			leadsEntity.setCreatedDate(new Date());
-			leadsEntity.setCourse(0);
-			leadsEntity.setCourseName(leadsEntity.getCourseName());
+				leadsEntity.setLeadiId(0);
+				leadsEntity.setCreatedDate(new Date());
+				leadsEntity.setCourse(0);
+				leadsEntity.setCourseName(leadsEntity.getCourseName());
 			} else if(!(lead.getCourseName()).equalsIgnoreCase(leadsEntity.getCourseName())) {
 				leadsEntity.setLeadiId(0);
 				leadsEntity.setCreatedDate(new Date());
@@ -575,6 +580,7 @@ public class UserController {
 		dashBoardForm.setLeadSource(0);
 		dashBoardForm.setName(null);
 		dashBoardForm.setLeadId(0);
+		dashBoardForm.setCourseName(null);
 	}
 
 	@RequestMapping(value = "/clearFilter", method = RequestMethod.GET)
@@ -877,7 +883,7 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/leadsBulkUpload", method = RequestMethod.GET)
-	public String viewCourses(ModelMap map) {
+	public String leadsBulkUpload(ModelMap map) {
 		map.addAttribute("viewPage", "leadsBulkUpload");
 		//map.addAttribute("templateDownloadFile", "radical.xlx");
 		return "adminactivities";
@@ -953,12 +959,28 @@ public class UserController {
 	@RequestMapping(value = "/updateCourse", method = RequestMethod.POST)
 	@ResponseBody
 	public String updateCourse(@RequestParam("courseId") int courseId, @RequestParam("value") int value) {
-		CourseEntity courseEntity = userService.getCourseByCourseId(courseId);
+		CourseEntity courseEntity = userService.getCourseListBasedOnCourseId(courseId);
 		courseEntity.setIsActive(value);
 		courseEntity.setUpdatedTime(new Date());
 		userService.saveCourse(courseEntity);
 		userService.getAllCourses();
 		return "success";
+	}
+	
+	@RequestMapping(value = "/getCourseInfo", method = RequestMethod.POST)
+	@ResponseBody
+	public CourseEntity getCourseInfo(@RequestParam("courseId") int courseId) {
+		return userService.getCourseDataByCourseId(courseId);
+	}
+	
+	@RequestMapping(value = "/updateMapping", method = RequestMethod.POST)
+	public String updateMapping(@RequestParam("courseId") int courseId, @RequestParam("courseName") String courseName, @RequestParam("categeoryId") int categeoryId) {
+		CourseEntity courseEntity = userService.getCourseListBasedOnCourseId(courseId);
+		courseEntity.setUpdatedTime(new Date());
+		courseEntity.setCategeoryId(categeoryId);
+		userService.saveCourse(courseEntity);
+		userService.getAllCourses();
+		return "redirect:/viewCourses?messageText=Course Mapping updated successfully";
 	}
 	
 	@RequestMapping(value = "/isCourseExits", method = RequestMethod.POST)
@@ -980,6 +1002,7 @@ public class UserController {
 			courseEntity.setIsActive(1);
 			courseEntity.setCreatedTime(new Date());
 			userService.saveCourse(courseEntity);
+			userService.getAllCourses();
 			return "redirect:/viewCourses?messageText=Course added successfully";
 	}
 	

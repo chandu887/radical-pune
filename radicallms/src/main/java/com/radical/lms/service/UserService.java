@@ -106,4 +106,7 @@ public interface UserService {
 	void downloadCourseFile(int courseId,HttpServletResponse response);
 	
 	Map<Integer, String> getStatusMap();
+	
+	CourseEntity getCourseDataByCourseId(int courseId);
+	
 }

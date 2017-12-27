@@ -194,6 +194,14 @@ var basepath = "${pageContext.request.contextPath}";
     	});
     }
 	
+	function getCourseInfo(courseId) {
+    	$.post(basepath + "/getCourseInfo?courseId="+courseId, function(data) {
+    		$('#editCourseId').val(data.courseId);
+    		$('#editCourseName').val(data.courseName);
+    		$('#editCategeoryId').selectpicker('val', data.categeoryId);
+    	});
+    }
+	
 	function updateAgent(userId, value) {
 		$.ajax({
   	        type : "post", 
@@ -477,6 +485,7 @@ var basepath = "${pageContext.request.contextPath}";
 					<tr>
 						<th>Course Name</th>
 						<th>Category Name</th>
+						<th>Edit</th>
 						<th>Activate/Deactivate</th>
 					</tr>
 				</thead>
@@ -486,6 +495,9 @@ var basepath = "${pageContext.request.contextPath}";
 							<tr>
 								<td>${course.courseName}</td>
 								<td>${course.categeoryName}</td>
+								<td><a data-toggle="modal" role="button"
+									data-target="#editCourse" onclick="getCourseInfo(${course.courseId})"><i
+										class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
 								<td>
 								<c:if test="${course.isActive == 0}">
 								<a href="#" onclick="updateCourse(${course.courseId}, 1)"><i class="fa fa-external-link" aria-hidden="true"></i> Activate</a>
@@ -674,7 +686,7 @@ var basepath = "${pageContext.request.contextPath}";
 					<form:form method="post" action="addCourse" name="addCourseForm"
 						onsubmit="return validateaddCourseForm()" role="form">
 						<div class="form-group">
-							<label for="email">Category Name</label> <input type="text"
+							<label for="email">Course Name</label> <input type="text"
 								class="form-control" id="courseName" name="courseName"
 								onchange="checkCategoryName()"
 								placeholder="Please enter Course Name">
@@ -697,5 +709,40 @@ var basepath = "${pageContext.request.contextPath}";
 		</div>
 	</div>
 
+		<!--Edit Course-->
+	<div id="editCourse" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Edit Course</h4>
+				</div>
+				<div class="modal-body">
+					<form:form method="post" action="updateMapping" name="editCourseForm"
+						 role="form">
+						 <input type="hidden" class="form-control" id="editCourseId" value=""
+							name="courseId">
+						<div class="form-group">
+							<label for="email">Course Name</label> <input type="text"
+								class="form-control" id="editCourseName" name="courseName"
+								placeholder="Please enter Course Name">
+						</div>
+						<div class="form-group">
+							<label for="pwd">Category</label><br> <select
+								class="selectpicker" title="Select Category" id="editCategeoryId"
+								name="categeoryId">
+								<option value="0">Select Category</option>
+								<c:forEach var="category" items="${courseCategories}">
+									<option value="${category.key}">${category.value}</option>
+								</c:forEach>
+							</select>
+						</div>
+						<button type="submit" class="btn btn-success">Add Course</button>
+						<button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+					</form:form>
+				</div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

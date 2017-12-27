@@ -76,5 +76,7 @@ public interface UserDao {
 	CourseEntity getCourseByCourseId(int courseId);
 	
 	CourseEntity getCourseByCourseName(String courseName);
+	
+	List getCourseDataByCourseId(int courseId);
 
 }

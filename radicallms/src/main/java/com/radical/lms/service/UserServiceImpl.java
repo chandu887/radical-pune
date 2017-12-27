@@ -341,7 +341,7 @@ public class UserServiceImpl implements UserService {
 		Map<Integer, String> statusMap = getStatusMap();
 		if (leadsEntityList != null) {
 			for (LeadsEntity leadsEntity : leadsEntityList) {
-				if(leadsEntity.getStatus() != 4){
+				//if(leadsEntity.getStatus() != 4){
 				XSSFRow aRow = sheet.createRow(rowCount);
 				aRow.createCell(0).setCellValue(leadsEntity.getLeadiId());
 				aRow.createCell(1).setCellValue(leadsEntity.getName());
@@ -382,7 +382,7 @@ public class UserServiceImpl implements UserService {
 				aRow.createCell(17).setCellValue(leadsEntity.getModeofTraining());
 				aRow.createCell(18).setCellValue(leadsEntity.getTypeofTraining());
 				rowCount++;
-				}
+				//}
 			}
 		} else {
 			XSSFRow aRow = sheet.createRow(rowCount);
@@ -469,6 +469,24 @@ public class UserServiceImpl implements UserService {
 		return coursesList;
 	}
 
+	@Transactional
+	public CourseEntity getCourseDataByCourseId(int courseId) {
+		List courses =  userDao.getCourseDataByCourseId(courseId);
+		List<CourseEntity> coursesList = new ArrayList<CourseEntity>();
+		for (Iterator courseIter = courses.iterator(); courseIter.hasNext();) {
+			Object[] objects = (Object[]) courseIter.next();
+			int id = (Integer) objects[0];
+			String courseName = (String) objects[1];
+			int categoryId = (Integer) objects[2];
+			CourseEntity courseEntity = new CourseEntity();
+			courseEntity.setCourseId(courseId);
+			courseEntity.setCourseName(courseName);
+			courseEntity.setCategeoryId(categoryId);
+			return courseEntity;
+		}
+		return null;
+	}
+	
 	@Transactional
 	public CourseEntity getCourseListBasedOnCourseId(int courseId) {
 		return userDao.getCourseListBasedOnCourseId(courseId);

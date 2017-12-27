@@ -87,6 +87,7 @@
             });
         
         $("#addManualName").hide();
+        $("#filterCourseManualDiv").hide();
     });
 	
 	updateList = function() {
@@ -635,7 +636,8 @@ var basepath = "${pageContext.request.contextPath}";
 				<section id="content">
 				<div class="action-btns">
 					<ul>
-						<li><a rel="tooltip" data-original-title='Change Status'
+					<c:if test="${dashBoardForm.currentStatus != 4}">
+					<li><a rel="tooltip" data-original-title='Change Status'
 							role="button" data-toggle="modal" data-target="#changestatus"><i
 								class="fa fa-retweet" aria-hidden="true"></i></a></li>
 						<li><a rel="tooltip"
@@ -645,14 +647,20 @@ var basepath = "${pageContext.request.contextPath}";
 						<li><a rel="tooltip" data-original-title='Lead Failed'
 							role="button" data-toggle="modal" data-target="#closelead"><i
 								class="fa fa-thumbs-down" aria-hidden="true"></i></a></li>
+					</c:if>
+						
 						<c:if test="${userName == 'admin'}">
+						<c:if test="${dashBoardForm.currentStatus != 4}">
 						<li><a rel="tooltip" data-original-title='Delete Lead'
 							role="button" data-toggle="modal" data-target="#deletlead"><i
 								class="fa fa-trash" aria-hidden="true"></i></a></li>
+								</c:if>
 						<li><a rel="tooltip" data-original-title='Download Excel'
 							role="button" data-toggle="modal" data-target="#dwnexcel"><i
 								class="fa fa-download" aria-hidden="true"></i></a></li>
-								</c:if>
+						</c:if>
+						
+						<c:if test="${dashBoardForm.currentStatus != 4}">
 						<li><a rel="tooltip" data-original-title='SMA & Email'
 							role="button"><i class="fa fa-envelope" aria-hidden="true"></i></a>
 							<ul class="childemail">
@@ -660,13 +668,15 @@ var basepath = "${pageContext.request.contextPath}";
 										Email</a></li>
 								<li><a data-toggle="modal" data-target="#freeemail">Free
 										Text Email/SMS</a></li>
-										<c:if test="${userName == 'admin'}">
+							<c:if test="${userName == 'admin'}">
 								<li><a data-toggle="modal" data-target="#createTemple">Create Category Emailer</a></li>
 								<li><a href="viewTemplatedMail">View All Category
 										Emailers</a></li>
 										<li><a href="viewAgents">Admin Activities</a></li>
 										</c:if>
-							</ul></li>
+							</ul>
+							</li>
+							</c:if>
 
 					</ul>
 				</div>
@@ -695,7 +705,9 @@ var basepath = "${pageContext.request.contextPath}";
 						<thead>
 							<tr>
 								<th><input type="checkbox"  id="select_all" class="action_box"></th>
+								<c:if test="${dashBoardForm.currentStatus != 4}">
 								<th></th>
+								</c:if>
 								<th>ENQ ID</th>
 								<th>Mobile</th>
 								<th>Email Id</th>
@@ -716,9 +728,11 @@ var basepath = "${pageContext.request.contextPath}";
 									<tr>
 										<td><input type="checkbox" value="${lead.leadiId}"
 											name="leadId" class="action_box checkbox"></td>
+										<c:if test="${dashBoardForm.currentStatus != 4}">
 										<td><a data-toggle="modal" role="button"
 											data-target="#editlead" onclick="getLeadInfo(${lead.leadiId})"><i
 												class="fa fa-pencil-square-o" aria-hidden="true"></i></a></td>
+											</c:if>
 										<td>ENQ ${lead.leadiId}</td>
 										<td>${lead.mobileNo}</td>
 										<td>${lead.emailId}</td>
@@ -1071,6 +1085,8 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="Classroom">Classroom</option>
 									<option value="Online">Online</option>
 									<option value="Corporate">Corporate</option>
+									<option value="Events">Events</option>
+									<option value="Workshop">Workshop</option>
 								</select>
 							</div>
 							<div class="form-group">
@@ -1132,7 +1148,7 @@ var basepath = "${pageContext.request.contextPath}";
 						</div>
 						<div class="form-group" id="filterCourseManualDiv">
 								<label for="pwd">Course</label> <input type="text"
-									class="form-control" value="" name="courseName" id="courseName">
+									class="form-control" value="" name="courseName" id="courseNameManual">
 							</div>
 						 <div class="form-group">
 								<label for="pwd">Center Location</label><br> <select
@@ -1299,6 +1315,8 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="Classroom">Classroom</option>
 									<option value="Online">Online</option>
 									<option value="Corporate">Corporate</option>
+									<option value="Events">Events</option>
+									<option value="Workshop">Workshop</option>
 								</select>
 							</div>
 
@@ -1488,6 +1506,8 @@ var basepath = "${pageContext.request.contextPath}";
 									<option value="Classroom">Classroom</option>
 									<option value="Online">Online</option>
 									<option value="Corporate">Corporate</option>
+									<option value="Events">Events</option>
+									<option value="Workshop">Workshop</option>
 								</select>
 							</div>
 

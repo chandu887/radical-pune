@@ -34,6 +34,8 @@ public class DashBoardForm {
 	int leadSource;
 	int leadId;
 	String name;
+	String courseName;
+	
 	public int getDeleteCount() {
 		return deleteCount;
 	}
@@ -240,5 +242,11 @@ public class DashBoardForm {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getCourseName() {
+		return courseName;
+	}
+	public void setCourseName(String courseName) {
+		this.courseName = courseName;
 	}
 }

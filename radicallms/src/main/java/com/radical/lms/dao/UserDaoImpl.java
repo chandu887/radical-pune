@@ -91,9 +91,8 @@ public class UserDaoImpl implements UserDao {
 		currentStatusList.add(1);
 		currentStatusList.add(2);
 		currentStatusList.add(3);
-		if(dashBoardForm.getEmail() == null && dashBoardForm.getMobileNumber() == null){
-			currentStatusList.add(4);
-		}
+		//if(dashBoardForm.getEmail() == null && dashBoardForm.getMobileNumber() == null){
+		currentStatusList.add(4);
 		currentStatusList.add(5);
 		query.setParameterList("status", currentStatusList);
 		List countList = query.list();
@@ -106,6 +105,10 @@ public class UserDaoImpl implements UserDao {
 			queryStr += " and course = " + dashBoardForm.getCourse();
 		} else if (dashBoardForm.getCategory() != 0){
 			queryStr += " and courseCategeory = " + dashBoardForm.getCategory();
+		}
+		
+		if (dashBoardForm.getCourseName() != null && !dashBoardForm.getCourseName().equals("")){
+			queryStr += " and courseCategeory = " + dashBoardForm.getCategory() + " and courseName like '%" + dashBoardForm.getCourseName()+"%'";
 		}
 		
 		if(null != dashBoardForm.getModeOfTraining()){
@@ -139,13 +142,13 @@ public class UserDaoImpl implements UserDao {
 			queryStr += " and emailId = '" + dashBoardForm.getEmail()+"'";
 		}
 		if(dashBoardForm.getMobileNumber()!=null){
-			queryStr += " and mobileNo = " + dashBoardForm.getMobileNumber();
+			queryStr += " and mobileNo = '" + dashBoardForm.getMobileNumber()+"'";;
 		}
 		if(dashBoardForm.getLeadId()!=0){
 			queryStr += " and leadid = " + dashBoardForm.getLeadId();
 		}
 		if(dashBoardForm.getName() != null){
-			queryStr += " and name = '"+dashBoardForm.getName()+"'";
+			queryStr += " and name like '%"+dashBoardForm.getName()+"%'";
 		}
 		if (dashBoardForm.getFromDate() != null && !dashBoardForm.getFromDate().equalsIgnoreCase("")
 				&& dashBoardForm.getToDate() != null && !dashBoardForm.getToDate().equalsIgnoreCase("")) {
@@ -153,7 +156,7 @@ public class UserDaoImpl implements UserDao {
 			 Date fromDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(dashBoardForm.getFromDate()+" 00:00:00");
 			 Date toDate = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").parse(dashBoardForm.getToDate()+" 23:59:59");
 			 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			 queryStr += " and createdDate BETWEEN '" + formatter.format(fromDate) + "' AND '" + formatter.format(toDate)+"'";
+			 queryStr += " and lastupdatetime BETWEEN '" + formatter.format(fromDate) + "' AND '" + formatter.format(toDate)+"'";
 			} catch (ParseException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -172,10 +175,10 @@ public class UserDaoImpl implements UserDao {
 			currentStatusList.add(1);
 			currentStatusList.add(2);
 			currentStatusList.add(3);
-			if(dashBoardForm.getEmail() == null && dashBoardForm.getMobileNumber() == null){
+			/*if(dashBoardForm.getEmail() == null && dashBoardForm.getMobileNumber() == null){
 				
 				currentStatusList.add(4);
-			}
+			}*/
 			currentStatusList.add(5);
 		}
 		
@@ -302,6 +305,14 @@ public class UserDaoImpl implements UserDao {
 		String query = "select courseid, coursename from courses where categoryid= :categoryid";
 		Query sqlQuery = this.sessionFactory.getCurrentSession().createSQLQuery(query);
 		sqlQuery.setParameter("categoryid", categoryId);
+		return sqlQuery.list();
+
+	}
+	
+	public List getCourseDataByCourseId(int courseId) {
+		String query = "select courseid, coursename, categoryid from courses where courseid= :courseid";
+		Query sqlQuery = this.sessionFactory.getCurrentSession().createSQLQuery(query);
+		sqlQuery.setParameter("courseid", courseId);
 		return sqlQuery.list();
 
 	}
