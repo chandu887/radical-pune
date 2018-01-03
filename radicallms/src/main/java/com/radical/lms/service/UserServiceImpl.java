@@ -335,6 +335,12 @@ public class UserServiceImpl implements UserService {
 
 		header.createCell(18).setCellValue("Weekend/ Weekday");
 		header.getCell(18).setCellStyle(style);
+		
+		header.createCell(19).setCellValue("Landline Number");
+		header.getCell(19).setCellStyle(style);
+		
+		header.createCell(20).setCellValue("Label");
+		header.getCell(20).setCellStyle(style);
 
 		int rowCount = 1;
 		Map<Integer, String> usersMap = getUsersMap();
@@ -381,6 +387,10 @@ public class UserServiceImpl implements UserService {
 				aRow.createCell(16).setCellValue(leadsEntity.getLocation());
 				aRow.createCell(17).setCellValue(leadsEntity.getModeofTraining());
 				aRow.createCell(18).setCellValue(leadsEntity.getTypeofTraining());
+				aRow.createCell(19).setCellValue(leadsEntity.getLandLineNumber());
+				aRow.createCell(20).setCellValue(leadsEntity.getLabels());
+				
+				
 				rowCount++;
 				//}
 			}

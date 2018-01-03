@@ -73,6 +73,24 @@
 <script
 	src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 	<script >
+	  function numbervalidation() {
+      	var regex = /^[0-9\b]+$/;
+      	var value = $("#mobileNo").val();
+      	 if (!regex.test(value)) {
+      		 $("#mobileNo").val("");
+               alert("Please enter numerics only");
+               return false;
+            }
+	  }
+	  function checkEmail() {
+          var email = document.getElementById('emailId');
+          var emailId = email.value;
+          var filter = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	            if (!filter.test(email.value)) {
+	            	 alert('Please provide a valid email address');
+	            }
+	  }
+	  
 	$(document).ready(function(){
         $('#select_all').on('click',function(){
             if(this.checked){
@@ -1224,7 +1242,7 @@ var basepath = "${pageContext.request.contextPath}";
 							</div>
 							<div class="form-group">
 								<label for="pwd">Phone Number</label> <input type="text"
-									class="form-control" id="mobileNo" value="" name="mobileNo">
+									class="form-control" id="mobileNo"  maxlength="14" value="" name="mobileNo" onkeyup="numbervalidation();">
 							</div>
 							<div class="form-group">
 								<label for="pwd">LandLine Number</label> <input type="text"
@@ -1232,7 +1250,7 @@ var basepath = "${pageContext.request.contextPath}";
 							</div>
 							<div class="form-group">
 								<label for="pwd">Email ID</label> <input type="email"
-									class="form-control" id="emailId" value="" name="emailId">
+									class="form-control" id="emailId" value="" name="emailId" onchange="checkEmail();">
 							</div>
 							<div class="form-group">
 								<label for="pwd">Address</label> <input type="text"
@@ -1414,7 +1432,7 @@ var basepath = "${pageContext.request.contextPath}";
 							</div>
 							<div class="form-group">
 								<label for="pwd">Phone Number</label> <input type="text"
-									class="form-control" id="editMobileNo" value="" name="mobileNo">
+									class="form-control" id="editMobileNo" value="" name="mobileNo" onkeyup="numbervalidation();">
 							</div>
 							<div class="form-group">
 								<label for="pwd">LandLine Number</label> <input type="text"
@@ -1422,7 +1440,7 @@ var basepath = "${pageContext.request.contextPath}";
 							</div>
 							<div class="form-group">
 								<label for="pwd">Email ID</label> <input type="email"
-									class="form-control" id="editEmail" value="" name="emailId">
+									class="form-control" id="editEmail" value="" name="emailId" onchange="checkEmail();">
 							</div>
 							<div class="form-group">
 								<label for="pwd">Address</label> <input type="text"
