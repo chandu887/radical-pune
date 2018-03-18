@@ -159,7 +159,7 @@ public class EmailServiceImpl implements EmailService {
 					String mailContent = "";
 					String mailId = addressArray[0].toString();
 					Object content = message.getContent();
-					if (mailsubject.contains("Radical Technologies - Cource Inquiry Details")) {
+					if (mailsubject.contains("Radicaltechnologies - Course Enquiry Details") || mailsubject.contains("Radical Technologies - Quick Inquiry Details")) {
 						if(content instanceof String){
 							mailContent = (String) content;
 							Document doc = Jsoup.parse(mailContent);
